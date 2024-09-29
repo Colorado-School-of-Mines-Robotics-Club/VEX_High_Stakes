@@ -7,10 +7,14 @@ CXXEXTS:=cpp c++ cc
 
 # probably shouldn't modify these, but you may need them below
 ROOT=.
-FWDIR:=$(ROOT)/firmware
+PROS=../.pros
+EXTRA_INCDIR=../common/include
+
 BINDIR=$(ROOT)/bin
 SRCDIR=$(ROOT)/src
-INCDIR=$(ROOT)/include
+
+FWDIR:=$(PROS)/firmware
+INCDIR=$(PROS)/include
 
 WARNFLAGS+=
 EXTRA_CFLAGS=
@@ -44,4 +48,4 @@ TEMPLATE_FILES=$(INCDIR)/$(LIBNAME)/*.h $(INCDIR)/$(LIBNAME)/*.hpp
 ################################################################################
 ################################################################################
 ########## Nothing below this line should be edited by typical users ###########
--include ./common.mk
+-include ../.pros/common.mk

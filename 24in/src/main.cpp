@@ -1,19 +1,16 @@
 #include "main.h"
+#include "constants.h"
+
+pros::Controller master(pros::E_CONTROLLER_MASTER);
+
+pros::MotorGroup left_drive_group(LEFT_DRIVE_PORTS);
+pros::MotorGroup right_drive_group(RIGHT_DRIVE_PORTS); 
 
 /**
  * A callback function for LLEMU's center button.
- *
- * When this callback is fired, it will toggle line 2 of the LCD text between
- * "I was pressed!" and nothing.
  */
 void on_center_button() {
-	static bool pressed = false;
-	pressed = !pressed;
-	if (pressed) {
-		pros::lcd::set_text(2, "I was pressed!");
-	} else {
-		pros::lcd::clear_line(2);
-	}
+
 }
 
 /**
@@ -24,9 +21,16 @@ void on_center_button() {
  */
 void initialize() {
 	pros::lcd::initialize();
-	pros::lcd::set_text(1, "Hello PROS User!");
+	pros::lcd::set_text(1, "Is this working");
 
-	pros::lcd::register_btn1_cb(on_center_button);
+	left_drive_group.set_gearing(
+		pros::motor_gearset_e_t::E_MOTOR_GEAR_GREEN);
+	left_drive_group.set_encoder_units(
+		pros::motor_encoder_units_e::E_MOTOR_ENCODER_DEGREES);
+	right_drive_group.set_gearing(
+		pros::motor_gearset_e_t::E_MOTOR_GEAR_GREEN);
+	right_drive_group.set_encoder_units(
+		pros::motor_encoder_units_e::E_MOTOR_ENCODER_DEGREES);
 }
 
 /**
@@ -74,21 +78,20 @@ void autonomous() {}
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-	pros::Controller master(pros::E_CONTROLLER_MASTER);
-	pros::MotorGroup left_mg({1, -2, 3});    // Creates a motor group with forwards ports 1 & 3 and reversed port 2
-	pros::MotorGroup right_mg({-4, 5, -6});  // Creates a motor group with forwards port 5 and reversed ports 4 & 6
 
-
+	bool direction = 0;
+	
 	while (true) {
-		pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
-		                 (pros::lcd::read_buttons() & LCD_BTN_CENTER) >> 1,
-		                 (pros::lcd::read_buttons() & LCD_BTN_RIGHT) >> 0);  // Prints status of the emulated screen LCDs
+		if(master.get_digital_new_press(DIGITAL_A)) {
+			direction = !direction;
+			left_drive_group.set_reversed(direction);
+			right_drive_group.set_reversed(direction);
+		}
 
-		// Arcade control scheme
-		int dir = master.get_analog(ANALOG_LEFT_Y);    // Gets amount forward/backward from left joystick
-		int turn = master.get_analog(ANALOG_RIGHT_X);  // Gets the turn left/right from right joystick
-		left_mg.move(dir - turn);                      // Sets left motor voltage
-		right_mg.move(dir + turn);                     // Sets right motor voltage
-		pros::delay(20);                               // Run for 20 ms then update
+		int left = master.get_analog(ANALOG_LEFT_Y);
+		int right = master.get_analog(ANALOG_RIGHT_Y);
+
+		left_drive_group.move(left);
+		right_drive_group.move(right);
 	}
 }

@@ -1,10 +1,9 @@
 #include "main.h"
 #include "constants.h"
+#include "drivetrain.h"
 
-pros::Controller master(pros::E_CONTROLLER_MASTER);
-
-pros::MotorGroup left_drive_group(LEFT_DRIVE_PORTS);
-pros::MotorGroup right_drive_group(RIGHT_DRIVE_PORTS); 
+pros::Controller controllerMain(pros::E_CONTROLLER_MASTER);
+DriveTrain driveTrain;
 
 /**
  * A callback function for LLEMU's center button.
@@ -22,15 +21,7 @@ void on_center_button() {
 void initialize() {
 	pros::lcd::initialize();
 	pros::lcd::set_text(1, "Is this working");
-
-	left_drive_group.set_gearing(
-		pros::motor_gearset_e_t::E_MOTOR_GEAR_GREEN);
-	left_drive_group.set_encoder_units(
-		pros::motor_encoder_units_e::E_MOTOR_ENCODER_DEGREES);
-	right_drive_group.set_gearing(
-		pros::motor_gearset_e_t::E_MOTOR_GEAR_GREEN);
-	right_drive_group.set_encoder_units(
-		pros::motor_encoder_units_e::E_MOTOR_ENCODER_DEGREES);
+	driveTrain.resetHeading();
 }
 
 /**
@@ -38,7 +29,9 @@ void initialize() {
  * the VEX Competition Switch, following either autonomous or opcontrol. When
  * the robot is enabled, this task will exit.
  */
-void disabled() {}
+void disabled() {
+	driveTrain.setDriveTrainVelocity(0);
+}
 
 /**
  * Runs after initialize(), and before autonomous when connected to the Field
@@ -79,19 +72,13 @@ void autonomous() {}
  */
 void opcontrol() {
 
-	bool direction = 0;
-	
+	driveTrain.setBrakeMode(pros::E_MOTOR_BRAKE_COAST);
+
 	while (true) {
-		if(master.get_digital_new_press(DIGITAL_A)) {
-			direction = !direction;
-			left_drive_group.set_reversed(direction);
-			right_drive_group.set_reversed(direction);
-		}
-
-		int left = master.get_analog(ANALOG_LEFT_Y);
-		int right = master.get_analog(ANALOG_RIGHT_Y);
-
-		left_drive_group.move(left);
-		right_drive_group.move(right);
+		double f = controllerMain.get_analog(ANALOG_LEFT_Y);
+		double s = controllerMain.get_analog(ANALOG_LEFT_X);
+		double t = controllerMain.get_analog(ANALOG_RIGHT_X);
+		
+		driveTrain.setDrivetrainPower(f, s, t);
 	}
 }

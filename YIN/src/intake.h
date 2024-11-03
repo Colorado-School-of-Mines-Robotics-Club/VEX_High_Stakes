@@ -1,5 +1,4 @@
-#ifndef MINES_INTAKE_H
-#define MINES_INTAKE_H
+#pragma once
 
 #include "main.h"
 
@@ -13,6 +12,3 @@ public:
 private:
     pros::Motor IntakeMotor;
 };
-
-
-#endif // MINES_INTAKE_H

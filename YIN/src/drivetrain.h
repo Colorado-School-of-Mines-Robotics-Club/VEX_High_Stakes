@@ -1,5 +1,4 @@
-#ifndef MINES_DRIVE_H
-#define MINES_DRIVE_H
+#pragma once
 
 #include "main.h"
 
@@ -19,6 +18,3 @@ private:
 	pros::MotorGroup rearLeft;
 	pros::IMU tinyBox;
 };
-
-
-#endif // MINES_DRIVE_H

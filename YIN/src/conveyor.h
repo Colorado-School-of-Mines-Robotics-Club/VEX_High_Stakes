@@ -1,5 +1,4 @@
-#ifndef MINES_CONVEYOR_H
-#define MINES_CONVEYOR_H
+#pragma once
 
 #include "main.h"
 
@@ -13,6 +12,3 @@ public:
 private:
     pros::Motor conveyorMotor;
 };
-
-
-#endif // MINES_CONVEYOR_H

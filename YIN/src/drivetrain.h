@@ -13,11 +13,11 @@ public:
 	void setBrakeMode(pros::motor_brake_mode_e mode);
 
 private:
-	pros::MotorGroup FrontRight;
-	pros::MotorGroup FrontLeft;
-	pros::MotorGroup RearRight;
-	pros::MotorGroup RearLeft;
-	pros::IMU TinyBox;
+	pros::MotorGroup frontRight;
+	pros::MotorGroup frontLeft;
+	pros::MotorGroup rearRight;
+	pros::MotorGroup rearLeft;
+	pros::IMU tinyBox;
 };
 
 

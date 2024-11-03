@@ -1,9 +1,13 @@
 #include "main.h"
 #include "constants.h"
 #include "drivetrain.h"
+#include "intake.h"
+#include "conveyor.h"
 
 pros::Controller controllerMain(pros::E_CONTROLLER_MASTER);
 DriveTrain driveTrain;
+Intake intake;
+Conveyor conveyor;
 
 /**
  * A callback function for LLEMU's center button.
@@ -31,6 +35,8 @@ void initialize() {
  */
 void disabled() {
 	driveTrain.setDriveTrainVelocity(0);
+	intake.brake();
+	conveyor.brake();
 }
 
 /**
@@ -80,5 +86,16 @@ void opcontrol() {
 		double t = controllerMain.get_analog(ANALOG_RIGHT_X);
 		
 		driveTrain.setDrivetrainPower(f, s, t);
+
+		if(controllerMain.get_digital(DIGITAL_A)) {
+			conveyor.move(MAX_VOLTAGE);
+			intake.intake(-MAX_VOLTAGE);
+		} else if(controllerMain.get_digital(DIGITAL_B)) {
+			conveyor.move(-MAX_VOLTAGE);
+			intake.intake(MAX_VOLTAGE);
+		} else {
+			conveyor.brake();
+			intake.brake();
+		}
 	}
 }

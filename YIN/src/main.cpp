@@ -1,13 +1,11 @@
 #include "main.h"
 #include "constants.h"
-#include "drivetrain.h"
+#include "drive.h"
 #include "intake.h"
 #include "conveyor.h"
+#include "auto.h"
 
 pros::Controller controllerMain(pros::E_CONTROLLER_MASTER);
-DriveTrain driveTrain;
-Intake intake;
-Conveyor conveyor;
 
 /**
  * A callback function for LLEMU's center button.
@@ -25,7 +23,7 @@ void on_center_button() {
 void initialize() {
 	pros::lcd::initialize();
 	pros::lcd::set_text(1, "Is this working");
-	driveTrain.resetHeading();
+	Drive::resetHeading();
 }
 
 /**
@@ -34,9 +32,9 @@ void initialize() {
  * the robot is enabled, this task will exit.
  */
 void disabled() {
-	driveTrain.setDriveTrainVelocity(0);
-	intake.brake();
-	conveyor.brake();
+	Drive::setDriveVelocity(0);
+	Intake::brake();
+	Conveyor::brake();
 }
 
 /**
@@ -61,7 +59,9 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous() {}
+void autonomous() {
+	testIntake();
+}
 
 /**
  * Runs the operator control code. This function will be started in its own task
@@ -77,25 +77,27 @@ void autonomous() {}
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-
-	driveTrain.setBrakeMode(pros::E_MOTOR_BRAKE_COAST);
+	testIntake();
+	return;
+	
+	Drive::setBrakeMode(pros::E_MOTOR_BRAKE_COAST);
 
 	while (true) {
 		double f = controllerMain.get_analog(ANALOG_LEFT_Y);
 		double s = controllerMain.get_analog(ANALOG_LEFT_X);
 		double t = controllerMain.get_analog(ANALOG_RIGHT_X);
 		
-		driveTrain.setDrivetrainPower(f, s, t);
+		Drive::setDrivePower(f, s, t);
 
 		if(controllerMain.get_digital(DIGITAL_A)) {
-			conveyor.move(MAX_VOLTAGE);
-			intake.intake(-MAX_VOLTAGE);
+			Conveyor::move(MAX_VOLTAGE);
+			Intake::intake(-MAX_VOLTAGE);
 		} else if(controllerMain.get_digital(DIGITAL_B)) {
-			conveyor.move(-MAX_VOLTAGE);
-			intake.intake(MAX_VOLTAGE);
+			Conveyor::move(-MAX_VOLTAGE);
+			Intake::intake(MAX_VOLTAGE);
 		} else {
-			conveyor.brake();
-			intake.brake();
+			Conveyor::brake();
+			Intake::brake();
 		}
 	}
 }

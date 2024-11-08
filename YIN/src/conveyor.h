@@ -4,11 +4,10 @@
 
 class Conveyor
 {
-public:
-	Conveyor();
-    void move(int32_t voltage);
-    void brake();
-
 private:
-    pros::Motor conveyorMotor;
+    static pros::Motor conveyorMotor;
+public:
+    Conveyor();
+    static void move(int32_t voltage);
+    static void brake();
 };

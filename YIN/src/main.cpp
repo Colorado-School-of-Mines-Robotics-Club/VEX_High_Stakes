@@ -3,6 +3,7 @@
 #include "drive.h"
 #include "intake.h"
 #include "conveyor.h"
+#include "goal_grabber.h"
 #include "auto.h"
 
 pros::Controller controllerMain(pros::E_CONTROLLER_MASTER);
@@ -35,6 +36,7 @@ void disabled() {
 	Drive::setDriveVelocity(0);
 	Intake::brake();
 	Conveyor::brake();
+	GoalGrabber::setNotGrabbing();
 }
 
 /**
@@ -77,27 +79,18 @@ void autonomous() {
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-	testIntake();
-	return;
-	
 	Drive::setBrakeMode(pros::E_MOTOR_BRAKE_COAST);
 
 	while (true) {
-		double f = controllerMain.get_analog(ANALOG_LEFT_Y);
-		double s = controllerMain.get_analog(ANALOG_LEFT_X);
-		double t = controllerMain.get_analog(ANALOG_RIGHT_X);
-		
-		Drive::setDrivePower(f, s, t);
+		double left = controllerMain.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
+		double right = controllerMain.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
+		bool l1 = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_L1);
+		bool l2 = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_L2);
+		bool r1 = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1);
 
-		if(controllerMain.get_digital(DIGITAL_A)) {
-			Conveyor::move(MAX_VOLTAGE);
-			Intake::intake(-MAX_VOLTAGE);
-		} else if(controllerMain.get_digital(DIGITAL_B)) {
-			Conveyor::move(-MAX_VOLTAGE);
-			Intake::intake(MAX_VOLTAGE);
-		} else {
-			Conveyor::brake();
-			Intake::brake();
-		}
+		Drive::control(left, right);
+		Intake::control(l1, l2);
+		GoalGrabber::control(r1);
+		// Conveyor::control();
 	}
 }

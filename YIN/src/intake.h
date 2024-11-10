@@ -2,7 +2,7 @@
 
 #include "main.h"
 
-enum IntakeState {
+enum class IntakeState {
     INTAKING,
     OUTTAKING,
     NOT_MOVING
@@ -15,7 +15,7 @@ private:
     static pros::Motor intakeMotor;
 public:
     Intake();
-    static void intake(int32_t voltage);
+    static void control(bool forwardButton, bool reverseButton);
     static void brake();
     static void setIntaking();
     static void setOuttaking();

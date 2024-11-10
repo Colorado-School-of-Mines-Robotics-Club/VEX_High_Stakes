@@ -3,17 +3,29 @@
 #define MAX_VOLTAGE 127
 
 // Drive 
-#define DRIVE_MULTIPLIER (5350/74.25);
-#define FRONT_RIGHT_DRIVE_PORTS { 19, 20}
-#define FRONT_LEFT_DRIVE_PORTS { -11, -12}
-#define REAR_RIGHT_DRIVE_PORTS { 17, 18}
-#define REAR_LEFT_DRIVE_PORTS { -13, -14}
-
+#define LEFT_DRIVE_PORTS {-11, -12, -13, 14}
+#define RIGHT_DRIVE_PORTS {17, 18, 19, 20}
 #define IMU_PORT 21
+#define DRIVE_SPEED_MULTIPLIER 0.7
+#define DISTANCE_MULTIPLIER (5350/74.25)
 
 // Intake
 #define INTAKE_SPEED 50
 #define INTAKE_PORT 10
+#define INTAKE_SPEED 100
 
-// Conveyot
+// Conveyor
 #define CONVEYOR_PORT 9
+#define CONVEYOR_FORWARD_SPEED 100
+#define CONVEYOR_REVERSE_SPEED 50
+
+// Goal Grabber
+#define GOAL_GRABBER_PORT 'A'
+
+
+
+// Unused
+#define FRONT_RIGHT_DRIVE_PORTS { 19, 20}
+#define FRONT_LEFT_DRIVE_PORTS { -11, -12}
+#define REAR_RIGHT_DRIVE_PORTS { 17, 18}
+#define REAR_LEFT_DRIVE_PORTS { -13, -14}

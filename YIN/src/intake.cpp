@@ -11,7 +11,7 @@ Intake::Intake() {
 
 void Intake::control(bool forwardButton, bool reverseButton) {
     if(intakeState == IntakeState::NOT_MOVING) {
-        if(forwardButton) {
+        if (forwardButton) {
             setIntaking();
             Conveyor::setConveyingForward();
         } else if (reverseButton) {
@@ -19,7 +19,7 @@ void Intake::control(bool forwardButton, bool reverseButton) {
             Conveyor::setConveyingReverse();
         }
     } else if (intakeState == IntakeState::INTAKING) {
-        if(!forwardButton || reverseButton) {
+        if (!forwardButton || reverseButton) {
             setNotMoving();
             Conveyor::setNotMoving();
         }
@@ -42,7 +42,7 @@ void Intake::setIntaking() {
 
 void Intake::setOuttaking() {
     intakeState = IntakeState::OUTTAKING;
-    intakeMotor.move(-INTAKE_SPEED);
+    intakeMotor.move(-OUTTAKE_SPEED);
 }
 
 void Intake::setNotMoving() {

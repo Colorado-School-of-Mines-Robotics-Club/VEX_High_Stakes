@@ -10,13 +10,13 @@ Conveyor::Conveyor() {
 
 void Conveyor::control(bool forwardButton, bool reverseButton) {
     if(conveyorState == ConveyorState::NOT_MOVING) {
-        if(forwardButton) {
+        if (forwardButton) {
             setConveyingForward();
         } else if (reverseButton) {
             setConveyingReverse();
         }
     } else if (conveyorState == ConveyorState::FORWARD) {
-        if(!forwardButton || reverseButton) {
+        if (!forwardButton || reverseButton) {
             setNotMoving();
         }
     } else if (conveyorState == ConveyorState::REVERSE) {
@@ -41,7 +41,7 @@ void Conveyor::setConveyingForward() {
 
 void Conveyor::setConveyingReverse() {
     conveyorState = ConveyorState::REVERSE;
-    conveyorMotor.move(CONVEYOR_REVERSE_SPEED);
+    conveyorMotor.move(-CONVEYOR_REVERSE_SPEED);
 }
 
 void Conveyor::setNotMoving() {

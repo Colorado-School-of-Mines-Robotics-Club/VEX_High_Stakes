@@ -5,6 +5,7 @@
 #include "conveyor.h"
 #include "goal_grabber.h"
 #include "auto.h"
+#include "auto_chooser.h"
 
 pros::Controller controllerMain(pros::E_CONTROLLER_MASTER);
 
@@ -48,7 +49,24 @@ void disabled() {
  * This task will exit when the robot is enabled and autonomous or opcontrol
  * starts.
  */
-void competition_initialize() {}
+void competition_initialize() {
+	pros::lcd::print(1, "Current Auto:");
+	pros::lcd::print(3, "Current Color:");
+	while (true) {
+		auto lcd_buttons = pros::lcd::read_buttons();
+		auto left = lcd_buttons & 0b001;
+		auto center = lcd_buttons & 0b010;
+		auto right = lcd_buttons & 0b100;
+
+		if (left) {
+			AutoChooser::selectPrev();
+		} else if (right) {
+			AutoChooser::selectNext();
+		}
+		pros::lcd::print(2, "%s", AutoChooser::getName());
+		pros::lcd::print(4, "%s", AutoChooser::isBlue() ? "blue" : "red");
+	}
+}
 
 /**
  * Runs the user autonomous code. This function will be started in its own task
@@ -62,7 +80,7 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-	testIntake();
+	//testIntake();
 }
 
 /**
@@ -77,6 +95,17 @@ void autonomous() {
  * If the robot is disabled or communications is lost, the
  * operator control task will be stopped. Re-enabling the robot will restart the
  * task, not resume it from where it left off.
+ *
+ * ########## Control Mappings ##########
+ *
+ * Left analog Y        - Left motors control
+ * Right analog Y       - Right motors control
+ *
+ * Left top bumper      - Intake
+ * Left bottom bumper   - Outtake
+ * Right top bumper     - Goal grabbing toggle
+ *
+ * B (right 3d printed) - Hold precision mode
  */
 void opcontrol() {
 	Drive::setBrakeMode(pros::E_MOTOR_BRAKE_COAST);
@@ -87,8 +116,9 @@ void opcontrol() {
 		bool l1 = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_L1);
 		bool l2 = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_L2);
 		bool r1 = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1);
+		bool b = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_B);
 
-		Drive::control(left, right);
+		Drive::control(left, right, b);
 		Intake::control(l1, l2);
 		GoalGrabber::control(r1);
 		// Conveyor::control();

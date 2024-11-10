@@ -1,25 +1,25 @@
 #include "goal_grabber.h"
 #include "constants.h"
 
-enum GrabState GoalGrabber::grabState(NOT_GRABBING);
+enum GrabState GoalGrabber::grabState (GrabState::NOT_GRABBING);
 
-pros::ADIDigitalOut goalGrabber (GOAL_GRABBER_PORT);
+pros::ADIDigitalOut GoalGrabber::goalGrabber (GOAL_GRABBER_PORT);
 
-void GoalGrabber::control(bool button) {
-    if(grabState == GRABBING && button) {
+void GoalGrabber::control(bool grabButton) {
+    if(grabState == GrabState::GRABBING && grabButton) {
         setNotGrabbing();
-    } else if (grabState == NOT_GRABBING && button) {
+    } else if (grabState == GrabState::NOT_GRABBING && grabButton) {
         setGrabbing();
     }
 }
 
 void GoalGrabber::setGrabbing() {
-    grabState = GRABBING;
+    grabState = GrabState::GRABBING;
     goalGrabber.set_value(true);
 }
 
 void GoalGrabber::setNotGrabbing() {
-    grabState = NOT_GRABBING;
+    grabState = GrabState::NOT_GRABBING;
     goalGrabber.set_value(false);
 }
 

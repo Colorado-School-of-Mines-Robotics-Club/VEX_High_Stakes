@@ -3,9 +3,9 @@
 #include "main.h"
 
 enum class ConveyorState {
+    NOT_MOVING,
     FORWARD,
-    REVERSE,
-    NOT_MOVING
+    REVERSE
 };
 
 class Conveyor

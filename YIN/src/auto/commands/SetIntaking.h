@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Command.h"
 #include "intake.h"
 

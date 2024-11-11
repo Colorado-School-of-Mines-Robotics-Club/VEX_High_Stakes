@@ -3,7 +3,7 @@
 
 enum GrabState GoalGrabber::grabState (GrabState::NOT_GRABBING);
 
-pros::ADIDigitalOut GoalGrabber::goalGrabber (GOAL_GRABBER_PORT);
+pros::adi::DigitalOut GoalGrabber::goalGrabber (GOAL_GRABBER_PORT);
 
 void GoalGrabber::control(bool grabButton) {
     if(grabState == GrabState::GRABBING && grabButton) {

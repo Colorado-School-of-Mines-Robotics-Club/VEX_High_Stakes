@@ -11,7 +11,7 @@ class GoalGrabber
 {
 private:
     static enum GrabState grabState;
-    static pros::ADIDigitalOut goalGrabber;
+    static pros::adi::DigitalOut goalGrabber;
 public:
     GoalGrabber();
     /**

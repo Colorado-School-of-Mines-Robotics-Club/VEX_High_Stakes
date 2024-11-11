@@ -39,8 +39,9 @@ void Drive::driveDistance(double distance, double power) {
 	left.tare_position();
 	right.tare_position();
 	double target =  distance * DISTANCE_MULTIPLIER;
-	right.move_relative(target, power * 2);
-	left.move_relative(target, power * 2);
+	pros::MotorUnits::counts;
+	right.move_relative(target, power);
+	left.move_relative(target, power);
 }
 
 void Drive::driveTime(uint32_t milis, int32_t left_power, int32_t right_power) {

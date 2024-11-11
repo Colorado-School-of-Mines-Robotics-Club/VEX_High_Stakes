@@ -4,16 +4,16 @@
 #include "intake.h"
 #include "conveyor.h"
 #include "goal_grabber.h"
-#include "auto.h"
 #include "auto_chooser.h"
+#include "autos.h"
 
 pros::Controller controllerMain(pros::E_CONTROLLER_MASTER);
 
 /**
- * A callback function for LLEMU's center button.
+ * A callback function for LLEMU's center_btn button.
  */
 void on_center_button() {
-
+	
 }
 
 /**
@@ -37,7 +37,42 @@ void disabled() {
 	Drive::setDriveVelocity(0);
 	Intake::brake();
 	Conveyor::brake();
-	GoalGrabber::setNotGrabbing();
+	// GoalGrabber::setNotGrabbing();
+
+	// Competition initialize
+	auto left_btn = 0;
+	auto center_btn = 0;
+	auto right_btn = 0;
+	
+	pros::lcd::print(0, "Choose the auto!");
+	pros::lcd::print(1, "Current Auto:");
+	pros::lcd::print(3, "Current Color:");
+	while (true) {
+		auto lcd_buttons = pros::lcd::read_buttons();
+
+		auto old_left_btn = left_btn;
+		auto old_center_btn = center_btn;
+		auto old_right_btn = right_btn;
+
+		left_btn = lcd_buttons & LCD_BTN_LEFT;
+		center_btn = lcd_buttons & LCD_BTN_CENTER;
+		right_btn = lcd_buttons & LCD_BTN_RIGHT;
+
+		if (left_btn != old_left_btn && left_btn) {
+			pros::lcd::print(5, "left_btn pressed");
+			AutoChooser::selectPrev();
+		} else if (center_btn != old_center_btn && center_btn) {
+			pros::lcd::print(5, "center_btn pressed");
+			AutoChooser::toggleColor();
+		} else if (right_btn != old_right_btn && right_btn) {
+			pros::lcd::print(5, "right_btn pressed");
+			AutoChooser::selectNext();
+		}
+		pros::lcd::print(2, "%s", AutoChooser::getName());
+		pros::lcd::print(4, "%s", AutoChooser::isBlue() ? "blue" : "red");
+
+		pros::delay(25);
+	}
 }
 
 /**
@@ -50,22 +85,7 @@ void disabled() {
  * starts.
  */
 void competition_initialize() {
-	pros::lcd::print(1, "Current Auto:");
-	pros::lcd::print(3, "Current Color:");
-	while (true) {
-		auto lcd_buttons = pros::lcd::read_buttons();
-		auto left = lcd_buttons & 0b001;
-		auto center = lcd_buttons & 0b010;
-		auto right = lcd_buttons & 0b100;
 
-		if (left) {
-			AutoChooser::selectPrev();
-		} else if (right) {
-			AutoChooser::selectNext();
-		}
-		pros::lcd::print(2, "%s", AutoChooser::getName());
-		pros::lcd::print(4, "%s", AutoChooser::isBlue() ? "blue" : "red");
-	}
 }
 
 /**
@@ -77,10 +97,11 @@ void competition_initialize() {
  *
  * If the robot is disabled or communications is lost, the autonomous task
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
- * from where it left off.
+ * from where it left_btn off.
  */
 void autonomous() {
-	//testIntake();
+	// AutoChooser::runSelected();
+	driveForward();
 }
 
 /**
@@ -94,7 +115,7 @@ void autonomous() {
  *
  * If the robot is disabled or communications is lost, the
  * operator control task will be stopped. Re-enabling the robot will restart the
- * task, not resume it from where it left off.
+ * task, not resume it from where it left_btn off.
  *
  * ########## Control Mappings ##########
  *
@@ -105,20 +126,20 @@ void autonomous() {
  * Left bottom bumper   - Outtake
  * Right top bumper     - Goal grabbing toggle
  *
- * B (right 3d printed) - Hold precision mode
+ * B (right_btn 3d printed) - Hold precision mode
  */
 void opcontrol() {
 	Drive::setBrakeMode(pros::E_MOTOR_BRAKE_COAST);
 
 	while (true) {
-		double left = controllerMain.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
-		double right = controllerMain.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
+		double left_btn = controllerMain.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
+		double right_btn = controllerMain.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
 		bool l1 = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_L1);
 		bool l2 = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_L2);
 		bool r1 = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1);
 		bool b = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_B);
 
-		Drive::control(left, right, b);
+		Drive::control(left_btn, right_btn, b);
 		Intake::control(l1, l2);
 		GoalGrabber::control(r1);
 		// Conveyor::control();

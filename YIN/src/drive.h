@@ -37,6 +37,11 @@ class Drive {
 		 * @param mode (brake, coast, hold)
 		 */
 		static void setBrakeMode(pros::motor_brake_mode_e mode);
+		/**
+		 * @brief Set the drive train to a specific power
+		 * 
+		 * @param power The power to apply to the motors
+		 */
 		static void setDriveVelocity(int32_t power);
 		/**
 		 * @brief Drive a distance forward at a certain speed
@@ -44,7 +49,24 @@ class Drive {
 		 * @param distance The distance in inches to drive
 		 * @param power The power to apply to the motors while driving
 		 */
-		static void driveDistance(double distance, double power);
+		static void driveDistance(double distance, int32_t power);
+		/**
+		 * @brief Turn degress
+		 * 
+		 * @param degrees The amount of degrees to turn. Negative is counter clockwise
+		 * @param power The power to apply to the motors while driving
+		 */
+		static void turn(double deg, int32_t power);
+		/**
+		 * @brief Drive the center of the robot along an arc
+		 * 
+		 * @param radius The radius of the circle
+ 		 * @param percentage The percentage (0-1) of the circle to drive. Negative is counter-clockwise
+		 * @param power The power in millivolts to apply to the motors while driving. Negative drives backwards along the circle
+		 * NOTE: Backwards means it will drive along the same arc as forwards but in the opposite direction.
+		 * Clockwise and counter-clockwise refer to the orientation for the forard arc
+		 */
+		static void driveArc(double radius, double percentage, double power);
 		/**
 		 * @brief Sets left and right motor speed for a specified amount of miliseconds
 		 * 

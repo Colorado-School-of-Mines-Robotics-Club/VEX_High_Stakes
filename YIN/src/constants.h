@@ -1,7 +1,9 @@
 #pragma once
 
 // Global
-#define MAX_VOLTAGE 127
+#define MAX_POWER 127
+#define POWER_TO_VOLTAGE (12000/127)
+#define VOLTAGE_TO_POWER (127/12000)
 
 // Drive 
 #define LEFT_DRIVE_PORTS  { -7, -8,  -9,  10}
@@ -9,9 +11,9 @@
 #define IMU_PORT 21
 #define DRIVE_SPEED_MULTIPLIER 0.7 
 #define PRECISION_MULTIPLIER 0.35
-// #define DISTANCE_MULTIPLIER (5350/74.25)
-// #define DISTANCE_MULTIPLIER 38.84459628
-#define DISTANCE_MULTIPLIER 40.635
+#define DRIVE_UNIT_MULTIPLIER 40.635
+#define DRIVE_DEG_MULTIPLIER 9.926
+#define TRACK_WIDTH 12.23
 
 // Intake
 #define INTAKE_PORT -4

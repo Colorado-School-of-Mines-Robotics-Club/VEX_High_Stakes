@@ -12,8 +12,13 @@ void AutoChooser::runSelected() {
             driveForward();
         break;
         case Auto::DRIVE_FORWARD_CONTACT_LADDER:
+            driveForwardContactLadder();
         break;
         case Auto::DRIVE_FORWARD_RUSH_MOGO:
+            driveForwardRushMogo();
+        break;
+        case Auto::FIGURE_EIGHT:
+            figureEight(is_blue);
         break;
         default:
             doNothing();
@@ -55,6 +60,8 @@ const char* AutoChooser::getName() {
         case Auto::DRIVE_FORWARD_RUSH_MOGO:
             return "Simple rush and grab mogo";
         break;
+        case Auto::FIGURE_EIGHT:
+            return "Figure eight!";
         default:
             return "This shouldn't happen";
         break;

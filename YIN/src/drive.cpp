@@ -1,10 +1,27 @@
 #include "drive.h"
 #include "constants.h"
+#include <vector>
 
 pros::MotorGroup Drive::right(RIGHT_DRIVE_PORTS);
 pros::MotorGroup Drive::left(LEFT_DRIVE_PORTS);
 pros::IMU Drive::tinyBox(IMU_PORT);
 pros::Optical Drive::colorSensor(COLOR_SENSOR_PORT);
+
+double abs(double x) {
+	if(x < 0) {
+		x *= -1;
+	}
+	return x;
+}
+
+double average(std::vector<double> x) {
+	double total{0};
+	for(double d : x) {
+		total += d;
+	}
+	return total / x.size();
+}
+
 
 Drive::Drive() {
 	left.set_gearing(pros::E_MOTOR_GEAR_BLUE);
@@ -48,13 +65,46 @@ void Drive::setDriveVelocity(int32_t power) {
 	right.move(power);
 }
 
-void Drive::driveDistance(double distance, double power) {
-	left.tare_position();
-	right.tare_position();
-	double target =  distance * DISTANCE_MULTIPLIER;
-	pros::MotorUnits::counts;
+void Drive::driveDistance(double distance, int32_t power) {
+	left.tare_position_all();
+	right.tare_position_all();
+	double target =  distance * DRIVE_UNIT_MULTIPLIER;
 	right.move_relative(target, power);
 	left.move_relative(target, power);
+}
+
+void Drive::turn(double deg, int32_t power) {
+	left.tare_position_all();
+	right.tare_position_all();	
+	double target = deg * DRIVE_DEG_MULTIPLIER;
+	left.move_relative(target, power);
+	right.move_relative(-target, power);
+}
+
+void Drive::driveArc(double radius, double percentage, double power) {
+	double wheel_distance = TRACK_WIDTH / 2;
+	double distance = 2 * M_PI * (radius + wheel_distance) * abs(percentage) * DRIVE_UNIT_MULTIPLIER;
+
+	double left_power{0};
+	double right_power{0};
+	
+	left.tare_position_all();
+	right.tare_position_all();
+
+	bool clockwise = (percentage > 0);
+	if(clockwise) {
+		left_power = power;
+		right_power = power * ((radius - wheel_distance) / (radius + wheel_distance)); 
+		left.move_voltage(power);
+		right.move_voltage(power);
+		while(clockwise && abs(average(left.get_position_all())) < distance) {}
+	} else {
+		left_power = power * ((radius - wheel_distance) / (radius + wheel_distance));
+		right_power = power;
+		left.move_voltage(power);
+		right.move_voltage(power);
+		while(!clockwise && abs(average(right.get_position_all())) < distance) {}
+	}
 }
 
 void Drive::driveTime(uint32_t milis, int32_t left_power, int32_t right_power) {

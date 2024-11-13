@@ -11,7 +11,20 @@ Drive::Drive() {
 	right.set_gearing(pros::E_MOTOR_GEAR_BLUE);
 }
 
-void Drive::control(double left_power, double right_power, bool precisionButton) {
+void Drive::controlTank(double left_power, double right_power, bool precisionButton) {
+	if (precisionButton) {
+		left.move(left_power * PRECISION_MULTIPLIER);
+		right.move(right_power * PRECISION_MULTIPLIER);
+	} else {
+		left.move(left_power * DRIVE_SPEED_MULTIPLIER);
+		right.move(right_power * DRIVE_SPEED_MULTIPLIER);
+	}
+}
+
+void Drive::controlArcade(double forward_power, double turn_power, bool precisionButton) {
+	double left_power = forward_power + turn_power;
+	double right_power = forward_power - turn_power;
+
 	if (precisionButton) {
 		left.move(left_power * PRECISION_MULTIPLIER);
 		right.move(right_power * PRECISION_MULTIPLIER);

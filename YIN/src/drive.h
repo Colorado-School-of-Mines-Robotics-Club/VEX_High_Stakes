@@ -17,7 +17,15 @@ class Drive {
 		 * @param right analog input for right side of robot
 		 * @param precisionButton the digital value of the precision button
 		 */
-		static void control(double left, double right, bool precisionButton);
+		static void controlTank(double left, double right, bool precisionButton);
+		/**
+		 * @brief Driver control using arcade drive
+		 * 
+		 * @param forward analog input for driving straight
+		 * @param turn analog input for turning
+		 * @param precisionButton the digital value of the precision button
+		 */
+		static void controlArcade(double forward, double turn, bool precisionButton);
 		/**
 		 * @brief Resets IMU
 		 * 

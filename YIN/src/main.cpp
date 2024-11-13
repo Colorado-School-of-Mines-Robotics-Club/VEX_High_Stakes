@@ -139,7 +139,7 @@ void opcontrol() {
 		bool r1 = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1);
 		bool b = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_B);
 
-		Drive::control(left_btn, right_btn, b);
+		Drive::controlTank(left_btn, right_btn, b);
 		Intake::control(l1, l2);
 		GoalGrabber::control(r1);
 		// Conveyor::control();

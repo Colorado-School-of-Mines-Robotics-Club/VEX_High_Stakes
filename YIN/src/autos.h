@@ -5,5 +5,12 @@ void driveForward();
 void driveForwardContactLadder();
 void driveForwardRushMogo();
 void figureEight(bool isBlue);
-// Not an option
+void fullAutoOne(bool isBlue);
+
+
+// Test autos
+
+void rotateOnce();
+void driveCircle(double radius);
+void driveDistanceGyro(double distance);
 void testIntake();

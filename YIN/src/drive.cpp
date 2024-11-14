@@ -22,10 +22,22 @@ double average(std::vector<double> x) {
 	return total / x.size();
 }
 
+double average(std::vector<double> x, std::vector<double> y) {
+	double total{0};
+	for(double d : x) {
+		total += d;
+	}
+	for(double d : y) {
+		total += d;
+	}
+	return total / (x.size() + y.size());
+}
+
 
 Drive::Drive() {
 	left.set_gearing(pros::E_MOTOR_GEAR_BLUE);
 	right.set_gearing(pros::E_MOTOR_GEAR_BLUE);
+	tinyBox.reset();
 }
 
 void Drive::controlTank(double left_power, double right_power, bool precisionButton) {
@@ -69,21 +81,57 @@ void Drive::driveDistance(double distance, int32_t power) {
 	left.tare_position_all();
 	right.tare_position_all();
 	double target =  distance * DRIVE_UNIT_MULTIPLIER;
-	right.move_relative(target, power);
-	left.move_relative(target, power);
+	power = distance > 0 ? power : -power; // Drive backwards if negative distance
+	right.move(power);
+	left.move(power);
+	while(abs(average(left.get_position_all(), right.get_position_all())) < abs(target)) {}
+	right.move(0);
+	left.move(0);
+}
+
+void Drive::driveDistanceGyro(double distance, int32_t power) {
+	left.tare_position_all();
+	right.tare_position_all();
+	tinyBox.tare();
+	tinyBox.set_heading(180);
+
+	double target =  distance * DRIVE_UNIT_MULTIPLIER;
+	power = distance > 0 ? power : -power; // Drive backwards if negative distance
+	
+	while(abs(average(left.get_position_all(), right.get_position_all())) < abs(target)) {
+		double left_power;
+		double right_power;
+		double heading = tinyBox.get_heading();
+		if(heading = PROS_ERR_F) {
+			left_power = power;
+			right_power = power;
+		} else {
+			left_power = power * heading/180;
+			right_power = power * abs(180-heading)/180;
+		}
+		left.move(left_power);
+		right.move(right_power);
+	}
+	right.move(0);
+	left.move(0);
 }
 
 void Drive::turn(double deg, int32_t power) {
 	left.tare_position_all();
 	right.tare_position_all();	
-	double target = deg * DRIVE_DEG_MULTIPLIER;
-	left.move_relative(target, power);
-	right.move_relative(-target, power);
+	tinyBox.tare_rotation();
+	double cw = (deg > 0) ? 1.0 : -1.0; // Turn cw if deg is positive
+	left.move(power * cw);
+	right.move(-power * cw);
+	while(abs(tinyBox.get_rotation()) < (abs(deg) * DRIVE_DEG_MULTIPLIER)) {}
+	left.move(0);
+	right.move(0);
 }
+
 
 void Drive::driveArc(double radius, double percentage, double power) {
 	double wheel_distance = TRACK_WIDTH / 2;
-	double distance = 2 * M_PI * (radius + wheel_distance) * abs(percentage) * DRIVE_UNIT_MULTIPLIER;
+	double distance = 2 * M_PI * (radius + wheel_distance) * abs(percentage) * DRIVE_UNIT_MULTIPLIER * DRIVE_TURN_MULTIPLIER;
 
 	double left_power{0};
 	double right_power{0};
@@ -95,22 +143,26 @@ void Drive::driveArc(double radius, double percentage, double power) {
 	if(clockwise) {
 		left_power = power;
 		right_power = power * ((radius - wheel_distance) / (radius + wheel_distance)); 
-		left.move_voltage(power);
-		right.move_voltage(power);
+		left.move_voltage(left_power);
+		right.move_voltage(right_power);
 		while(clockwise && abs(average(left.get_position_all())) < distance) {}
 	} else {
 		left_power = power * ((radius - wheel_distance) / (radius + wheel_distance));
 		right_power = power;
-		left.move_voltage(power);
-		right.move_voltage(power);
+		left.move_voltage(left_power);
+		right.move_voltage(right_power);
 		while(!clockwise && abs(average(right.get_position_all())) < distance) {}
 	}
+	left.move(0);
+	right.move(0);
 }
 
 void Drive::driveTime(uint32_t milis, int32_t left_power, int32_t right_power) {
 	left.move(left_power);
-	left.move(right_power);
+	right.move(right_power);
 	pros::delay(milis);
+	left.move(0);
+	right.move(0);
 }
 
 void Drive::driveUntilColor(uint32_t color, int32_t left_power, int32_t right_power) {

@@ -8,6 +8,9 @@ void AutoChooser::runSelected() {
         case Auto::DO_NOTHING:
             doNothing();
         break;
+        case Auto::TEST:
+            rotateOnce();
+        break;
         case Auto::DRIVE_FORWARD:
             driveForward();
         break;
@@ -50,6 +53,9 @@ const char* AutoChooser::getName() {
     switch(selected_auto) {
         case Auto::DO_NOTHING:
             return "Do nothing :(";
+        break;
+        case Auto::TEST:
+            return "Test program";
         break;
         case Auto::DRIVE_FORWARD:
             return "Just go forward";

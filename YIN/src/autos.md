@@ -14,3 +14,21 @@
     ya - rush goal
 
 
+# first auto
+yin: 
+0. load ring near top
+0. start facing middle ring pile on opposite side of yang
+1. drive forward
+1. intake ring from first stack (don't run conveyor)
+2. load one ring onto field goal
+3. turn around and load ring onto mogo
+4. 
+
+yang: 
+0. start with preload touching bot in position
+0. start right side
+1. rush mogo
+2. outtake mogo in safe spot
+3. rush middle mogo
+
+

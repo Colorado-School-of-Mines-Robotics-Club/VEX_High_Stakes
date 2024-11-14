@@ -50,6 +50,7 @@ class Drive {
 		 * @param power The power to apply to the motors while driving
 		 */
 		static void driveDistance(double distance, int32_t power);
+		static void driveDistanceGyro(double distance, int32_t power);
 		/**
 		 * @brief Turn degress
 		 * 

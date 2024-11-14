@@ -23,8 +23,8 @@ void on_center_button() {
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
-	pros::lcd::initialize();
-	pros::lcd::set_text(1, "Is this working");
+	// pros::lcd::initialize();
+	// pros::lcd::set_text(1, "Is this working");
 	Drive::resetHeading();
 }
 
@@ -101,7 +101,8 @@ void competition_initialize() {
  */
 void autonomous() {
 	// AutoChooser::runSelected();
-	driveForward();
+	// rotateOnce();
+	fullAutoOne(true);
 }
 
 /**

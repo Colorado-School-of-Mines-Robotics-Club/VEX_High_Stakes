@@ -4,6 +4,7 @@
 
 enum class Auto {
     DO_NOTHING,
+    TEST,
     DRIVE_FORWARD,
     DRIVE_FORWARD_CONTACT_LADDER,
     DRIVE_FORWARD_RUSH_MOGO,

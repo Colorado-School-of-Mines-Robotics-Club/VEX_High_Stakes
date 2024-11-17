@@ -70,35 +70,46 @@ yin:
 2. load one ring onto field goal
 3. turn around and load ring onto mogo
 */
-void fullAutoOne(bool isBlue) {
+void fullAutoOneYang(bool isBlue) {
     const int32_t driveSpeed = 50;
     const int32_t turnSpeed = 40;
     pros::delay(2000); // TODO: REMOVE IN COMPETITION
     Drive::setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
     Intake::setIntaking();
-    Drive::driveDistanceGyro(12.75, driveSpeed * 0.8);
+    Drive::driveDistanceGyro(12.75, driveSpeed * 0.8); // Drive past goal
     pros::delay(250);
-    Drive::driveDistanceGyro(-3, driveSpeed * 0.75);
+    Drive::driveDistanceGyro(-3, driveSpeed * 0.75); // Drive back to post
     Intake::setNotMoving();
     pros::delay(200);
-    Drive::turn(-85, turnSpeed);
+    Drive::turn(-85, turnSpeed); // Turn to face post
     Drive::driveDistanceGyro(-4, driveSpeed); // Drive into wall
-    Drive::setDriveVelocity(-40);
+    Drive::setDriveVelocity(-40); // Keep driving into wall
     Intake::setIntaking();
-    // Conveyor::conveyDistance(700, CONVEYOR_FORWARD_SPEED);
     Conveyor::conveyTime(800, CONVEYOR_FORWARD_SPEED);
-    Drive::setDriveVelocity(20);
+    Drive::setDriveVelocity(20); // Start driving away
     Conveyor::conveyTime(200, CONVEYOR_FORWARD_SPEED);
     Intake::setNotMoving();
     Drive::driveDistanceGyro(5, driveSpeed);
-    Drive::turn(210, turnSpeed);
+    Drive::turn(210, turnSpeed); // Turn to face mogo
     Drive::driveDistanceGyro(-12, driveSpeed);
-    GoalGrabber::setGrabbing();
+    GoalGrabber::setGrabbing(); // Grab onto mogo
     pros::delay(250);
-    Conveyor::conveyTime(800, CONVEYOR_FORWARD_SPEED);
+    Conveyor::conveyTime(800, CONVEYOR_FORWARD_SPEED); // Place ring on mogo
     Drive::setDriveVelocity(0);
     GoalGrabber::setNotGrabbing();
+}
 
+void fullAutoOneYin(bool isBlue) {
+    const int32_t driveSpeed = 60;
+    const int32_t turnSpeed = 40;
+    pros::delay(2000); // TODO: REMOVE IN COMPETITION
+    Drive::driveDistance(-16, driveSpeed);
+    Drive::driveArc(12, 0.125, -driveSpeed);
+    Drive::driveDistance(-4, driveSpeed);
+    GoalGrabber::setGrabbing();
+    Drive::driveDistance(-4, driveSpeed);
+    Drive::driveArc(12, 0.125, driveSpeed);
+    Drive::driveDistance(24, driveSpeed);
 }
 
 // Test autos

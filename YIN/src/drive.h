@@ -51,6 +51,7 @@ class Drive {
 		 */
 		static void driveDistance(double distance, int32_t power);
 		static void driveDistanceGyro(double distance, int32_t power);
+		static void driveDistanceFeedbackBasic(double distance, int32_t minPower, int32_t maxPower);
 		/**
 		 * @brief Turn degress
 		 * 

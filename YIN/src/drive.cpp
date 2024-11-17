@@ -116,6 +116,39 @@ void Drive::driveDistanceGyro(double distance, int32_t power) {
 	left.move(0);
 }
 
+void Drive::driveDistanceFeedbackBasic(double distance, int32_t minPower, int32_t maxPower) {
+	left.tare_position_all();
+	right.tare_position_all();
+	tinyBox.tare();
+	tinyBox.set_heading(180);
+
+	double target =  distance * DRIVE_UNIT_MULTIPLIER;
+	double distance_traveled = 0;
+	int dir = distance > 0 ? 1 : -1; // Drive backwards if negative distance
+	
+	while(distance_traveled < abs(target)) {
+		distance_traveled = abs(average(left.get_position_all(), right.get_position_all()));
+
+		double left_power;
+		double right_power;
+		double heading = tinyBox.get_heading();
+
+		if(heading = PROS_ERR_F) {
+			left_power = dir * maxPower;
+			right_power = dir * maxPower;
+		} else {
+			// parabolic function that starts at minPower, reaches maxPower in the middle, and ends at minPower
+			left_power = dir * (maxPower-minPower) * ((distance_traveled) * (target - distance_traveled))/(target*target/4)  * heading/180 + minPower;
+			right_power = dir * (maxPower-minPower) * ((distance_traveled) * (target - distance_traveled))/(target*target/4)  * abs(180-heading)/180 + minPower;
+		}
+		left.move(left_power);
+		right.move(right_power);
+	}
+	right.move(0);
+	left.move(0);
+}
+
+
 void Drive::turn(double deg, int32_t power) {
 	left.tare_position_all();
 	right.tare_position_all();	

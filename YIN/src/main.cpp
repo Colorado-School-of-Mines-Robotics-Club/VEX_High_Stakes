@@ -102,7 +102,7 @@ void competition_initialize() {
 void autonomous() {
 	// AutoChooser::runSelected();
 	// rotateOnce();
-	fullAutoOne(true);
+	fullAutoOneYing(true);
 }
 
 /**

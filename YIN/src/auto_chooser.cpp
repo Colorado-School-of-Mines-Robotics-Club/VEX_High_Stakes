@@ -29,16 +29,16 @@ void AutoChooser::runSelected() {
     }
 }
 
-void AutoChooser::selectNext() {
-    selected_auto = static_cast<Auto>((static_cast<int>(selected_auto) + 1) % static_cast<int>(Auto::NUM_AUTOS));
+void AutoChooser::selectNext(int amount = 1) {
+    int ordinal = (static_cast<int>(selected_auto) + amount) % NUM_AUTOS;
+    if (ordinal < 0) {
+        ordinal += NUM_AUTOS;
+    }
+    selected_auto = static_cast<Auto>(ordinal);
 }
 
 void AutoChooser::selectPrev() {
-    if (static_cast<int>(selected_auto) - 1 < 0) {
-        selected_auto = static_cast<Auto>(static_cast<int>(Auto::NUM_AUTOS) - 1);
-    } else {
-        selected_auto = static_cast<Auto>(static_cast<int>(selected_auto) - 1);
-    }
+    AutoChooser::selectNext(-1);
 }
 
 void AutoChooser::toggleColor() {

@@ -33,6 +33,9 @@
 // Goal Grabber
 #define GOAL_GRABBER_PORT 'A'
 
+// Arm
+#define ARM_PORT 'B'
+
 // Sensors
 #define COLOR_SENSOR_TOLERANCE 10 // needs testing
 #define COLOR_SENSOR_PORT 42 // CHANGEME

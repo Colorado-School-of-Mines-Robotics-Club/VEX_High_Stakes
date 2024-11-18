@@ -3,8 +3,9 @@
 #include "drive.h"
 #include "intake.h"
 #include "conveyor.h"
+#include "arm.h"
 #include "goal_grabber.h"
-#include "auto_chooser.h"
+// #include "auto_chooser.h"
 #include "autos.h"
 
 pros::Controller controllerMain(pros::E_CONTROLLER_MASTER);
@@ -33,47 +34,47 @@ void initialize() {
  * the VEX Competition Switch, following either autonomous or opcontrol. When
  * the robot is enabled, this task will exit.
  */
-void disabled() {
-	Drive::setDriveVelocity(0);
-	Intake::brake();
-	Conveyor::brake();
-	// GoalGrabber::setNotGrabbing();
+// void disabled() {
+// 	Drive::setDriveVelocity(0);
+// 	Intake::brake();
+// 	Conveyor::brake();
+// 	// GoalGrabber::setNotGrabbing();
 
-	// Competition initialize
-	auto left_btn = 0;
-	auto center_btn = 0;
-	auto right_btn = 0;
+// 	// Competition initialize
+// 	auto left_btn = 0;
+// 	auto center_btn = 0;
+// 	auto right_btn = 0;
 	
-	pros::lcd::print(0, "Choose the auto!");
-	pros::lcd::print(1, "Current Auto:");
-	pros::lcd::print(3, "Current Color:");
-	while (true) {
-		auto lcd_buttons = pros::lcd::read_buttons();
+// 	pros::lcd::print(0, "Choose the auto!");
+// 	pros::lcd::print(1, "Current Auto:");
+// 	pros::lcd::print(3, "Current Color:");
+// 	while (true) {
+// 		auto lcd_buttons = pros::lcd::read_buttons();
 
-		auto old_left_btn = left_btn;
-		auto old_center_btn = center_btn;
-		auto old_right_btn = right_btn;
+// 		auto old_left_btn = left_btn;
+// 		auto old_center_btn = center_btn;
+// 		auto old_right_btn = right_btn;
 
-		left_btn = lcd_buttons & LCD_BTN_LEFT;
-		center_btn = lcd_buttons & LCD_BTN_CENTER;
-		right_btn = lcd_buttons & LCD_BTN_RIGHT;
+// 		left_btn = lcd_buttons & LCD_BTN_LEFT;
+// 		center_btn = lcd_buttons & LCD_BTN_CENTER;
+// 		right_btn = lcd_buttons & LCD_BTN_RIGHT;
 
-		if (left_btn != old_left_btn && left_btn) {
-			pros::lcd::print(5, "left_btn pressed");
-			AutoChooser::selectPrev();
-		} else if (center_btn != old_center_btn && center_btn) {
-			pros::lcd::print(5, "center_btn pressed");
-			AutoChooser::toggleColor();
-		} else if (right_btn != old_right_btn && right_btn) {
-			pros::lcd::print(5, "right_btn pressed");
-			AutoChooser::selectNext();
-		}
-		pros::lcd::print(2, "%s", AutoChooser::getName());
-		pros::lcd::print(4, "%s", AutoChooser::isBlue() ? "blue" : "red");
+// 		if (left_btn != old_left_btn && left_btn) {
+// 			pros::lcd::print(5, "left_btn pressed");
+// 			AutoChooser::selectPrev();
+// 		} else if (center_btn != old_center_btn && center_btn) {
+// 			pros::lcd::print(5, "center_btn pressed");
+// 			AutoChooser::toggleColor();
+// 		} else if (right_btn != old_right_btn && right_btn) {
+// 			pros::lcd::print(5, "right_btn pressed");
+// 			AutoChooser::selectNext();
+// 		}
+// 		pros::lcd::print(2, "%s", AutoChooser::getName());
+// 		pros::lcd::print(4, "%s", AutoChooser::isBlue() ? "blue" : "red");
 
-		pros::delay(25);
-	}
-}
+// 		pros::delay(25);
+// 	}
+// }
 
 /**
  * Runs after initialize(), and before autonomous when connected to the Field
@@ -102,7 +103,10 @@ void competition_initialize() {
 void autonomous() {
 	// AutoChooser::runSelected();
 	// rotateOnce();
-	fullAutoOneYing(true);
+	// fullAutoOneYang(true);
+	// testBasicFeedbackDrive();
+	fullAutoOneYin(false);
+	// rushWithArm();
 }
 
 /**
@@ -138,11 +142,13 @@ void opcontrol() {
 		bool l1 = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_L1);
 		bool l2 = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_L2);
 		bool r1 = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1);
+		bool r2 = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2);
 		bool b = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_B);
 
 		Drive::controlTank(left_btn, right_btn, b);
 		Intake::control(l1, l2);
 		GoalGrabber::control(r1);
 		// Conveyor::control();
+		Arm::control(r2);
 	}
 }

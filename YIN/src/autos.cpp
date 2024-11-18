@@ -1,6 +1,7 @@
 #include "drive.h"
 #include "intake.h"
 #include "conveyor.h"
+#include "arm.h"
 #include "goal_grabber.h"
 #include "constants.h"
 
@@ -15,6 +16,7 @@ void driveForward() {
     pros::lcd::set_text(1, "Finished Driving Forward!");
 }
 
+// broken since driveArc changed
 void figureEight(bool isBlue) {
     Drive::setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
     if(isBlue) {
@@ -61,6 +63,48 @@ void driveForwardRushMogo() {
     // TODO: implement
 }
 
+// start negative side, rush goal
+void fullAutoOneYin(bool isBlue) {
+    const int32_t rushSpeed = 100;
+    const int32_t driveSpeed = 50;
+    const int32_t slowSpeed = 25;
+    const int32_t turnSpeed = 50;
+    if(isBlue) {
+        
+
+
+    } else {
+        pros::delay(1000); // TODO: REMOVE IN COMPETITION
+        Drive::setBrakeMode(MOTOR_BRAKE_BRAKE);
+        GoalGrabber::setNotGrabbing();
+        Drive::driveArcDistance(72, 38, -rushSpeed);
+        Drive::driveArcDistance(72, 6, -driveSpeed); 
+        Drive::driveArcDistance(72, 3, -slowSpeed); 
+        GoalGrabber::setGrabbing();
+        Drive::brake();
+        // Drive::driveDistance(5, rushSpeed);
+        // GoalGrabber::setNotGrabbing();
+        // Drive::driveDistance(36, rushSpeed); // Go to ring
+        // Intake::setIntaking();
+        // Drive::driveDistance(7, driveSpeed); // Pickup ring
+        // Intake::setNotMoving(); 
+        // Conveyor::conveyTime(1500, CONVEYOR_FORWARD_SPEED); // Place ring
+        // Drive::driveArc(6, 0.125, driveSpeed); 
+        // Arm::setArmDown();
+        // Drive::driveDistance(6, slowSpeed);
+        // Drive::turn(-90, turnSpeed);
+        // Drive::turn(90, turnSpeed);
+    }
+    
+    // Drive::driveArc(TRACK_WIDTH/2, 0.25, driveSpeed);
+    // Drive::driveDistance(18, driveSpeed);
+    // Drive::turn(-90, turnSpeed);
+    // Drive::driveDistance(-4, driveSpeed);
+    // GoalGrabber::setGrabbing();
+    // Drive::driveArc(6, 0.125, driveSpeed);
+    // Drive::driveArc(6, -0.125, driveSpeed);
+    // Drive::driveDistance(24, driveSpeed);
+}
 
 /*
 yin: 
@@ -72,13 +116,14 @@ yin:
 */
 void fullAutoOneYang(bool isBlue) {
     const int32_t driveSpeed = 50;
+    const int32_t slowSpeed = 30;
     const int32_t turnSpeed = 40;
-    pros::delay(2000); // TODO: REMOVE IN COMPETITION
+    pros::delay(1000); // TODO: REMOVE IN COMPETITION
     Drive::setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
     Intake::setIntaking();
-    Drive::driveDistanceGyro(12.75, driveSpeed * 0.8); // Drive past goal
+    Drive::driveDistanceFeedbackBasic(12.75, slowSpeed, driveSpeed); // Drive past goal
     pros::delay(250);
-    Drive::driveDistanceGyro(-3, driveSpeed * 0.75); // Drive back to post
+    Drive::driveDistanceFeedbackBasic(-3, slowSpeed, driveSpeed); // Drive back to post
     Intake::setNotMoving();
     pros::delay(200);
     Drive::turn(-85, turnSpeed); // Turn to face post
@@ -99,21 +144,30 @@ void fullAutoOneYang(bool isBlue) {
     GoalGrabber::setNotGrabbing();
 }
 
-void fullAutoOneYin(bool isBlue) {
-    const int32_t driveSpeed = 60;
-    const int32_t turnSpeed = 40;
-    pros::delay(2000); // TODO: REMOVE IN COMPETITION
-    Drive::driveDistance(-16, driveSpeed);
-    Drive::driveArc(12, 0.125, -driveSpeed);
-    Drive::driveDistance(-4, driveSpeed);
-    GoalGrabber::setGrabbing();
-    Drive::driveDistance(-4, driveSpeed);
-    Drive::driveArc(12, 0.125, driveSpeed);
-    Drive::driveDistance(24, driveSpeed);
-}
-
 // Test autos
-
+void rushWithArm() {
+    const int32_t rushSpeed = 90;
+    const int32_t driveSpeed = 50;
+    const int32_t slowSpeed = 20;
+    const int32_t turnSpeed = 50;
+    pros::delay(1000); // TODO: REMOVE IN COMPETITION
+    Drive::setBrakeMode(MOTOR_BRAKE_BRAKE);
+    GoalGrabber::setNotGrabbing();
+    Arm::setArmUp();
+    Drive::driveArc(TRACK_WIDTH/2, -0.042, rushSpeed);
+    Drive::driveDistanceFeedbackBasic(41, slowSpeed, rushSpeed); // Initial move
+    Drive::driveDistance(5, slowSpeed);
+    Arm::setArmDown();
+    pros::delay(250);
+    Drive::driveDistance(-12, driveSpeed); 
+    Arm::setArmUp();
+    pros::delay(250);
+    Drive::turn(-200, turnSpeed);
+    Drive::driveDistance(-12, driveSpeed);
+    GoalGrabber::setGrabbing();
+    Drive::driveDistance(5, slowSpeed);
+    GoalGrabber::setNotGrabbing();
+}
 void rotateOnce() {
     Drive::resetHeading();
     Drive::setBrakeMode(MOTOR_BRAKE_BRAKE);
@@ -149,4 +203,18 @@ void testIntake() {
     Intake::setOuttaking();
     pros::delay(2000);
     Intake::setNotMoving();
+}
+
+void testBasicFeedbackDrive() {
+    Drive::setBrakeMode(MOTOR_BRAKE_BRAKE);
+    int32_t minPower = 20;
+    int32_t maxPower = 40;
+    Drive::driveDistanceFeedbackBasic(24, minPower, maxPower);
+    pros::delay(2000);
+    Drive::driveDistanceFeedbackBasic(-24, minPower, maxPower);
+}
+
+void testArc() {
+    Drive::setBrakeMode(MOTOR_BRAKE_BRAKE);
+    Drive::driveArc(TRACK_WIDTH/2, -0.25, 25); 
 }

@@ -63,8 +63,13 @@ void Drive::controlArcade(double forward_power, double turn_power, bool precisio
 	}
 }
 
-void Drive::resetHeading(){
+void Drive::resetHeading() {
 	tinyBox.reset(true);
+}
+
+void Drive::brake() {
+	left.brake();
+	right.brake();
 }
 
 void Drive::setBrakeMode(pros::motor_brake_mode_e mode) {
@@ -161,7 +166,6 @@ void Drive::turn(double deg, int32_t power) {
 	right.move(0);
 }
 
-
 void Drive::driveArc(double radius, double percentage, double power) {
 	double wheel_distance = TRACK_WIDTH / 2;
 	double distance = 2 * M_PI * (radius + wheel_distance) * abs(percentage) * DRIVE_UNIT_MULTIPLIER * DRIVE_TURN_MULTIPLIER;
@@ -172,19 +176,46 @@ void Drive::driveArc(double radius, double percentage, double power) {
 	left.tare_position_all();
 	right.tare_position_all();
 
-	bool clockwise = (percentage > 0);
+	bool clockwise = percentage > 0;
 	if(clockwise) {
 		left_power = power;
 		right_power = power * ((radius - wheel_distance) / (radius + wheel_distance)); 
-		left.move_voltage(left_power);
-		right.move_voltage(right_power);
-		while(clockwise && abs(average(left.get_position_all())) < distance) {}
+		left.move(left_power);
+		right.move(right_power);
+		while(abs(average(left.get_position_all())) < distance) {}
 	} else {
 		left_power = power * ((radius - wheel_distance) / (radius + wheel_distance));
 		right_power = power;
-		left.move_voltage(left_power);
-		right.move_voltage(right_power);
-		while(!clockwise && abs(average(right.get_position_all())) < distance) {}
+		left.move(left_power);
+		right.move(right_power);
+		while(abs(average(right.get_position_all())) < distance) {}
+	}
+	left.move(0);
+	right.move(0);
+}
+
+void Drive::driveArcDistance(double radius, double inches, double power) {
+	double wheel_distance = TRACK_WIDTH / 2;
+	double distance = inches * DRIVE_UNIT_MULTIPLIER * DRIVE_TURN_MULTIPLIER;
+
+	double left_power{0};
+	double right_power{0};
+	left.tare_position_all();
+	right.tare_position_all();
+
+	bool clockwise = distance > 0;
+	if(clockwise) {
+		left_power = power;
+		right_power = power * ((radius - wheel_distance) / (radius + wheel_distance)); 
+		left.move(left_power);
+		right.move(right_power);
+		while(abs(average(left.get_position_all())) < distance) {}
+	} else {
+		left_power = power * ((radius - wheel_distance) / (radius + wheel_distance));
+		right_power = power;
+		left.move(left_power);
+		right.move(right_power);
+		while(abs(average(right.get_position_all())) < distance) {}
 	}
 	left.move(0);
 	right.move(0);

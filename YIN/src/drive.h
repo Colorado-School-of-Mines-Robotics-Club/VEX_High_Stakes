@@ -31,6 +31,7 @@ class Drive {
 		 * 
 		 */
 		static void resetHeading();
+		static void brake();
 		/**
 		 * @brief Set brake mode
 		 * 
@@ -64,11 +65,14 @@ class Drive {
 		 * 
 		 * @param radius The radius of the circle
  		 * @param percentage The percentage (0-1) of the circle to drive. Negative is counter-clockwise
-		 * @param power The power in millivolts to apply to the motors while driving. Negative drives backwards along the circle
+		 * @param power The power to apply to the motors while driving. Negative drives backwards along the circle
 		 * NOTE: Backwards means it will drive along the same arc as forwards but in the opposite direction.
 		 * Clockwise and counter-clockwise refer to the orientation for the forard arc
 		 */
 		static void driveArc(double radius, double percentage, double power);
+		// same as driveArc but uses a arc distance instead of a percentage
+		static void driveArcDistance(double radius, double inches, double power);
+
 		/**
 		 * @brief Sets left and right motor speed for a specified amount of miliseconds
 		 * 

@@ -107,7 +107,7 @@ void Drive::driveDistanceGyro(double distance, int32_t power) {
 		double left_power;
 		double right_power;
 		double heading = tinyBox.get_heading();
-		if(heading = PROS_ERR_F) {
+		if(heading == PROS_ERR_F) {
 			left_power = power;
 			right_power = power;
 		} else {
@@ -124,8 +124,6 @@ void Drive::driveDistanceGyro(double distance, int32_t power) {
 void Drive::driveDistanceFeedbackBasic(double distance, int32_t minPower, int32_t maxPower) {
 	left.tare_position_all();
 	right.tare_position_all();
-	tinyBox.tare();
-	tinyBox.set_heading(180);
 
 	double target =  distance * DRIVE_UNIT_MULTIPLIER;
 	double distance_traveled = 0;
@@ -136,23 +134,15 @@ void Drive::driveDistanceFeedbackBasic(double distance, int32_t minPower, int32_
 
 		double left_power;
 		double right_power;
-		double heading = tinyBox.get_heading();
-
-		if(heading = PROS_ERR_F) {
-			left_power = dir * maxPower;
-			right_power = dir * maxPower;
-		} else {
-			// parabolic function that starts at minPower, reaches maxPower in the middle, and ends at minPower
-			left_power = dir * (maxPower-minPower) * ((distance_traveled) * (target - distance_traveled))/(target*target/4)  * heading/180 + minPower;
-			right_power = dir * (maxPower-minPower) * ((distance_traveled) * (target - distance_traveled))/(target*target/4)  * abs(180-heading)/180 + minPower;
-		}
+		// Parabola that starts at minPower, maxes at maxPower, ends at minPower
+		left_power = dir * (maxPower-minPower) * ((distance_traveled) * (target - distance_traveled)) / (target*target/4) + minPower;
+		right_power = dir * (maxPower-minPower) * ((distance_traveled) * (target - distance_traveled)) / (target*target/4) + minPower;
 		left.move(left_power);
 		right.move(right_power);
 	}
 	right.move(0);
 	left.move(0);
 }
-
 
 void Drive::turn(double deg, int32_t power) {
 	left.tare_position_all();

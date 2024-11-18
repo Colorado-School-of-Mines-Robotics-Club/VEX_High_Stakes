@@ -103,9 +103,9 @@ void competition_initialize() {
 void autonomous() {
 	// AutoChooser::runSelected();
 	// rotateOnce();
-	// fullAutoOneYang(true);
 	// testBasicFeedbackDrive();
-	fullAutoOneYin(false);
+	// fullAutoOneYin(false);
+	fullAutoOneYang(true);
 	// rushWithArm();
 }
 

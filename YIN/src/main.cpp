@@ -137,15 +137,20 @@ void opcontrol() {
 	Drive::setBrakeMode(pros::E_MOTOR_BRAKE_COAST);
 
 	while (true) {
-		double left_btn = controllerMain.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
-		double right_btn = controllerMain.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
+		double left_x = controllerMain.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X);
+		double left_y = controllerMain.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
+		double right_x = controllerMain.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
+		double right_y = controllerMain.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
 		bool l1 = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_L1);
 		bool l2 = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_L2);
 		bool r1 = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1);
 		bool r2 = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2);
+		bool a = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A);
 		bool b = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_B);
 
-		Drive::controlTank(left_btn, right_btn, b);
+		// Drive::controlDirection(a);
+		Drive::controlTank(left_y, right_y, b);
+		// Drive::controlArcade(right_y, left_x, b);
 		Intake::control(l1, l2);
 		GoalGrabber::control(r1);
 		// Conveyor::control();

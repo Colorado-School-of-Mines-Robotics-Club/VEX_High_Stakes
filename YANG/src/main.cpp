@@ -102,7 +102,6 @@ void competition_initialize() {
  */
 void autonomous() {
 	// AutoChooser::runSelected();
-	// rotateOnce();
 	// testBasicFeedbackDrive();
 	// fullAutoOneYin(false);
 	fullAutoOneYang(true);

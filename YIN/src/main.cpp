@@ -102,10 +102,14 @@ void competition_initialize() {
  */
 void autonomous() {
 	// AutoChooser::runSelected();
-	// rotateOnce();
+	// driveForward(48);
+	// driveForward(-48);
+	// rotate(720);
+	// driveCircle(12);
+	// driveDistanceGyro(24);
+	// rotateTest();
 	// testBasicFeedbackDrive();
-	// fullAutoOneYin(false);
-	fullAutoOneYang(true);
+	fullAutoOneYin(false);
 	// rushWithArm();
 }
 
@@ -149,8 +153,8 @@ void opcontrol() {
 		bool b = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_B);
 
 		// Drive::controlDirection(a);
-		Drive::controlTank(left_y, right_y, b);
-		// Drive::controlArcade(right_y, left_x, b);
+		// Drive::controlTank(left_y, right_y, b);
+		Drive::controlArcade(right_y, left_x, b);
 		Intake::control(l1, l2);
 		GoalGrabber::control(r1);
 		// Conveyor::control();

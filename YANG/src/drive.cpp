@@ -203,7 +203,7 @@ void Drive::driveArc(double radius, double percentage, double power) {
 
 void Drive::driveArcDistance(double radius, double inches, double power) {
 	double wheel_distance = TRACK_WIDTH / 2;
-	double distance = inches * DRIVE_UNIT_MULTIPLIER * DRIVE_TURN_MULTIPLIER;
+	double distance = abs(inches) * DRIVE_UNIT_MULTIPLIER * DRIVE_TURN_MULTIPLIER;
 
 	double left_power{0};
 	double right_power{0};
@@ -268,4 +268,8 @@ void Drive::driveUntilMotorVoltage(double voltage, int32_t left_power, int32_t r
 	
 	left.brake();
 	right.brake();
+}
+
+void Drive::waitForStop() {
+	while(left.get_actual_velocity() > 0 || right.get_actual_velocity() > 0) {}
 }

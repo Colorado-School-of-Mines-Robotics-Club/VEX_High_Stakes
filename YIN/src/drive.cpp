@@ -41,14 +41,18 @@ Drive::Drive() {
 	tinyBox.reset();
 }
 
+void Drive::move(double left_speed, double right_speed) {
+	left.move(left_speed * LEFT_MULTIPLIER);
+	right.move(right_speed * RIGHT_MULTIPLIER);
+}
+
 void Drive::controlTank(double left_power, double right_power, bool precisionButton) {
 	if (precisionButton) {
-		left.move(left_power * PRECISION_MULTIPLIER);
-		right.move(right_power * PRECISION_MULTIPLIER);
+		Drive::move(left_power * PRECISION_MULTIPLIER, right_power * PRECISION_MULTIPLIER);
 	} else {
-		left.move(left_power * DRIVE_SPEED_MULTIPLIER);
-		right.move(right_power * DRIVE_SPEED_MULTIPLIER);
+		Drive::move(left_power * DRIVE_SPEED_MULTIPLIER, right_power * DRIVE_SPEED_MULTIPLIER);
 	}
+	Drive::move(left_power, right_power);
 }
 
 void Drive::controlArcade(double forward_power, double turn_power, bool precisionButton) {
@@ -56,11 +60,9 @@ void Drive::controlArcade(double forward_power, double turn_power, bool precisio
 	double right_power = static_cast<int>(direction) * forward_power - (turn_power * TURN_SPEED_MULTIPLIER);
 
 	if (precisionButton) {
-		left.move(left_power * PRECISION_MULTIPLIER);
-		right.move(right_power * PRECISION_MULTIPLIER);
+		Drive::move(left_power * PRECISION_MULTIPLIER, right_power * PRECISION_MULTIPLIER);
 	} else {
-		left.move(left_power * DRIVE_SPEED_MULTIPLIER);
-		right.move(right_power * DRIVE_SPEED_MULTIPLIER);
+		Drive::move(left_power * DRIVE_SPEED_MULTIPLIER, right_power * DRIVE_SPEED_MULTIPLIER);
 	}
 }
 
@@ -95,8 +97,7 @@ void Drive::setBrakeMode(pros::motor_brake_mode_e mode) {
 }
 
 void Drive::setDriveVelocity(int32_t power) {
-	left.move(power);
-	right.move(power);
+	Drive::move(power, power);
 }
 
 void Drive::driveDistance(double distance, int32_t power) {
@@ -104,12 +105,11 @@ void Drive::driveDistance(double distance, int32_t power) {
 	right.tare_position_all();
 	double target =  distance * DRIVE_UNIT_MULTIPLIER;
 	power = distance > 0 ? power : -power; // Drive backwards if negative distance
-	right.move(power);
-	left.move(power);
+	Drive::move(power, power);
 	while(abs(average(left.get_position_all(), right.get_position_all())) < abs(target)) {}
-	right.move(0);
-	left.move(0);
+	Drive::move(0, 0);
 }
+
 
 void Drive::driveDistanceGyro(double distance, int32_t power) {
 	left.tare_position_all();
@@ -131,22 +131,20 @@ void Drive::driveDistanceGyro(double distance, int32_t power) {
 			left_power = power * heading/180;
 			right_power = power * abs(180-heading)/180;
 		}
-		left.move(left_power);
-		right.move(right_power);
+		Drive::move(left_power, right_power);
 	}
-	right.move(0);
-	left.move(0);
+	Drive::move(0, 0);
 }
 
 void Drive::driveDistanceFeedbackBasic(double distance, int32_t minPower, int32_t maxPower) {
 	left.tare_position_all();
 	right.tare_position_all();
 
-	double target =  distance * DRIVE_UNIT_MULTIPLIER;
+	double target =  abs(distance * DRIVE_UNIT_MULTIPLIER);
 	double distance_traveled = 0;
 	int dir = distance > 0 ? 1 : -1; // Drive backwards if negative distance
 	
-	while(distance_traveled < abs(target)) {
+	while(distance_traveled < target) {
 		distance_traveled = abs(average(left.get_position_all(), right.get_position_all()));
 
 		double left_power;
@@ -154,11 +152,9 @@ void Drive::driveDistanceFeedbackBasic(double distance, int32_t minPower, int32_
 		// Parabola that starts at minPower, maxes at maxPower, ends at minPower
 		left_power = dir * (maxPower-minPower) * ((distance_traveled) * (target - distance_traveled)) / (target*target/4) + minPower;
 		right_power = dir * (maxPower-minPower) * ((distance_traveled) * (target - distance_traveled)) / (target*target/4) + minPower;
-		left.move(left_power);
-		right.move(right_power);
+		Drive::move(left_power, right_power);
 	}
-	right.move(0);
-	left.move(0);
+	Drive::move(0, 0);
 }
 
 void Drive::turn(double deg, int32_t power) {
@@ -166,11 +162,9 @@ void Drive::turn(double deg, int32_t power) {
 	right.tare_position_all();	
 	tinyBox.tare_rotation();
 	double cw = (deg > 0) ? 1.0 : -1.0; // Turn cw if deg is positive
-	left.move(power * cw);
-	right.move(-power * cw);
+	Drive::move(power * cw, -power * cw);
 	while(abs(tinyBox.get_rotation()) < (abs(deg) * DRIVE_DEG_MULTIPLIER)) {}
-	left.move(0);
-	right.move(0);
+	Drive::brake();
 }
 
 void Drive::driveArc(double radius, double percentage, double power) {
@@ -187,53 +181,45 @@ void Drive::driveArc(double radius, double percentage, double power) {
 	if(clockwise) {
 		left_power = power;
 		right_power = power * ((radius - wheel_distance) / (radius + wheel_distance)); 
-		left.move(left_power);
-		right.move(right_power);
+		Drive::move(left_power, right_power);
 		while(abs(average(left.get_position_all())) < distance) {}
 	} else {
 		left_power = power * ((radius - wheel_distance) / (radius + wheel_distance));
 		right_power = power;
-		left.move(left_power);
-		right.move(right_power);
+		Drive::move(left_power, right_power);
 		while(abs(average(right.get_position_all())) < distance) {}
 	}
-	left.move(0);
-	right.move(0);
+	Drive::move(0, 0);
 }
 
 void Drive::driveArcDistance(double radius, double inches, double power) {
 	double wheel_distance = TRACK_WIDTH / 2;
-	double distance = inches * DRIVE_UNIT_MULTIPLIER * DRIVE_TURN_MULTIPLIER;
+	double distance = abs(inches) * DRIVE_UNIT_MULTIPLIER * DRIVE_TURN_MULTIPLIER;
 
 	double left_power{0};
 	double right_power{0};
 	left.tare_position_all();
 	right.tare_position_all();
 
-	bool clockwise = distance > 0;
+	bool clockwise = inches > 0;
 	if(clockwise) {
 		left_power = power;
 		right_power = power * ((radius - wheel_distance) / (radius + wheel_distance)); 
-		left.move(left_power);
-		right.move(right_power);
+		Drive::move(left_power, right_power);
 		while(abs(average(left.get_position_all())) < distance) {}
 	} else {
 		left_power = power * ((radius - wheel_distance) / (radius + wheel_distance));
 		right_power = power;
-		left.move(left_power);
-		right.move(right_power);
+		Drive::move(left_power, right_power);
 		while(abs(average(right.get_position_all())) < distance) {}
 	}
-	left.move(0);
-	right.move(0);
+	Drive::move(0, 0);
 }
 
 void Drive::driveTime(uint32_t milis, int32_t left_power, int32_t right_power) {
-	left.move(left_power);
-	right.move(right_power);
+	Drive::move(left_power, right_power);
 	pros::delay(milis);
-	left.move(0);
-	right.move(0);
+	Drive::move(0, 0);
 }
 
 void Drive::driveUntilColor(uint32_t color, int32_t left_power, int32_t right_power) {
@@ -251,8 +237,7 @@ void Drive::driveUntilColor(uint32_t color, int32_t left_power, int32_t right_po
 			break;
 		}
 
-		left.move(left_power);
-		right.move(right_power);
+		Drive::move(left_power, right_power);
 		pros::delay(10);
 	}
 
@@ -262,8 +247,7 @@ void Drive::driveUntilColor(uint32_t color, int32_t left_power, int32_t right_po
 
 void Drive::driveUntilMotorVoltage(double voltage, int32_t left_power, int32_t right_power) {
 	while (left.get_voltage() < voltage && right.get_voltage() < voltage) {
-		left.move(left_power);
-		right.move(right_power);
+		Drive::move(left_power, right_power);
 	}
 	
 	left.brake();

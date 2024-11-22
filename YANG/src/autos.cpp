@@ -114,77 +114,81 @@ void fullAutoOneYang(bool isBlue) {
     const int32_t slowSpeed = 30;
     const int32_t turnSpeed = 40;
     Drive::setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
+    pros::delay(2000); // TODO: REMOVE IN COMPETITION
     if(isBlue) {
-        pros::delay(1000); // TODO: REMOVE IN COMPETITION
         Intake::setIntaking();
-        Drive::driveDistance(12.25, driveSpeed); // Drive past goal
+        Drive::driveDistance(15.25, driveSpeed); // Drive past goal
         pros::delay(250);
-        Drive::driveDistance(-2, driveSpeed); // Drive back to post 
-        Intake::setNotMoving();
+        Drive::driveDistance(-3, driveSpeed); // Drive back to post 
         pros::delay(200);
-        Drive::turn(-90, turnSpeed); // Turn to face post
-        Drive::driveDistance(5, driveSpeed);
+        Intake::setNotMoving();
+        Drive::turn(-85, turnSpeed); // Turn to face post
+        Drive::driveDistance(6, driveSpeed);
         Drive::driveDistance(-12, driveSpeed); // Drive into wall
         Drive::setDriveVelocity(-driveSpeed); // Keep driving into wall
         Intake::setIntaking();
-        Conveyor::conveyTime(700, CONVEYOR_FORWARD_SPEED);
+        Conveyor::conveyTime(500, CONVEYOR_FORWARD_SPEED);
         Drive::setDriveVelocity(20); // Start driving away
         Conveyor::conveyTime(200, CONVEYOR_FORWARD_SPEED);
         Intake::setNotMoving();
         Drive::driveDistance(1.5, driveSpeed);
-        Drive::turn(180, turnSpeed); // Turn to have pickup facing mogo
-        Drive::driveDistance(-5, driveSpeed);
-        Drive::driveDistance(-5, slowSpeed);
+        Drive::turn(175, turnSpeed); // Turn to have pickup facing mogo
+        Drive::driveTime(600, -driveSpeed, -driveSpeed);
         GoalGrabber::setGrabbing(); // Grab onto mogo
-        GoalGrabber::setNotGrabbing();
         pros::delay(250);
-        GoalGrabber::setGrabbing();
         Conveyor::conveyTime(1200, CONVEYOR_FORWARD_SPEED); // Place ring on mogo
-        Drive::driveArc(9, 0.25, driveSpeed);
+        Drive::driveArc(8, 0.225, driveSpeed);
         Drive::driveDistance(25, driveSpeed);
         Intake::setIntaking();
-        Drive::driveDistance(10, driveSpeed);
+        Drive::driveDistance(12, driveSpeed);
         Conveyor::conveyTime(1500, CONVEYOR_FORWARD_SPEED);
         Intake::setNotMoving();
         Arm::setArmDown();
-        Drive::driveDistance(-12, driveSpeed); // Drive away after picking up rings
-        Drive::turn(-30, turnSpeed);
+        Drive::driveDistance(-14, driveSpeed); // Drive away after picking up rings
+        Drive::turn(-20, turnSpeed);
         Drive::driveTime(1000, fastSpeed, fastSpeed*0.8);
-        Intake::setIntaking();
-        Conveyor::setConveyingForward();
-        Drive::turn(180, driveSpeed);
-        Drive::driveTime(1500, -driveSpeed, -driveSpeed);
+        Drive::turn(120, driveSpeed);
         GoalGrabber::setNotGrabbing();
-        Arm::setArmUp();
         Intake::setNotMoving();
         Conveyor::setNotMoving();
+        Drive::turn(60, driveSpeed);  
+        Drive::driveTime(1000, -driveSpeed, -driveSpeed);
+        Arm::setArmUp();
         pros::delay(250);
 
-        Drive::driveDistance(16, driveSpeed);
-        Drive::driveArc(32, -0.27, driveSpeed);
+        Drive::driveDistance(30, driveSpeed);
+        Drive::driveArc(12, 0.125, driveSpeed);
+        Drive::driveTime(1000, driveSpeed, driveSpeed);
+    } else {
+        GoalGrabber::setNotGrabbing();
+        Arm::setArmUp();
+        Drive::driveArc(TRACK_WIDTH/2, -0.06, rushSpeed); // Align with mogo
+        Drive::driveDistanceFeedbackBasic(36, slowSpeed, rushSpeed); // Move to mogo
+        Drive::driveDistance(5, slowSpeed);
+        Drive::driveArc(TRACK_WIDTH/2, 0.06, slowSpeed);
+        Arm::setArmDown(); // Grab
+        pros::delay(350); 
+        Drive::driveDistance(-2, driveSpeed); // Run away
+        Drive::driveDistance(-14, rushSpeed); // Run away
+        Drive::driveArc(TRACK_WIDTH/2, 0.06, -slowSpeed);
+        Arm::setArmUp(); // Leave goal
+        pros::delay(350);
+        Drive::driveDistance(-4, driveSpeed);
+        Drive::turn(-180, turnSpeed); // Turn around
+        Drive::driveDistance(-12, driveSpeed); // Align goal
+        Drive::driveDistance(-8, slowSpeed); 
+        GoalGrabber::setGrabbing(); // Pickup goal
+        Drive::driveDistance(-2, slowSpeed); // Move a little more
+        Drive::driveArcDistance(24, 25, rushSpeed); // Drive to ring
+        Intake::setIntaking(); // Pickup ring
+        Drive::driveArcDistance(24, 15, driveSpeed); // Keep Driving
+        Conveyor::conveyTime(1500, CONVEYOR_FORWARD_SPEED); // Put ring on goal
+        Intake::setNotMoving();
+        GoalGrabber::setNotGrabbing();
 
-
-        // Wallride strats from getting second ring
-        // Drive::driveArc(12, 0.086111111, driveSpeed);
-        // Arm::setArmDown();
-        // Drive::driveDistance(6, driveSpeed);
-
-        // Drive::driveTime(3000, driveSpeed, driveSpeed * 0.9); // Wallride
-        // Drive::turn(180, driveSpeed); // Clear corner
-        // pros::delay(1500); // TODO: REMOVE IN COMPETITION
-        // Drive::driveDistance(-5, driveSpeed);
-        // Drive::turn(-45, driveSpeed); // look towards rings
-        // Drive::driveDistance(6, driveSpeed);
-        // Intake::setIntaking();
-        // Drive::driveDistance(14, driveSpeed);
-        // Conveyor::setConveyingForward();
-        // Drive::driveDistance(-14, driveSpeed);
-        // Conveyor::setNotMoving();
-        // Intake::setNotMoving();
-        // GoalGrabber::setNotGrabbing();
-        // Drive::driveDistance(12, driveSpeed);
-
-        // Drive::brake();
+        Drive::turn(180, turnSpeed);
+        Arm::setArmDown();
+        Drive::driveTime(2000, slowSpeed, slowSpeed*0.8);
     }
 
 }

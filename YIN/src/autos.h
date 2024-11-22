@@ -1,7 +1,6 @@
 #pragma once
 
 void doNothing();
-void driveForward();
 void driveForwardContactLadder();
 void driveForwardRushMogo();
 void figureEight(bool isBlue);
@@ -10,11 +9,12 @@ void fullAutoOneYang(bool isBlue);
 
 
 // Test autos
-
+void driveForward(double distance);
 void rushWithArm();
-void rotateOnce();
+void rotate(double degrees);
 void driveCircle(double radius);
 void driveDistanceGyro(double distance);
 void testIntake();
 void testBasicFeedbackDrive();
 void testArc();
+void rotateTest();

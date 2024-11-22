@@ -106,4 +106,5 @@ class Drive {
 		 * @param right_power The power of the right motors in range [-127, 127]
 		 */
 		static void driveUntilMotorVoltage(double voltage, int32_t left_power, int32_t right_power);
+		static void waitForStop();
 };

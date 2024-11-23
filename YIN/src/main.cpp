@@ -153,8 +153,8 @@ void opcontrol() {
 		bool b = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_B);
 
 		// Drive::controlDirection(a);
-		// Drive::controlTank(left_y, right_y, b);
-		Drive::controlArcade(right_y, left_x, b);
+		Drive::controlTank(left_y, right_y, b);
+		// Drive::controlArcade(right_y, left_x, b);
 		Intake::control(l1, l2);
 		GoalGrabber::control(r1);
 		// Conveyor::control();

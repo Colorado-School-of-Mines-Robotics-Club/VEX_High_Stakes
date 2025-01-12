@@ -3,8 +3,20 @@
 #include <vector>
 
 DriveDirection Drive::direction(DriveDirection::FACING_INTAKE);
-pros::MotorGroup Drive::right(RIGHT_DRIVE_PORTS);
+
+// TODO: fix later drive groups do not actually refer to the motors, but are separately declared from ports
+pros::Motor Drive::left_motor_0(LEFT_PORT_0);
+pros::Motor Drive::left_motor_1(LEFT_PORT_1);
+pros::Motor Drive::left_motor_2(LEFT_PORT_2);
+pros::Motor Drive::left_motor_3(LEFT_PORT_3);
+
+pros::Motor Drive::right_motor_0(RIGHT_PORT_0);
+pros::Motor Drive::right_motor_1(RIGHT_PORT_1);
+pros::Motor Drive::right_motor_2(RIGHT_PORT_2);
+pros::Motor Drive::right_motor_3(RIGHT_PORT_3);
+
 pros::MotorGroup Drive::left(LEFT_DRIVE_PORTS);
+pros::MotorGroup Drive::right(RIGHT_DRIVE_PORTS);
 pros::IMU Drive::tinyBox(IMU_PORT);
 pros::Optical Drive::colorSensor(COLOR_SENSOR_PORT);
 
@@ -45,6 +57,19 @@ void Drive::move(double left_speed, double right_speed) {
 	left.move(left_speed * LEFT_MULTIPLIER);
 	right.move(right_speed * RIGHT_MULTIPLIER);
 }
+
+void Drive::driveDirect(double left_speeds[4], double right_speeds[4]) {
+	left_motor_0.move_velocity(left_speeds[0]);
+	left_motor_1.move_velocity(left_speeds[1]);
+	left_motor_2.move_velocity(left_speeds[2]);
+	left_motor_3.move_velocity(left_speeds[3]);
+
+	right_motor_0.move_velocity(right_speeds[0]);
+	right_motor_1.move_velocity(right_speeds[1]);
+	right_motor_2.move_velocity(right_speeds[2]);
+	right_motor_3.move_velocity(right_speeds[3]);
+}
+
 
 void Drive::controlTank(double left_power, double right_power, bool precisionButton) {
 	if (precisionButton) {

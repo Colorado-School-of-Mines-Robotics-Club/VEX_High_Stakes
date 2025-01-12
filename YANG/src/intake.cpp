@@ -50,4 +50,9 @@ void Intake::setNotMoving() {
     intakeMotor.move(0);
 }
 
+void Intake::direct(double velocity) {
+    intakeMotor.move_velocity(velocity);
+}
+
+
 

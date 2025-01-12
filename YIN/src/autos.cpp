@@ -63,8 +63,7 @@ void fullAutoOneYin(bool isBlue) {
     const int32_t driveSpeed = 50;
     const int32_t slowSpeed = 25;
     const int32_t turnSpeed = 50;
-    Drive::resetHeading();
-    pros::delay(2000); // TODO: REMOVE IN COMPETITION
+    // pros::delay(2000); // TODO: REMOVE IN COMPETITION
     Drive::setBrakeMode(MOTOR_BRAKE_BRAKE);
 
     if(isBlue) {
@@ -75,7 +74,7 @@ void fullAutoOneYin(bool isBlue) {
         Drive::driveDistance(6, slowSpeed); // Approach slowly
         Drive::driveArc(TRACK_WIDTH/2, -0.052, slowSpeed);
         Arm::setArmDown(); // Grab
-        pros::delay(500); 
+        pros::delay(250); 
         Drive::driveDistance(-2, driveSpeed); // Run away
         Drive::driveDistance(-14, rushSpeed); // Run away
         Drive::driveArc(TRACK_WIDTH/2, 0.052, -slowSpeed);
@@ -131,18 +130,18 @@ void fullAutoOneYin(bool isBlue) {
         Drive::driveTime(1000, fastSpeed*0.8, fastSpeed);
         Intake::setIntaking();
         Conveyor::setConveyingForward();
-        Drive::turn(-120, driveSpeed);
+        Drive::turn(-90, driveSpeed);
         GoalGrabber::setNotGrabbing();
         Intake::setNotMoving();
         Conveyor::setNotMoving();
-        Drive::turn(-60, driveSpeed);  
+        Drive::turn(-90, driveSpeed);  
         
         Drive::driveTime(2000, -driveSpeed, -driveSpeed);
         
         pros::delay(250);
 
         Arm::setArmDown();
-        Drive::driveTime(250, driveSpeed * 0.8, driveSpeed);
+        Drive::driveTime(4000, slowSpeed, slowSpeed * 0.8);
     }
 }
 

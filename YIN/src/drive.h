@@ -6,17 +6,29 @@ enum class DriveDirection {
     FACING_INTAKE = 1,
     FACING_GRABBER = -1,
 };
-
 class Drive {
 	private:
 		static DriveDirection direction;
-		static pros::MotorGroup left;
-		static pros::MotorGroup right;
+		static pros::Motor left_motor_0;
+		static pros::Motor left_motor_1;
+		static pros::Motor left_motor_2;
+		static pros::Motor left_motor_3;
+
+		static pros::Motor right_motor_0;
+		static pros::Motor right_motor_1;
+		static pros::Motor right_motor_2;
+		static pros::Motor right_motor_3;
+
+
 		static pros::IMU tinyBox;
 		static pros::Optical colorSensor;
 		static void move(double left_speed, double right_speed);
 	public:
+		// everything is public now
+		static pros::MotorGroup left;
+		static pros::MotorGroup right;
 		Drive();
+		static void driveDirect(double left_speeds[4], double right_speeds[4]);
 		/**
 		 * @brief Driver control using tank drive
 		 * 

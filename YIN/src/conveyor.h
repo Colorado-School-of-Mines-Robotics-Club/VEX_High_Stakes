@@ -12,8 +12,8 @@ class Conveyor
 {
 private:
     static enum ConveyorState conveyorState;
-    static pros::Motor conveyorMotor;
 public:
+    static pros::Motor conveyorMotor;
     Conveyor();
     static void control(bool forwardButton, bool reverseButton);
     static void move(int32_t speed);
@@ -24,4 +24,5 @@ public:
     static void setConveyingReverse();
     static void setNotMoving();
     static double getPosition();
+    static void direct(double velocity);
 };

@@ -73,4 +73,8 @@ double Conveyor::getPosition() {
     return conveyorMotor.get_position();
 }
 
+void Conveyor::direct(double velocity) {
+    conveyorMotor.move_velocity(velocity);
+}
+
 

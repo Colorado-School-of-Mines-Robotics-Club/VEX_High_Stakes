@@ -5,12 +5,13 @@
 const int NUM_AUTOS = static_cast<int>(static_cast<int>(Auto::NUM_AUTOS));
 
 enum class Auto {
+    DEFAULT_AUTO,
     DO_NOTHING,
-    TEST,
+    // TEST,
     DRIVE_FORWARD,
-    DRIVE_FORWARD_CONTACT_LADDER,
-    DRIVE_FORWARD_RUSH_MOGO,
-    FIGURE_EIGHT,
+    // DRIVE_FORWARD_CONTACT_LADDER,
+    // DRIVE_FORWARD_RUSH_MOGO,
+    // FIGURE_EIGHT,
     NUM_AUTOS
 };
 

@@ -2,6 +2,7 @@
 
 #include "main.h"
 
+
 enum class GrabState {
     NOT_GRABBING,
     GRABBING
@@ -13,6 +14,7 @@ private:
     static enum GrabState grabState;
     static pros::adi::DigitalOut goalGrabber;
 public:
+    static bool grabValue;
     GoalGrabber();
     /**
      * @brief Driver control to grab the goal
@@ -22,4 +24,5 @@ public:
     static void control(bool grabButton);
     static void setGrabbing();
     static void setNotGrabbing();
+    static void direct(bool grabState);
 };

@@ -12,8 +12,9 @@ class Intake
 {
 private:
     static enum IntakeState intakeState;
-    static pros::Motor intakeMotor;
+
 public:
+    static pros::Motor intakeMotor;
     Intake();
     /**
      * @brief Driver control for intake
@@ -31,4 +32,5 @@ public:
     static void setIntaking();
     static void setOuttaking();
     static void setNotMoving();
+    static void direct(double velocity);
 };

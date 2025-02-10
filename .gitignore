@@ -18,3 +18,5 @@ temp.errors
 
 # Direnv state
 .direnv/
+
+rpi-test

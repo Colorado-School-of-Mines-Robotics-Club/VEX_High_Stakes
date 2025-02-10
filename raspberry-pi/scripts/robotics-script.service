@@ -1,0 +1,12 @@
+[Unit]
+Description=Robotics Script
+
+[Service]
+Type=simple
+Restart=always
+User=pi
+WorkingDirectory=/home/pi/code
+ExecStart=/home/pi/code/script.py
+
+[Install]
+WantedBy=multi-user.target

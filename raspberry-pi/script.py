@@ -1,0 +1,238 @@
+#!/usr/bin/env -S venv/bin/python3 -u
+import qwiic_otos
+import serial
+import sys
+import time
+import struct
+import argparse
+import socket
+from cobs import cobs
+from math import sqrt
+from typing import Generator
+from enum import IntEnum
+
+############ CONSTANTS ############
+
+# V5 Brain
+BRAIN_BAUD_RATE = 115200
+BRAIN_PORT = "/dev/serial/by-id/usb-VEX_Robotics__Inc_VEX_Robotics_V5_Brain_-_5CDA4900-if02"
+BRAIN_TIMEOUT = 1
+
+# Control codes sent from V5 Brain
+class Codes(IntEnum):
+	KEEPALIVE = 0x00
+	RECALIBRATE = 0x01
+
+# Sensor
+LINEAR_SCALAR = 1.0
+ANGULAR_SCALAR = 1.0
+OFFSET_X = 0
+OFFSET_Y = 0
+OFFSET_ANGLE = 0
+
+############ UTIL FUNCTIONS ############
+
+def connect_to_brain() -> serial.Serial:
+	print("Attempting to connect to v5 brain...")
+	serial_connection = serial.Serial()
+	serial_connection.baudrate = BRAIN_BAUD_RATE
+	serial_connection.port = BRAIN_PORT
+	serial_connection.timeout = BRAIN_TIMEOUT
+	i = 0
+	while True:
+		try:
+			serial_connection.open()
+			print("Successfully connected to v5 brain!")
+			return serial_connection
+		except:
+			time.sleep(1)
+			if i % 30 == 0:
+				print(f"Unable to connect after {i} attempts...")
+			i = i + 1
+			continue
+
+recv_buffer = bytearray()
+
+def recv_data(mode: str, connection) -> Generator[bytes, None, None]:
+	"""
+	A generator that given the mode and connection, will return any new
+	COBS frames received over the connection. This will only take in
+	standard error logs from the Vex V5 brain, as standard output gets
+	used at the start to print a pros-themed banner that can't be disabled
+	as of the present (though there is an open PR)
+	"""
+	global recv_buffer
+
+	data = None
+	match mode:
+		case "serial":
+			data = connection.read_all()
+		case "network":
+			try:
+				data = connection[1].recv(1024, socket.MSG_DONTWAIT)
+			except socket.error as e:
+				if socket.errno.EAGAIN == e.errno:
+					data = bytes()
+				else:
+					raise e
+		case "stdout":
+			return
+	
+	for byte in data:
+		if byte != 0x00:
+			recv_buffer.append(byte)
+		else:
+			decoded = cobs.decode(recv_buffer)
+			recv_buffer.clear()
+
+			if decoded.startswith(b"serr"):
+				yield decoded[4:]
+			elif decoded.startswith(b"sout"):
+				print("[STDOUT] " + decoded[4:].decode("utf-8"), end="")
+
+def send_data(mode: str, connection, current_position: qwiic_otos.Pose2D):
+	# Pack x, y, and heading as a little-endian c-struct with 3 doubles
+	packed = struct.pack("<ddd", current_position.x, current_position.y, current_position.h)
+	packed = cobs.encode(packed)
+
+	match mode:
+		case "serial":
+			bytes_written = serial_connection.write(packed)
+			zero_written = serial_connection.write(b'\0')
+
+			if bytes_written != len(packed) or zero_written != 1:
+				print("WARNING: Wrong amount of bytes written to serial!")
+		case "network":
+			bytes_written = connection[1].send(packed)
+			zero_written = connection[1].send(b'\0')
+
+			if bytes_written != len(packed) or zero_written != 1:
+				print("WARNING: Wrong amount of bytes written to network socket!")
+		case "stdout":
+			print(f"X: {current_position.x: .6f}; Y: {current_position.y: .6f}; H: {current_position.h: .6f}; D: {sqrt(current_position.x ** 2 + current_position.y ** 2): .6f}")
+
+############ MAIN PROGRAM FLOW ############
+
+def main(mode: str):
+	print("Starting main program...")
+
+	# Create instance of device
+	optical_device = qwiic_otos.QwiicOTOS()
+
+	# Check if it's connected
+	if optical_device.is_connected() == False:
+		print("The optical tracking device isn't connected to the system. Please check your connection")
+		return
+
+	# Initialize the device
+	optical_device.begin()
+
+	print("Calibrating IMU...")
+
+	# Keep flat and stable, calibration should take about a second
+	# This calibrates the sensor automatically
+	optical_device.calibrateImu()
+
+	# Set manual calibration values for scale & offset
+	optical_device.setLinearScalar(1.0)
+	optical_device.setAngularScalar(1.0)
+
+	offset = qwiic_otos.Pose2D(OFFSET_X, OFFSET_Y, OFFSET_ANGLE)
+	optical_device.setOffset(offset)
+
+	# Reset the tracking algorithm - this resets the position to the origin
+	optical_device.resetTracking()
+
+	# Wait for a connection to the brain
+	connection = None
+	match mode:
+		case "serial":
+			connection = connect_to_brain()
+		case "network":
+			connection = (socket.socket(socket.AF_INET, socket.SOCK_STREAM), None)
+			connection[0].setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+			connection[0].bind(("0.0.0.0", 8080))
+			connection[0].listen()
+			print("Listening on 0.0.0.0:8080, waiting for connection...")
+			connection = (connection[0], connection[0].accept()[0])
+			print("Connection established!")
+		case "stdout":
+			pass
+	
+	# Wait for the start code
+	last_keepalive = None
+	if mode != "stdout":
+		print("Waiting for first keepalive...")
+		started = False
+		while last_keepalive is None:
+			for data in recv_data(mode, connection):
+				match data[0]:
+					case Codes.KEEPALIVE:
+						print("First keepalive received!")
+						last_keepalive = time.time()
+						break
+					case Codes.RECALIBRATE:
+						optical_device.calibrateImu()
+						optical_device.resetTracking()
+
+	# Main program loop
+	print("Starting communication loop!")
+	while True:
+		# Check if we haven't received a keepalive recently and pause if so
+		if time.time() - last_keepalive > 2:
+			print("Haven't received a keepalive recently, pausing...")
+			last_keepalive = None
+			while last_keepalive is None:
+				for data in recv_data(mode, connection):
+					match data[0]:
+						case Codes.KEEPALIVE:
+							print("New keepalive received, restarting!")
+							last_keepalive = time.time()
+							break
+						case Codes.RECALIBRATE:
+							optical_device.calibrateImu()
+							optical_device.resetTracking()
+		# First check for any codes received
+		for data in recv_data(mode, connection):
+			match data[0]:
+				case Codes.KEEPALIVE:
+					last_keepalive = time.time()
+				case Codes.RECALIBRATE:
+					print("Recalibrate code received, calibrating sensor and zeroing position")
+					optical_device.calibrateImu()
+					optical_device.resetTracking()
+		# Then send data
+		try:
+			# Get position and write over serial to the brain
+			current_position = optical_device.getPosition()
+
+			send_data(mode, connection, current_position)
+		except serial.SerialTimeoutException:
+			print("WARNING: Disconnected from brain, attempting to reconnect")
+			serial_connection = connect_to_brain()
+		except socket.error as e:
+			if e.errno == socket.errno.EPIPE:
+				print("Socket closed, exiting...")
+				sys.exit(0)
+			else:
+				print(f"WARNING: Unrecognized socket error thrown:\n{e}")
+		except Exception as e:
+			print(f"WARNING: Unrecognized error thrown:\n{e}")
+		
+		time.sleep(0.001)
+
+if __name__ == '__main__':
+	try:
+		parser = argparse.ArgumentParser()
+		parser.add_argument(
+			"--mode",
+			type=str,
+			default="serial",
+			help="The output mode, one of [serial, network, stdout] (default serial)"
+		)
+		args = parser.parse_args()
+		
+		main(args.mode)
+	except (KeyboardInterrupt, SystemExit) as exErr:
+		print("\nEnding program")
+		sys.exit(0)

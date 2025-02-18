@@ -43,11 +43,11 @@ void initialize() {
  * the VEX Competition Switch, following either autonomous or opcontrol. When
  * the robot is enabled, this task will exit.
  */
-// void disabled() {
-// 	Drive::setDriveVelocity(0);
-// 	Intake::brake();
-// 	Conveyor::brake();
-// 	// GoalGrabber::setNotGrabbing();
+void disabled() {
+	Drive::setDriveVelocity(0);
+	Intake::brake();
+	Conveyor::brake();
+	// GoalGrabber::setNotGrabbing();
 
 // 	// Competition initialize
 // 	auto left_btn = 0;
@@ -83,7 +83,7 @@ void initialize() {
 
 // 		pros::delay(25);
 // 	}
-// }
+}
 
 /**
  * Runs after initialize(), and before autonomous when connected to the Field
@@ -110,7 +110,7 @@ void competition_initialize() {
  * from where it left_btn off.
  */
 void autonomous() {
-	fullAutoOneYang(false);
+	fullAutoOneYang(true);
 	// AutoChooser::runSelected();
 	// driveForward(48);
 	// driveForward(-48);
@@ -183,8 +183,8 @@ void opcontrol() {
 		bool b = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_B);
 
 		// Drive::controlDirection(a);
-		// Drive::controlTank(left_y, right_y, b);
-		Drive::controlArcade(right_y, left_x, b);
+		Drive::controlTank(left_y, right_y, b);
+		// Drive::controlArcade(right_y, left_x, b);
 		Intake::control(l1, l2);
 		GoalGrabber::control(r1);
 		// Conveyor::control();

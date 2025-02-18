@@ -1,7 +1,7 @@
 {
   "py/object": "pros.conductor.project.Project",
   "py/state": {
-    "project_name": "YANG red",
+    "project_name": "YANG blue",
     "target": "v5",
     "templates": {
       "kernel": {
@@ -255,7 +255,7 @@
       }
     },
     "upload_options": {
-      "icon": "X",
+      "icon": "pizza",
       "description": "yang testing",
       "slot": 1
     },

@@ -7,7 +7,7 @@ pros::Motor Intake::intakeMotor(INTAKE_PORT);
 
 Intake::Intake() {
     intakeMotor.set_gearing(pros::E_MOTOR_GEAR_BLUE);
-}   
+}
 
 void Intake::control(bool forwardButton, bool reverseButton) {
     if(intakeState == IntakeState::NOT_MOVING) {

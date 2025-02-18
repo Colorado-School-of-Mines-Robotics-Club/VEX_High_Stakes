@@ -1,4 +1,4 @@
-#!/usr/bin/env -S venv/bin/python3 -u
+#!/usr/bin/env -S /home/pi/code/venv/bin/python3 -u
 import qwiic_otos
 import serial
 import sys
@@ -53,7 +53,7 @@ def connect_to_brain() -> serial.Serial:
 
 recv_buffer = bytearray()
 
-def recv_data(mode: str, connection) -> Generator[bytes, None, None]:
+def recv_data(connection) -> Generator[bytes, None, None]:
 	"""
 	A generator that given the mode and connection, will return any new
 	COBS frames received over the connection. This will only take in
@@ -63,21 +63,8 @@ def recv_data(mode: str, connection) -> Generator[bytes, None, None]:
 	"""
 	global recv_buffer
 
-	data = None
-	match mode:
-		case "serial":
-			data = connection.read_all()
-		case "network":
-			try:
-				data = connection[1].recv(1024, socket.MSG_DONTWAIT)
-			except socket.error as e:
-				if socket.errno.EAGAIN == e.errno:
-					data = bytes()
-				else:
-					raise e
-		case "stdout":
-			return
-	
+	data = connection.read_all()
+
 	for byte in data:
 		if byte != 0x00:
 			recv_buffer.append(byte)
@@ -90,30 +77,20 @@ def recv_data(mode: str, connection) -> Generator[bytes, None, None]:
 			elif decoded.startswith(b"sout"):
 				print("[STDOUT] " + decoded[4:].decode("utf-8"), end="")
 
-def send_data(mode: str, connection, current_position: qwiic_otos.Pose2D):
+def send_data(connection, current_position: qwiic_otos.Pose2D):
 	# Pack x, y, and heading as a little-endian c-struct with 3 doubles
 	packed = struct.pack("<ddd", current_position.x, current_position.y, current_position.h)
 	packed = cobs.encode(packed)
 
-	match mode:
-		case "serial":
-			bytes_written = serial_connection.write(packed)
-			zero_written = serial_connection.write(b'\0')
+	bytes_written = connection.write(packed)
+	zero_written = connection.write(b'\0')
 
-			if bytes_written != len(packed) or zero_written != 1:
-				print("WARNING: Wrong amount of bytes written to serial!")
-		case "network":
-			bytes_written = connection[1].send(packed)
-			zero_written = connection[1].send(b'\0')
-
-			if bytes_written != len(packed) or zero_written != 1:
-				print("WARNING: Wrong amount of bytes written to network socket!")
-		case "stdout":
-			print(f"X: {current_position.x: .6f}; Y: {current_position.y: .6f}; H: {current_position.h: .6f}; D: {sqrt(current_position.x ** 2 + current_position.y ** 2): .6f}")
+	if bytes_written != len(packed) or zero_written != 1:
+		print("WARNING: Wrong amount of bytes written to serial!")
 
 ############ MAIN PROGRAM FLOW ############
 
-def main(mode: str):
+def main():
 	print("Starting main program...")
 
 	# Create instance of device
@@ -144,36 +121,22 @@ def main(mode: str):
 	optical_device.resetTracking()
 
 	# Wait for a connection to the brain
-	connection = None
-	match mode:
-		case "serial":
-			connection = connect_to_brain()
-		case "network":
-			connection = (socket.socket(socket.AF_INET, socket.SOCK_STREAM), None)
-			connection[0].setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-			connection[0].bind(("0.0.0.0", 8080))
-			connection[0].listen()
-			print("Listening on 0.0.0.0:8080, waiting for connection...")
-			connection = (connection[0], connection[0].accept()[0])
-			print("Connection established!")
-		case "stdout":
-			pass
+	connection = connect_to_brain()
 	
 	# Wait for the start code
 	last_keepalive = None
-	if mode != "stdout":
-		print("Waiting for first keepalive...")
-		started = False
-		while last_keepalive is None:
-			for data in recv_data(mode, connection):
-				match data[0]:
-					case Codes.KEEPALIVE:
-						print("First keepalive received!")
-						last_keepalive = time.time()
-						break
-					case Codes.RECALIBRATE:
-						optical_device.calibrateImu()
-						optical_device.resetTracking()
+	print("Waiting for first keepalive...")
+	started = False
+	while last_keepalive is None:
+		for data in recv_data(connection):
+			match data[0]:
+				case Codes.KEEPALIVE:
+					print("First keepalive received!")
+					last_keepalive = time.time()
+					break
+				case Codes.RECALIBRATE:
+					optical_device.calibrateImu()
+					optical_device.resetTracking()
 
 	# Main program loop
 	print("Starting communication loop!")
@@ -183,7 +146,7 @@ def main(mode: str):
 			print("Haven't received a keepalive recently, pausing...")
 			last_keepalive = None
 			while last_keepalive is None:
-				for data in recv_data(mode, connection):
+				for data in recv_data(connection):
 					match data[0]:
 						case Codes.KEEPALIVE:
 							print("New keepalive received, restarting!")
@@ -193,7 +156,7 @@ def main(mode: str):
 							optical_device.calibrateImu()
 							optical_device.resetTracking()
 		# First check for any codes received
-		for data in recv_data(mode, connection):
+		for data in recv_data(connection):
 			match data[0]:
 				case Codes.KEEPALIVE:
 					last_keepalive = time.time()
@@ -206,10 +169,10 @@ def main(mode: str):
 			# Get position and write over serial to the brain
 			current_position = optical_device.getPosition()
 
-			send_data(mode, connection, current_position)
+			send_data(connection, current_position)
 		except serial.SerialTimeoutException:
 			print("WARNING: Disconnected from brain, attempting to reconnect")
-			serial_connection = connect_to_brain()
+			connection = connect_to_brain()
 		except socket.error as e:
 			if e.errno == socket.errno.EPIPE:
 				print("Socket closed, exiting...")
@@ -223,16 +186,7 @@ def main(mode: str):
 
 if __name__ == '__main__':
 	try:
-		parser = argparse.ArgumentParser()
-		parser.add_argument(
-			"--mode",
-			type=str,
-			default="serial",
-			help="The output mode, one of [serial, network, stdout] (default serial)"
-		)
-		args = parser.parse_args()
-		
-		main(args.mode)
+		main()
 	except (KeyboardInterrupt, SystemExit) as exErr:
 		print("\nEnding program")
 		sys.exit(0)

@@ -13,11 +13,13 @@ class Drive {
 		static pros::Motor left_motor_1;
 		static pros::Motor left_motor_2;
 		static pros::Motor left_motor_3;
+		static pros::Motor left_motor_4;
 
 		static pros::Motor right_motor_0;
 		static pros::Motor right_motor_1;
 		static pros::Motor right_motor_2;
 		static pros::Motor right_motor_3;
+		static pros::Motor right_motor_4;
 
 
 		static pros::IMU tinyBox;

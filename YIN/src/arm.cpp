@@ -4,7 +4,15 @@
 bool Arm::armValue(false);
 enum ArmState Arm::armState (ArmState::ARM_UP);
 
-pros::adi::DigitalOut Arm::arm (ARM_PORT);
+pros::adi::DigitalOut Arm::arm0 (ARM_PORT0);
+pros::adi::DigitalOut Arm::arm1 (ARM_PORT1);
+
+void Arm::setArmValue(bool value) {
+    arm0.set_value(value);
+    arm1.set_value(value);
+
+    armValue = value;
+}
 
 void Arm::control(bool armButton) {
     if (armState == ArmState::ARM_UP && armButton) {
@@ -16,17 +24,17 @@ void Arm::control(bool armButton) {
 
 void Arm::setArmUp() {
     armState = ArmState::ARM_UP;
-    arm.set_value(false);
-    armValue = false;
+    setArmValue(false);
 }
 
 void Arm::setArmDown() {
     armState = ArmState::ARM_DOWN;
-    arm.set_value(true);
-    armValue = true;
+    setArmValue(true);
 }
 
 void Arm::direct(bool armState) {
-    arm.set_value(armState);
+    if(armValue != armState) {
+        setArmValue(armState);
+    }
 }
 

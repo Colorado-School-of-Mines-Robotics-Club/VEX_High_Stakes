@@ -16,6 +16,7 @@ private:
 public:
     static bool grabValue;
     GoalGrabber();
+    static void setGrabberValue(bool value);
     /**
      * @brief Driver control to grab the goal
      * 

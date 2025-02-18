@@ -2,12 +2,12 @@
 #include "constants.h"
 
 enum ConveyorState Conveyor::conveyorState(ConveyorState::NOT_MOVING);
-pros::Motor Conveyor::conveyorMotor(CONVEYOR_PORT);
+pros::MotorGroup Conveyor::conveyorMotors(CONVEYOR_PORTS);
 
 Conveyor::Conveyor() {
-    conveyorMotor.tare_position();
-    conveyorMotor.set_gearing(pros::E_MOTOR_GEAR_BLUE);
-}   
+    conveyorMotors.tare_position();
+    conveyorMotors.set_gearing(pros::E_MOTOR_GEAR_BLUE);
+}
 
 void Conveyor::control(bool forwardButton, bool reverseButton) {
     if(conveyorState == ConveyorState::NOT_MOVING) {
@@ -28,53 +28,53 @@ void Conveyor::control(bool forwardButton, bool reverseButton) {
 }
 
 void Conveyor::move(int32_t speed) {
-    conveyorMotor.move(speed);
+    conveyorMotors.move(speed);
 }
 
 void Conveyor::brake() {
-    conveyorMotor.brake();
+    conveyorMotors.brake();
 }
 
 void Conveyor::conveyDistance(double units, int32_t speed) {
-    conveyorMotor.tare_position();
-    conveyorMotor.move(speed);
-    while(conveyorMotor.get_position() < units ) {
-        // if(conveyorMotor.get_actual_velocity() < 1) {
-        //     conveyorMotor.move(-CONVEYOR_REVERSE_SPEED);
+    conveyorMotors.tare_position();
+    conveyorMotors.move(speed);
+    while(conveyorMotors.get_position() < units ) {
+        // if(conveyorMotors.get_actual_velocity() < 1) {
+        //     conveyorMotors.move(-CONVEYOR_REVERSE_SPEED);
         //     pros::delay(500);
         // }
-        // conveyorMotor.move(speed);
+        // conveyorMotors.move(speed);
     }
-    conveyorMotor.move(0);
+    conveyorMotors.move(0);
 }
 
 void Conveyor::conveyTime(uint32_t milis, int32_t power) {
-	conveyorMotor.move(power);
+	conveyorMotors.move(power);
 	pros::delay(milis);
-    conveyorMotor.move(0);
+    conveyorMotors.move(0);
 }
 
 void Conveyor::setConveyingForward() {
     conveyorState = ConveyorState::FORWARD;
-    conveyorMotor.move(CONVEYOR_FORWARD_SPEED);
+    conveyorMotors.move(CONVEYOR_FORWARD_SPEED);
 }
 
 void Conveyor::setConveyingReverse() {
     conveyorState = ConveyorState::REVERSE;
-    conveyorMotor.move(-CONVEYOR_REVERSE_SPEED);
+    conveyorMotors.move(-CONVEYOR_REVERSE_SPEED);
 }
 
 void Conveyor::setNotMoving() {
     conveyorState = ConveyorState::NOT_MOVING;
-    conveyorMotor.move(0);
+    conveyorMotors.move(0);
 }
 
 double Conveyor::getPosition() {
-    return conveyorMotor.get_position();
+    return conveyorMotors.get_position();
 }
 
 void Conveyor::direct(double velocity) {
-    conveyorMotor.move_velocity(velocity);
+    conveyorMotors.move_velocity(velocity);
 }
 
 

@@ -6,6 +6,11 @@ enum GrabState GoalGrabber::grabState (GrabState::NOT_GRABBING);
 
 pros::adi::DigitalOut GoalGrabber::goalGrabber (GOAL_GRABBER_PORT);
 
+void GoalGrabber::setGrabberValue(bool value) {
+    goalGrabber.set_value(value);
+    grabValue = value;
+}
+
 void GoalGrabber::control(bool grabButton) {
     if(grabState == GrabState::GRABBING && grabButton) {
         setNotGrabbing();
@@ -16,17 +21,17 @@ void GoalGrabber::control(bool grabButton) {
 
 void GoalGrabber::setGrabbing() {
     grabState = GrabState::GRABBING;
-    goalGrabber.set_value(true);
-    grabValue = true;
+    setGrabberValue(true);
 }
 
 void GoalGrabber::setNotGrabbing() {
     grabState = GrabState::NOT_GRABBING;
-    goalGrabber.set_value(false);
-    grabValue = false;
+    setGrabberValue(false);
 }
 
 void GoalGrabber::direct(bool grabState) {
-    goalGrabber.set_value(grabState);
+    if(grabValue != grabState) {
+        setGrabberValue(grabState);
+    }
 }
 

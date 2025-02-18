@@ -11,13 +11,16 @@ class Arm
 {
 private:
     static enum ArmState armState;
-    static pros::adi::DigitalOut arm;
+    static pros::adi::DigitalOut arm0;
+    static pros::adi::DigitalOut arm1;
+
 public:
     static bool armValue;
     Arm();
+    static void setArmValue(bool armValue);
     /**
      * @brief Controls the arm based on the driver control
-     * 
+     *
      * @param armButton Input digital signal to toggle arm
      */
     static void control(bool ArmButton);

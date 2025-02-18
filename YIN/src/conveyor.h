@@ -13,7 +13,7 @@ class Conveyor
 private:
     static enum ConveyorState conveyorState;
 public:
-    static pros::Motor conveyorMotor;
+    static pros::MotorGroup conveyorMotors;
     Conveyor();
     static void control(bool forwardButton, bool reverseButton);
     static void move(int32_t speed);

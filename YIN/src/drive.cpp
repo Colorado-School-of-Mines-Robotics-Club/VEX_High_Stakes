@@ -9,11 +9,13 @@ pros::Motor Drive::left_motor_0(LEFT_PORT_0);
 pros::Motor Drive::left_motor_1(LEFT_PORT_1);
 pros::Motor Drive::left_motor_2(LEFT_PORT_2);
 pros::Motor Drive::left_motor_3(LEFT_PORT_3);
+pros::Motor Drive::left_motor_4(LEFT_PORT_4);
 
 pros::Motor Drive::right_motor_0(RIGHT_PORT_0);
 pros::Motor Drive::right_motor_1(RIGHT_PORT_1);
 pros::Motor Drive::right_motor_2(RIGHT_PORT_2);
 pros::Motor Drive::right_motor_3(RIGHT_PORT_3);
+pros::Motor Drive::right_motor_4(RIGHT_PORT_4);
 
 pros::MotorGroup Drive::left(LEFT_DRIVE_PORTS);
 pros::MotorGroup Drive::right(RIGHT_DRIVE_PORTS);
@@ -58,16 +60,18 @@ void Drive::move(double left_speed, double right_speed) {
 	right.move(right_speed * RIGHT_MULTIPLIER);
 }
 
-void Drive::driveDirect(double left_speeds[4], double right_speeds[4]) {
+void Drive::driveDirect(double left_speeds[5], double right_speeds[5]) {
 	left_motor_0.move_velocity(left_speeds[0]);
 	left_motor_1.move_velocity(left_speeds[1]);
 	left_motor_2.move_velocity(left_speeds[2]);
 	left_motor_3.move_velocity(left_speeds[3]);
+	left_motor_4.move_velocity(left_speeds[4]);
 
 	right_motor_0.move_velocity(right_speeds[0]);
 	right_motor_1.move_velocity(right_speeds[1]);
 	right_motor_2.move_velocity(right_speeds[2]);
 	right_motor_3.move_velocity(right_speeds[3]);
+	right_motor_4.move_velocity(right_speeds[4]);
 }
 
 
@@ -81,8 +85,8 @@ void Drive::controlTank(double left_power, double right_power, bool precisionBut
 }
 
 void Drive::controlArcade(double forward_power, double turn_power, bool precisionButton) {
-	double left_power = static_cast<int>(direction) * forward_power + (turn_power * TURN_SPEED_MULTIPLIER);
-	double right_power = static_cast<int>(direction) * forward_power - (turn_power * TURN_SPEED_MULTIPLIER);
+	double left_power = forward_power + (turn_power * TURN_SPEED_MULTIPLIER);
+	double right_power = forward_power - (turn_power * TURN_SPEED_MULTIPLIER);
 
 	if (precisionButton) {
 		Drive::move(left_power * PRECISION_MULTIPLIER, right_power * PRECISION_MULTIPLIER);

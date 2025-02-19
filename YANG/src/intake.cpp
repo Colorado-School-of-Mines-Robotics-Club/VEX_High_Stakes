@@ -1,5 +1,4 @@
 #include "intake.h"
-#include "conveyor.h"
 #include "constants.h"
 
 enum IntakeState Intake::intakeState(IntakeState::NOT_MOVING);
@@ -10,24 +9,12 @@ Intake::Intake() {
 }   
 
 void Intake::control(bool forwardButton, bool reverseButton) {
-    if(intakeState == IntakeState::NOT_MOVING) {
-        if (forwardButton) {
-            setIntaking();
-            Conveyor::setConveyingForward();
-        } else if (reverseButton) {
-            setOuttaking();
-            Conveyor::setConveyingReverse();
-        }
-    } else if (intakeState == IntakeState::INTAKING) {
-        if (!forwardButton || reverseButton) {
-            setNotMoving();
-            Conveyor::setNotMoving();
-        }
-    } else if (intakeState == IntakeState::OUTTAKING) {
-        if (!reverseButton || forwardButton) {
-            setNotMoving();
-            Conveyor::setNotMoving();
-        }
+    if (forwardButton && !reverseButton) {
+        setIntaking();
+    } else if (reverseButton && !forwardButton) {
+        setOuttaking();
+    } else {
+        setNotMoving();
     }
 }
 

@@ -1,64 +1,71 @@
-// modified from https://github.com/BushRobotics/replay.h
+#include <fstream>
+#include <sstream>
+#include <vector>
+#include <string>
 
-#include <cstdlib>
-#include <stdio.h>
-
-
-typedef struct { 
+struct ReplayStep{
 	double leftWheels[4]; // wheels
     double rightWheels[4]; // wheels
 	double intake; // intake
     double conveyor; // conveyor
     bool arm; // arm
     bool grabber; // goal  grabber
-	
-	int last; // indicate last step 
-} ReplayStep;
+};
 
+void write_replay(std::vector<ReplayStep> steps, std::string filename) {
+	std::ofstream replay_file(std::string("/usd/") + filename);
 
-void write_replay(ReplayStep *step, char* filename) {
-	FILE *f = fopen(filename, "wb");
-	for (ReplayStep *i = step; (i-1)->last != 1; i++) {
-		fwrite(i, sizeof(ReplayStep), 1, f);
+	for(const auto step : steps) {
+		replay_file << step.leftWheels[0] << " ";
+		replay_file << step.leftWheels[1] << " ";
+		replay_file << step.leftWheels[2] << " ";
+		replay_file << step.leftWheels[3] << " ";
+
+		replay_file << step.rightWheels[0] << " ";
+		replay_file << step.rightWheels[1] << " ";
+		replay_file << step.rightWheels[2] << " ";
+		replay_file << step.rightWheels[3] << " ";
+
+		replay_file << step.intake << " ";
+		replay_file << step.conveyor << " ";
+		replay_file << step.arm << " ";
+		replay_file << step.grabber;
+		replay_file << "\n";
 	}
-	fclose(f);
 }
 
-ReplayStep *read_replay(char* filename) {
-	FILE *f = fopen(filename, "rb");
-	
-	fseek(f, 0, SEEK_END);
-	size_t size = ftell(f);
-	fseek(f, 0, SEEK_SET);
-	
-	ReplayStep* replay = (ReplayStep*) malloc(size); 
-	ReplayStep currentstep;
+std::vector<ReplayStep> read_replay(std::string filename) {
+	std::vector<ReplayStep> steps(0);
+
+	std::ifstream replay_file(std::string("/usd/") + filename);
+	std::string line;
 
 	int i = 0;
-	while (fread(&currentstep, sizeof(ReplayStep), 1, f)) {
-        // yes i know how stupid this is its midnight before competition leave me alone
-		replay[i].leftWheels[0] = currentstep.leftWheels[0];
-        replay[i].leftWheels[1] = currentstep.leftWheels[1];
-        replay[i].leftWheels[2] = currentstep.leftWheels[2];
-		replay[i].leftWheels[3] = currentstep.leftWheels[3];
-        replay[i].rightWheels[0] = currentstep.leftWheels[0];
-        replay[i].rightWheels[1] = currentstep.rightWheels[1];
-		replay[i].rightWheels[2] = currentstep.rightWheels[2];
-		replay[i].rightWheels[3] = currentstep.rightWheels[3];
-        replay[i].intake = currentstep.intake;
-        replay[i].conveyor = currentstep.conveyor;
-		replay[i].arm = currentstep.arm;
-        replay[i].grabber = currentstep.grabber;
-
-        replay[i].last = 1;
-        
-        if(i > 0) {
-            replay[i - 1].last = 0; // set prev last bool to zero so we know it wasn't the last one
-        }
+	while (getline (replay_file, line, '\n')) {
+		std::istringstream s(line);
+		 while(!s.eof()) {
+			ReplayStep current_step;
+			s >> current_step.leftWheels[0];
+			s >> current_step.leftWheels[1];
+			s >> current_step.leftWheels[2];
+			s >> current_step.leftWheels[3];
+			s >> current_step.rightWheels[0];
+			s >> current_step.rightWheels[1];
+			s >> current_step.rightWheels[2];
+			s >> current_step.rightWheels[3];
+			s >> current_step.intake;
+			s >> current_step.conveyor;
+			s >> current_step.arm;
+			s >> current_step.grabber;
+			steps.push_back(current_step);
+			if(s.fail()) {
+				s.clear();
+				std::string temp;
+				s >> temp;
+				continue;
+			}
+		}
 		i++;
 	}
-	replay[i].last = 1;
-	
-	fclose(f);
-	return replay;
+	return steps;
 }

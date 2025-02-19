@@ -7,23 +7,15 @@ pros::Motor Conveyor::conveyorMotor(CONVEYOR_PORT);
 Conveyor::Conveyor() {
     conveyorMotor.tare_position();
     conveyorMotor.set_gearing(pros::E_MOTOR_GEAR_BLUE);
-}   
+} 
 
 void Conveyor::control(bool forwardButton, bool reverseButton) {
-    if(conveyorState == ConveyorState::NOT_MOVING) {
-        if (forwardButton) {
-            setConveyingForward();
-        } else if (reverseButton) {
-            setConveyingReverse();
-        }
-    } else if (conveyorState == ConveyorState::FORWARD) {
-        if (!forwardButton || reverseButton) {
-            setNotMoving();
-        }
-    } else if (conveyorState == ConveyorState::REVERSE) {
-        if (!reverseButton || forwardButton) {
-            setNotMoving();
-        }
+    if (forwardButton && !reverseButton) {
+        setConveyingForward();
+    } else if (reverseButton && !forwardButton) {
+        setConveyingReverse();
+    } else {
+        setNotMoving();
     }
 }
 

@@ -13,9 +13,14 @@
 
 #include "replay.hpp"
 
-#define FILENAME "/usd/rec"
+#define FILENAME "replay_.txt"
 #define RECORD false
-#define RECORD_TIME 30000
+// #define RECORD_TIME 15000 // 30 seconds
+#define RECORD_TIME 30000 // 1 min
+
+bool driver = true;
+bool recording = RECORD;
+std::vector<ReplayStep> replay(0);
 
 pros::Controller controllerMain(pros::E_CONTROLLER_MASTER);
 
@@ -33,7 +38,7 @@ void on_center_button() {
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
-	// pros::lcd::initialize();
+	pros::lcd::initialize();
 	// pros::lcd::set_text(1, "Is this working");
 	Drive::resetHeading();
 }
@@ -48,6 +53,10 @@ void disabled() {
 	Intake::brake();
 	Conveyor::brake();
 	// GoalGrabber::setNotGrabbing();
+
+	if(recording && replay.size() > 0) {
+		write_replay(replay, FILENAME);
+	}
 
 // 	// Competition initialize
 // 	auto left_btn = 0;
@@ -110,7 +119,7 @@ void competition_initialize() {
  * from where it left_btn off.
  */
 void autonomous() {
-	fullAutoOneYang(true);
+	// fullAutoOneYang(true);
 	// AutoChooser::runSelected();
 	// driveForward(48);
 	// driveForward(-48);
@@ -121,19 +130,38 @@ void autonomous() {
 	// testBasicFeedbackDrive();
 	// rushWithArm();
 
-	// ReplayStep *replay = read_replay(FILENAME);
-	// for(int i = 0; replay[i].last != 1; i++) {
-	// 	Drive::driveDirect(replay[i].leftWheels, replay[i].rightWheels);
-	// 	Intake::direct(replay[i].intake);
-	// 	Conveyor::direct(replay[i].conveyor);
-	// 	Arm::direct(replay[i].arm);
-	// 	GoalGrabber::direct(replay[i].grabber);
+	Drive::brake();
+	Intake::setNotMoving();
+	Conveyor::setNotMoving();
 
-	// 	pros::delay(2);
-	// }
-	// Drive::brake();
-	// Intake::setNotMoving();
-	// Conveyor::setNotMoving();
+	bool y = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y);
+	if(!y) {
+		pros::lcd::set_text(2, "Waiting for press...");
+		pros::lcd::clear_line(3);
+		pros::lcd::clear_line(4);
+		pros::delay(2);
+		return;
+	}
+	pros::lcd::clear_line(1);
+
+	// std::vector<ReplayStep> replay = read_replay(FILENAME);
+	pros::lcd::set_text(2, "Loaded replay!");
+	pros::delay(1000);
+	pros::lcd::set_text(3, "Running replay!");
+	for(ReplayStep replay_step : replay) {
+		Drive::driveDirect(replay_step.leftWheels, replay_step.rightWheels);
+		Intake::direct(replay_step.intake);
+		Conveyor::direct(replay_step.conveyor);
+		Arm::direct(replay_step.arm);
+		GoalGrabber::direct(replay_step.grabber);
+
+		pros::delay(2);
+	}
+	Drive::brake();
+	Intake::setNotMoving();
+	Conveyor::setNotMoving();
+	pros::lcd::set_text(4, "Finished replay!");
+	pros::delay(1000);
 }
 
 /**
@@ -167,10 +195,7 @@ void opcontrol() {
 	// return; 
 	Drive::setBrakeMode(pros::E_MOTOR_BRAKE_COAST);
 
-	bool recording = RECORD;
-	int replay_step = 0;
-	ReplayStep* replay = (ReplayStep*) malloc(sizeof(ReplayStep) * RECORD_TIME );
-	while (true) {
+	while (driver) {
 		double left_x = controllerMain.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X);
 		double left_y = controllerMain.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
 		double right_x = controllerMain.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
@@ -181,35 +206,44 @@ void opcontrol() {
 		bool r2 = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2);
 		bool a = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A);
 		bool b = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_B);
+		bool up_arrow = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_UP);
+		bool x = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X);
 
 		// Drive::controlDirection(a);
 		Drive::controlTank(left_y, right_y, b);
 		// Drive::controlArcade(right_y, left_x, b);
-		Intake::control(l1, l2);
+
+		bool intake_forward = l1 || l2;
+		Intake::control(intake_forward, up_arrow);
 		GoalGrabber::control(r1);
-		// Conveyor::control();
+		Conveyor::control(l1, up_arrow);
 		Arm::control(r2);
 
+		int replay_step = 0;
 		if(recording) {
-			replay[replay_step].leftWheels[0] = Drive::left.get_actual_velocity(0);
-			replay[replay_step].leftWheels[1] = Drive::left.get_actual_velocity(1);
-			replay[replay_step].leftWheels[2] = Drive::left.get_actual_velocity(2);
-			replay[replay_step].leftWheels[3] = Drive::left.get_actual_velocity(3);
-			replay[replay_step].rightWheels[0] = Drive::right.get_actual_velocity(0);
-			replay[replay_step].rightWheels[1] = Drive::right.get_actual_velocity(1);
-			replay[replay_step].rightWheels[2] = Drive::right.get_actual_velocity(2);
-			replay[replay_step].rightWheels[3] = Drive::right.get_actual_velocity(3);
-			replay[replay_step].intake = Intake::intakeMotor.get_actual_velocity();
-			replay[replay_step].conveyor = Conveyor::conveyorMotor.get_actual_velocity();
-			replay[replay_step].arm = Arm::armValue;
-			replay[replay_step].grabber = GoalGrabber::grabValue;
+			ReplayStep current_step;
+			current_step.leftWheels[0] = Drive::left.get_actual_velocity(0);
+			current_step.leftWheels[1] = Drive::left.get_actual_velocity(1);
+			current_step.leftWheels[2] = Drive::left.get_actual_velocity(2);
+			current_step.leftWheels[3] = Drive::left.get_actual_velocity(3);
+			current_step.rightWheels[0] = Drive::right.get_actual_velocity(0);
+			current_step.rightWheels[1] = Drive::right.get_actual_velocity(1);
+			current_step.rightWheels[2] = Drive::right.get_actual_velocity(2);
+			current_step.rightWheels[3] = Drive::right.get_actual_velocity(3);
+			current_step.intake = Intake::intakeMotor.get_actual_velocity();
+			current_step.conveyor = Conveyor::conveyorMotor.get_actual_velocity();
+			current_step.arm = Arm::armValue;
+			current_step.grabber = GoalGrabber::grabValue;
+			replay.push_back(current_step);
 
-			if(replay_step == RECORD_TIME) {
+			if(replay_step >= RECORD_TIME || x) {
+				// driver = false;
 				recording = false;
 				write_replay(replay, FILENAME);
+				pros::lcd::set_text(1, "Saved replay!");
 			}
 			replay_step++;
-			pros::delay(2);
-		}
+		} 
+		pros::delay(2);
 	}
 }

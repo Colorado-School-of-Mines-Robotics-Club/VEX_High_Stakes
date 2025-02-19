@@ -1,7 +1,7 @@
 {
   "py/object": "pros.conductor.project.Project",
   "py/state": {
-    "project_name": "YANG blue",
+    "project_name": "YANG not replay",
     "target": "v5",
     "templates": {
       "kernel": {
@@ -257,7 +257,7 @@
     "upload_options": {
       "icon": "pizza",
       "description": "yang testing",
-      "slot": 1
+      "slot": 2
     },
     "use_early_access": false
   }

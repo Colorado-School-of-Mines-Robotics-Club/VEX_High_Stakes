@@ -20,7 +20,7 @@ pros::Motor Drive::right_motor_4(RIGHT_PORT_4);
 pros::MotorGroup Drive::left(LEFT_DRIVE_PORTS);
 pros::MotorGroup Drive::right(RIGHT_DRIVE_PORTS);
 pros::IMU Drive::tinyBox(IMU_PORT);
-pros::Optical Drive::colorSensor(COLOR_SENSOR_PORT);
+pros::Optical Drive::colorSensor(OPTICAL_PORT);
 
 double abs(double x) {
 	if(x < 0) {
@@ -259,9 +259,9 @@ void Drive::driveUntilColor(uint32_t color, int32_t left_power, int32_t right_po
 	while (true) {
 		auto sensedColor = colorSensor.get_rgb();
 		if (
-			(red - sensedColor.red) < COLOR_SENSOR_TOLERANCE
-			&& (green - sensedColor.green) < COLOR_SENSOR_TOLERANCE
-			&& (blue - sensedColor.blue) < COLOR_SENSOR_TOLERANCE
+			(red - sensedColor.red) < OPTICAL_SENSOR_TOLERANCE
+			&& (green - sensedColor.green) < OPTICAL_SENSOR_TOLERANCE
+			&& (blue - sensedColor.blue) < OPTICAL_SENSOR_TOLERANCE
 		) {
 			break;
 		}

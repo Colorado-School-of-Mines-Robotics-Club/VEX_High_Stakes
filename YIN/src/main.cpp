@@ -1,6 +1,8 @@
 #include <chrono>
 #include <ctime>
 #include <vector>
+#include <string>
+#include <format>
 
 #include "main.h"
 #include "constants.h"
@@ -8,20 +10,31 @@
 #include "intake.h"
 #include "conveyor.h"
 #include "arm.h"
+#include "top_arm.h"
 #include "goal_grabber.h"
 // #include "auto_chooser.h"
 #include "autos.h"
+#include "optical.h"
 
 #include "replay.hpp"
 
 #define FILENAME "replay_.txt"
-#define RECORD true
+#define RECORD false
 #define RECORD_TIME 15000
 
+bool isBlue = true;
 bool recording = RECORD;
 std::vector<ReplayStep> replay(0);
 
 pros::Controller controllerMain(pros::E_CONTROLLER_MASTER);
+
+// void setColor(bool blue) {
+// 	if(blue) {
+		
+// 	} else {
+
+// 	}
+// }
 
 /**
  * A callback function for LLEMU's center_btn button.
@@ -38,6 +51,7 @@ void on_center_button() {
  */
 void initialize() {
 	pros::lcd::initialize();
+	// setColor(isBlue);
 	// pros::lcd::set_text(1, "Is this working");
 	Drive::resetHeading();
 }
@@ -55,42 +69,41 @@ void disabled() {
 	if(recording && replay.size() > 0) {
 		write_replay(replay, FILENAME);
 	}
-// 	// GoalGrabber::setNotGrabbing();
 
-// 	// Competition initialize
-// 	auto left_btn = 0;
-// 	auto center_btn = 0;
-// 	auto right_btn = 0;
+	// Competition initialize
+	// auto left_btn = 0;
+	// auto center_btn = 0;
+	// auto right_btn = 0;
 
-// 	pros::lcd::print(0, "Choose the auto!");
-// 	pros::lcd::print(1, "Current Auto:");
-// 	pros::lcd::print(3, "Current Color:");
-// 	while (true) {
-// 		auto lcd_buttons = pros::lcd::read_buttons();
+	// pros::lcd::print(0, "Choose the auto!");
+	// pros::lcd::print(1, "Current Auto:");
+	// pros::lcd::print(3, "Current Color:");
+	// while (true) {
+	// 	auto lcd_buttons = pros::lcd::read_buttons();
 
-// 		auto old_left_btn = left_btn;
-// 		auto old_center_btn = center_btn;
-// 		auto old_right_btn = right_btn;
+	// 	auto old_left_btn = left_btn;
+	// 	auto old_center_btn = center_btn;
+	// 	auto old_right_btn = right_btn;
 
-// 		left_btn = lcd_buttons & LCD_BTN_LEFT;
-// 		center_btn = lcd_buttons & LCD_BTN_CENTER;
-// 		right_btn = lcd_buttons & LCD_BTN_RIGHT;
+	// 	left_btn = lcd_buttons & LCD_BTN_LEFT;
+	// 	center_btn = lcd_buttons & LCD_BTN_CENTER;
+	// 	right_btn = lcd_buttons & LCD_BTN_RIGHT;
 
-// 		if (left_btn != old_left_btn && left_btn) {
-// 			pros::lcd::print(5, "left_btn pressed");
-// 			AutoChooser::selectPrev();
-// 		} else if (center_btn != old_center_btn && center_btn) {
-// 			pros::lcd::print(5, "center_btn pressed");
-// 			AutoChooser::toggleColor();
-// 		} else if (right_btn != old_right_btn && right_btn) {
-// 			pros::lcd::print(5, "right_btn pressed");
-// 			AutoChooser::selectNext();
-// 		}
-// 		pros::lcd::print(2, "%s", AutoChooser::getName());
-// 		pros::lcd::print(4, "%s", AutoChooser::isBlue() ? "blue" : "red");
+	// 	if (left_btn != old_left_btn && left_btn) {
+	// 		pros::lcd::print(5, "left_btn pressed");
+	// 		AutoChooser::selectPrev();
+	// 	} else if (center_btn != old_center_btn && center_btn) {
+	// 		pros::lcd::print(5, "center_btn pressed");
+	// 		AutoChooser::toggleColor();
+	// 	} else if (right_btn != old_right_btn && right_btn) {
+	// 		pros::lcd::print(5, "right_btn pressed");
+	// 		AutoChooser::selectNext();
+	// 	}
+	// 	pros::lcd::print(2, "%s", AutoChooser::getName());
+	// 	pros::lcd::print(4, "%s", AutoChooser::isBlue() ? "blue" : "red");
 
-// 		pros::delay(25);
-// 	}
+	// 	pros::delay(25);
+	// }
 }
 
 /**
@@ -118,7 +131,7 @@ void competition_initialize() {
  * from where it left_btn off.
  */
 void autonomous() {
-	// fullAutoOneYang(false);
+	// fullAutoOneYang(is_blue);
 	// AutoChooser::runSelected();
 	// driveForward(48);
 	// driveForward(-48);
@@ -190,6 +203,7 @@ void autonomous() {
 void opcontrol() {
 	// pros::delay(2000);
 	Drive::setBrakeMode(pros::E_MOTOR_BRAKE_COAST);
+	Optical::setLED(true);
 
 	int replay_step = 0;
 	while (true) {
@@ -204,14 +218,26 @@ void opcontrol() {
 		bool a = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A);
 		bool b = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_B);
 		bool x = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X);
+		bool up_arrow = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_UP);
+		bool down_arrow = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN);
 
 		// Drive::controlDirection(a);
 		Drive::controlTank(left_y, right_y, b);
 		// Drive::controlArcade(right_y, left_x, b);
-		Intake::control(l1, l2);
+		// Intake::control(l1, l2);
+		Intake::control(l2, l1, up_arrow, Optical::getColor() == Color::BLUE);
+
 		GoalGrabber::control(r1);
-		// Conveyor::control();
-		Arm::control(r2);
+		Arm::control(down_arrow);
+		TopArm::control(x, r2);
+
+		pros::lcd::print(6, "%s", Optical::colorString());
+		// pros::lcd::print(3, "%.2f", Optical::getRGB().red);
+		// pros::lcd::print(4, "%.2f", Optical::getRGB().green);
+		// pros::lcd::print(5, "%.2f", Optical::getRGB().blue);
+		pros::lcd::print(7, "%.2f", Optical::getHue());
+
+
 
 		if(recording) {
 			ReplayStep current_step;
@@ -238,10 +264,7 @@ void opcontrol() {
 				autonomous();
 			}
 			replay_step++;
-			pros::delay(2);
 		}
-		// else {
-		// 	autonomous();
-		// }
+		pros::delay(2);
 	}
 }

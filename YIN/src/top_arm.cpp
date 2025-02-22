@@ -1,9 +1,9 @@
 #include "top_arm.h"
 #include "constants.h"
 
-const double MOGO_POSITION = 5;
-const double RING_POSITION = -160;
-const double HIGH_STAKE_POSITION = -800;
+const double MOGO_POSITION = 0;
+double RING_POSITION = -110;
+const double HIGH_STAKE_POSITION = -720;
 
 double TopArm::desiredPosition = 0;
 
@@ -19,21 +19,31 @@ TopArm::TopArm() {
 }
 
 bool TopArm::atDesiredPosition() {
-    return (topArmMotor.get_position() - TOP_ARM_DELTA <= desiredPosition)
-        && (topArmMotor.get_position() + TOP_ARM_DELTA >= desiredPosition);
+    return (topArmMotor.get_position() - 5 <= desiredPosition)
+        && (topArmMotor.get_position() + 5 >= desiredPosition);
 }
 
 void TopArm::control(bool mogo_button, bool upper_toggle_button) {
     pros::lcd::print(2, "%f", topArmMotor.get_position());
     pros::lcd::print(3, "%f", desiredPosition);
     pros::lcd::print(4, "%i", TopArm::atDesiredPosition());
-
+    // if(topArmState == TopArmState::MOGO && mogo_button) {
+    //     topArmMotor.tare_position();
+    //     desiredPosition = 0;
+    // }
     switch(topArmState) {
         case TopArmState::APPROACH_MOGO:
             approachMogo();
             pros::lcd::print(1, "APPROACH_MOGO");
-            if(atDesiredPosition) {
+            if(atDesiredPosition()) {
                 reachMogo();
+            } else if (upper_toggle_button) {
+                approachRingFromMogo();
+            } else if (mogo_button) {
+                reachMogo();
+                topArmMotor.tare_position();
+                desiredPosition = 0;
+                double RING_POSITION = -50;
             }
         break;
         case TopArmState::APPROACH_RING_FROM_MOGO:
@@ -43,7 +53,7 @@ void TopArm::control(bool mogo_button, bool upper_toggle_button) {
                 approachHighStake();
             } else if(mogo_button) {
                 approachMogo();
-            } else if(atDesiredPosition) {
+            } else if(atDesiredPosition()) {
                 reachRing();
             }
         break;
@@ -54,7 +64,7 @@ void TopArm::control(bool mogo_button, bool upper_toggle_button) {
                 approachHighStake();
             } else if(mogo_button) {
                 approachMogo();
-            } else if(atDesiredPosition) {
+            } else if(atDesiredPosition()) {
                 reachRing();
             }
         break;
@@ -65,7 +75,7 @@ void TopArm::control(bool mogo_button, bool upper_toggle_button) {
                 approachRingFromHighStake();
             } else if(mogo_button) {
                 approachMogo();
-            } else if(atDesiredPosition) {
+            } else if(atDesiredPosition()) {
                 reachHighStake();
             }
         break;
@@ -120,8 +130,8 @@ void TopArm::approachHighStake() {
 }
 
 void TopArm::reachMogo() {
+    topArmMotor.move(0);
     // topArmMotor.tare_position();
-    // topArmMotor.move(0);
     topArmState = TopArmState::MOGO;
 }
 

@@ -2,6 +2,7 @@
 #include "intake.h"
 #include "conveyor.h"
 #include "arm.h"
+#include "top_arm.h"
 #include "goal_grabber.h"
 #include "constants.h"
 
@@ -231,6 +232,50 @@ void fullAutoOneYang(bool isBlue) {
 
 }
 
+void yinRush(bool isBlue) {
+    Drive::resetHeading();
+    const int32_t rushSpeed = 110;
+    const int32_t fastSpeed = 90;
+    const int32_t driveSpeed = 50;
+    const int32_t slowSpeed = 30;
+    const int32_t turnSpeed = 50;
+
+    // if (isBlue) {
+        GoalGrabber::setNotGrabbing();
+        Arm::setArmDown();
+        // Drive::driveArc(TRACK_WIDTH/2, 0.052, rushSpeed); // Align with mogo
+        Drive::driveDistanceFeedbackBasic(28, fastSpeed, rushSpeed); // Move to mogo
+        Drive::driveDistance(7, slowSpeed); // Approach slowly
+        Arm::setArmUp();
+        Drive::driveDistance(2, slowSpeed); // Approach slowly
+
+        // Drive::driveArc(TRACK_WIDTH/2, -0.052, slowSpeed);
+
+        pros::delay(100);
+        Drive::driveDistance(-12, driveSpeed); // Run away
+        Arm::setArmDown();
+        pros::delay(200);
+        // Drive::driveDistance(-6, driveSpeed);
+        // Arm::setArmUp();
+        // pros::delay(200);
+        Drive::driveArc(0, -0.1, turnSpeed);
+        Arm::setArmUp();
+        Drive::driveArc(0, -0.3, turnSpeed);
+
+        Drive::driveDistance(-16, slowSpeed);
+        GoalGrabber::setGrabbing();
+        Conveyor::setConveyingForward();
+        Drive::driveDistance(16, slowSpeed);
+        pros::delay(200);
+
+        Drive::driveArc(0, 0.4, turnSpeed);
+        // Drive::driveDistance(30, slowSpeed);
+        Conveyor::setNotMoving();
+        Drive::brake();
+
+
+    // }
+}
 // Test autos
 
 void driveForward(double distance) {

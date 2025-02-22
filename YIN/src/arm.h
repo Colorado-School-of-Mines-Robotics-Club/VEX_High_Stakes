@@ -32,5 +32,6 @@ public:
      * @brief Moves the arm downwaards
      */
     static void setArmDown();
+    static void setArmOpen();
     static void direct(bool armState);
 };

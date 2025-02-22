@@ -32,6 +32,11 @@ void Arm::setArmDown() {
     setArmValue(true);
 }
 
+void Arm::setArmOpen() {
+    arm0.set_value(true);
+    arm1.set_value(false);
+}
+
 void Arm::direct(bool armState) {
     if(armValue != armState) {
         setArmValue(armState);

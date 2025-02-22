@@ -1,0 +1,12 @@
+replay_.txt
+this is the default
+
+replay_skills_1.txt
+does not exist
+
+replay_skills_2.txt
+bad
+
+replay_skills_4.txt
+made on practice field
+

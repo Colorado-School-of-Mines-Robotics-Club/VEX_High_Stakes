@@ -5,7 +5,7 @@
 #include <format>
 
 #include "main.h"
-#include "constants.h"
+// #include "constants.h"
 #include "drive.h"
 #include "intake.h"
 #include "conveyor.h"
@@ -18,11 +18,14 @@
 
 #include "replay.hpp"
 
-#define FILENAME "replay_.txt"
-#define RECORD false
-#define RECORD_TIME 15000
+#define RECORD_NAME "replay_skills_4.txt"
+#define PLAY_NAME "replay_skills_4.txt"
 
-bool isBlue = true;
+#define RECORD false
+// #define RECORD_TIME 15000 // 30 sec
+#define RECORD_TIME 30000 // 1 min
+
+bool is_blue = true;
 bool recording = RECORD;
 std::vector<ReplayStep> replay(0);
 
@@ -30,7 +33,7 @@ pros::Controller controllerMain(pros::E_CONTROLLER_MASTER);
 
 // void setColor(bool blue) {
 // 	if(blue) {
-		
+
 // 	} else {
 
 // 	}
@@ -67,7 +70,7 @@ void disabled() {
 	Conveyor::brake();
 
 	if(recording && replay.size() > 0) {
-		write_replay(replay, FILENAME);
+		write_replay(replay, RECORD_NAME);
 	}
 
 	// Competition initialize
@@ -131,7 +134,9 @@ void competition_initialize() {
  * from where it left_btn off.
  */
 void autonomous() {
-	// fullAutoOneYang(is_blue);
+	// fullAutoOneYin(is_blue);
+	yinRush(is_blue);
+	// pros::delay(10000);
 	// AutoChooser::runSelected();
 	// driveForward(48);
 	// driveForward(-48);
@@ -144,18 +149,19 @@ void autonomous() {
 	Drive::brake();
 	Intake::setNotMoving();
 	Conveyor::setNotMoving();
+	return;
 
-	bool y = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y);
-	if(!y) {
-		pros::lcd::set_text(2, "Waiting for press...");
-		pros::lcd::clear_line(3);
-		pros::lcd::clear_line(4);
-		pros::delay(2);
-		return;
-	}
-	pros::lcd::clear_line(1);
+	// bool y = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y);
+	// if(!y) {
+	// 	pros::lcd::set_text(2, "Waiting for press...");
+	// 	pros::lcd::clear_line(3);
+	// 	pros::lcd::clear_line(4);
+	// 	pros::delay(2);
+	// 	return;
+	// }
+	// pros::lcd::clear_line(1);
 
-	std::vector<ReplayStep> replay = read_replay(FILENAME);
+	std::vector<ReplayStep> replay = read_replay(PLAY_NAME);
 	pros::lcd::set_text(2, "Loaded replay!");
 	pros::delay(1000);
 	pros::lcd::set_text(3, "Running replay!");
@@ -172,7 +178,7 @@ void autonomous() {
 	Intake::setNotMoving();
 	Conveyor::setNotMoving();
 	pros::lcd::set_text(4, "Finished replay!");
-	pros::delay(1000);
+	// pros::delay(1000);
 
 }
 
@@ -201,9 +207,11 @@ void autonomous() {
  * B (right_btn 3d printed) - Hold precision mode
  */
 void opcontrol() {
+	// autonomous();
 	// pros::delay(2000);
 	Drive::setBrakeMode(pros::E_MOTOR_BRAKE_COAST);
-	Optical::setLED(true);
+	Optical::setLED(false);
+	TopArm::approachMogo();
 
 	int replay_step = 0;
 	while (true) {
@@ -220,7 +228,7 @@ void opcontrol() {
 		bool x = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X);
 		bool up_arrow = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_UP);
 		bool down_arrow = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN);
-
+		bool left_arrow = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT);
 		// Drive::controlDirection(a);
 		// Drive::controlTank(left_y, right_y, b);
 		Drive::controlArcade(right_y, left_x, b);
@@ -238,8 +246,6 @@ void opcontrol() {
 		// pros::lcd::print(4, "%.2f", Optical::getRGB().green);
 		// pros::lcd::print(5, "%.2f", Optical::getRGB().blue);
 		pros::lcd::print(7, "%.2f", Optical::getHue());
-
-
 
 		if(recording) {
 			ReplayStep current_step;
@@ -259,11 +265,12 @@ void opcontrol() {
 			current_step.grabber = GoalGrabber::grabValue;
 			replay.push_back(current_step);
 
-			if(replay_step >= RECORD_TIME || x) {
+			// if(replay_step >= RECORD_TIME || left_arrow) {
+			if(left_arrow) {
 				recording = false;
-				write_replay(replay, FILENAME);
+				write_replay(replay, RECORD_NAME);
 				pros::lcd::set_text(1, "Saved replay!");
-				autonomous();
+				// autonomous();
 			}
 			replay_step++;
 		}

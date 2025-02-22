@@ -5,6 +5,7 @@ void driveForwardContactLadder();
 void driveForwardRushMogo();
 void figureEight(bool isBlue);
 void fullAutoOneYin(bool isBlue);
+void yinRush(bool isBlue);
 void fullAutoOneYang(bool isBlue);
 
 

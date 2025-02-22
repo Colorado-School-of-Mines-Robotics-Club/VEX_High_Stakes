@@ -188,7 +188,7 @@ void Drive::driveDistanceFeedbackBasic(double distance, int32_t minPower, int32_
 
 void Drive::turn(double deg, int32_t power) {
 	left.tare_position_all();
-	right.tare_position_all();	
+	right.tare_position_all();
 	tinyBox.tare_rotation();
 	double cw = (deg > 0) ? 1.0 : -1.0; // Turn cw if deg is positive
 	Drive::move(power * cw, -power * cw);

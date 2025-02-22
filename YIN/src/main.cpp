@@ -222,10 +222,12 @@ void opcontrol() {
 		bool down_arrow = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN);
 
 		// Drive::controlDirection(a);
-		Drive::controlTank(left_y, right_y, b);
-		// Drive::controlArcade(right_y, left_x, b);
+		// Drive::controlTank(left_y, right_y, b);
+		Drive::controlArcade(right_y, left_x, b);
 		// Intake::control(l1, l2);
-		Intake::control(l2, l1, up_arrow, Optical::getColor() == Color::BLUE);
+		Intake::control(up_arrow, l1, l2, false);
+		// Intake::control(l2, l1, up_arrow, Optical::getColor() == Color::BLUE);
+
 
 		GoalGrabber::control(r1);
 		Arm::control(down_arrow);

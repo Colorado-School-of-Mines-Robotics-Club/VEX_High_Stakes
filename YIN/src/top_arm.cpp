@@ -2,7 +2,7 @@
 #include "constants.h"
 
 const double MOGO_POSITION = 5;
-const double RING_POSITION = -180;
+const double RING_POSITION = -160;
 const double HIGH_STAKE_POSITION = -800;
 
 double TopArm::desiredPosition = 0;

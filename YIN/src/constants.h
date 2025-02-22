@@ -39,7 +39,7 @@
 // Intake
 #define INTAKE_PORT -10
 #define INTAKE_SPEED 127
-#define OUTTAKE_SPEED 63
+#define OUTTAKE_SPEED 127
 
 // Conveyor
 #define CONVEYOR_PORTS {-2, 9}

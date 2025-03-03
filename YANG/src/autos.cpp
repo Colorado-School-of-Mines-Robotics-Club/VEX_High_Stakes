@@ -303,6 +303,119 @@ void fullAutoOneYang(bool isBlue) {
 
 }
 
+void fullAutoTwoYang(bool isBlue) {
+    static const int32_t slowSpeed = 30;
+    static const int32_t driveSpeed = 50;
+    static const int32_t fastSpeed = 70;
+    Drive::setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
+    Drive::resetHeading();
+
+    if(isBlue) {
+        {
+            Intake::setIntaking();
+            Conveyor::setNotMoving();
+            Drive::driveDistance(15.5, slowSpeed);
+            Intake::setNotMoving();
+            Drive::driveDistance(15, slowSpeed);
+        }
+        {
+            Drive::turn(-30, slowSpeed);
+            Drive::driveDistance(-15, driveSpeed);
+            pros::delay(400);
+            Drive::driveDistance(-13, slowSpeed);
+        }
+        {
+            GoalGrabber::setGrabbing();
+            Intake::setIntaking();
+            Conveyor::setConveyingForward();
+            pros::delay(1000);
+            Conveyor::setNotMoving();
+            Intake::setNotMoving();
+            Drive::driveDistance(9.5, slowSpeed);
+        }
+        {
+            Drive::turn(-50, slowSpeed);
+            Drive::driveDistance(8, slowSpeed);
+            Drive::driveTime(800, slowSpeed, slowSpeed);
+            Drive::driveDistance(-11.5, slowSpeed);
+        }
+        {
+            Drive::turn(65, driveSpeed);
+            Drive::driveDistance(27, driveSpeed);
+            Intake::setIntaking();
+            Conveyor::setConveyingForward();
+            Drive::driveDistance(15, driveSpeed);
+            pros::delay(1300);
+            Conveyor::setNotMoving();
+            Intake::setNotMoving();
+        }
+        {
+            Arm::setArmDown();
+            Drive::driveDistance(-8, driveSpeed);
+            Drive::turn(-20, slowSpeed);
+            Drive::driveDistance(12, driveSpeed);
+            Drive::driveTime(400, driveSpeed, 0.85*driveSpeed);
+            Drive::turn(150, driveSpeed);
+            Drive::driveTime(500, -0.9*driveSpeed, -driveSpeed);
+            GoalGrabber::setNotGrabbing();
+            Arm::setArmUp();
+            Drive::driveTime(1000, 0.8*driveSpeed, driveSpeed);
+            Drive::driveDistance(7, driveSpeed);
+            Drive::brake();
+        }
+    } else {
+        {
+            Intake::setIntaking();
+            Conveyor::setNotMoving();
+            Drive::driveDistance(13.5, slowSpeed);
+            Intake::setNotMoving();
+            Drive::driveDistance(17, slowSpeed);
+        }
+        {
+            Drive::turn(30, slowSpeed);
+            Drive::driveDistance(-30, slowSpeed);
+        }
+        {
+            GoalGrabber::setGrabbing();
+            Intake::setIntaking();
+            Conveyor::setConveyingForward();
+            pros::delay(1000);
+            Conveyor::setNotMoving();
+            Intake::setNotMoving();
+            Drive::driveDistance(7, slowSpeed);
+        }
+        {
+            Drive::turn(50, slowSpeed);
+            Drive::driveDistance(8, slowSpeed);
+            Drive::driveTime(800, slowSpeed, slowSpeed);
+            Drive::driveDistance(-14, slowSpeed);
+        }
+        {
+            Drive::turn(-67, driveSpeed);
+            Drive::driveDistance(27, driveSpeed);
+            Intake::setIntaking();
+            Conveyor::setConveyingForward();
+            Drive::driveDistance(15, driveSpeed);
+            pros::delay(1300);
+            Conveyor::setNotMoving();
+            Intake::setNotMoving();
+        }
+        {
+            Arm::setArmDown();
+            Drive::driveDistance(-8, driveSpeed);
+            Drive::turn(20, slowSpeed);
+            Drive::driveDistance(12, driveSpeed);
+            Drive::driveTime(400, 0.85*driveSpeed, driveSpeed);
+            Drive::turn(190, driveSpeed);
+            Drive::driveTime(500, -driveSpeed, -0.9*driveSpeed);
+            GoalGrabber::setNotGrabbing();
+            Arm::setArmUp();
+            Drive::driveDistance(20, driveSpeed);
+            Drive::brake();
+        }
+    }
+}
+
 // Test autos
 
 void driveForward(double distance) {

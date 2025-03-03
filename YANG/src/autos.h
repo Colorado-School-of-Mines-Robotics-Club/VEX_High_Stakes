@@ -7,6 +7,7 @@ void driveForwardRushMogo();
 void figureEight(bool isBlue);
 void fullAutoOneYin(bool isBlue);
 void fullAutoOneYang(bool isBlue);
+void fullAutoTwoYang(bool isBlue);
 
 
 // Test autos

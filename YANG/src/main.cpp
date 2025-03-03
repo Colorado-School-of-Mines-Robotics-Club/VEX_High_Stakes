@@ -119,7 +119,7 @@ void competition_initialize() {
  * from where it left_btn off.
  */
 void autonomous() {
-	// fullAutoOneYang(true);
+	fullAutoTwoYang(true);
 	// AutoChooser::runSelected();
 	// driveForward(48);
 	// driveForward(-48);
@@ -130,38 +130,38 @@ void autonomous() {
 	// testBasicFeedbackDrive();
 	// rushWithArm();
 
-	Drive::brake();
-	Intake::setNotMoving();
-	Conveyor::setNotMoving();
+	// Drive::brake();
+	// Intake::setNotMoving();
+	// Conveyor::setNotMoving();
 
-	bool y = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y);
-	if(!y) {
-		pros::lcd::set_text(2, "Waiting for press...");
-		pros::lcd::clear_line(3);
-		pros::lcd::clear_line(4);
-		pros::delay(2);
-		return;
-	}
-	pros::lcd::clear_line(1);
+	// bool y = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y);
+	// if(!y) {
+	// 	pros::lcd::set_text(2, "Waiting for press...");
+	// 	pros::lcd::clear_line(3);
+	// 	pros::lcd::clear_line(4);
+	// 	pros::delay(2);
+	// 	return;
+	// }
+	// pros::lcd::clear_line(1);
 
-	// std::vector<ReplayStep> replay = read_replay(FILENAME);
-	pros::lcd::set_text(2, "Loaded replay!");
-	pros::delay(1000);
-	pros::lcd::set_text(3, "Running replay!");
-	for(ReplayStep replay_step : replay) {
-		Drive::driveDirect(replay_step.leftWheels, replay_step.rightWheels);
-		Intake::direct(replay_step.intake);
-		Conveyor::direct(replay_step.conveyor);
-		Arm::direct(replay_step.arm);
-		GoalGrabber::direct(replay_step.grabber);
+	// // std::vector<ReplayStep> replay = read_replay(FILENAME);
+	// pros::lcd::set_text(2, "Loaded replay!");
+	// pros::delay(1000);
+	// pros::lcd::set_text(3, "Running replay!");
+	// for(ReplayStep replay_step : replay) {
+	// 	Drive::driveDirect(replay_step.leftWheels, replay_step.rightWheels);
+	// 	Intake::direct(replay_step.intake);
+	// 	Conveyor::direct(replay_step.conveyor);
+	// 	Arm::direct(replay_step.arm);
+	// 	GoalGrabber::direct(replay_step.grabber);
 
-		pros::delay(2);
-	}
-	Drive::brake();
-	Intake::setNotMoving();
-	Conveyor::setNotMoving();
-	pros::lcd::set_text(4, "Finished replay!");
-	pros::delay(1000);
+	// 	pros::delay(2);
+	// }
+	// Drive::brake();
+	// Intake::setNotMoving();
+	// Conveyor::setNotMoving();
+	// pros::lcd::set_text(4, "Finished replay!");
+	// pros::delay(1000);
 }
 
 /**

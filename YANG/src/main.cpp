@@ -119,16 +119,9 @@ void competition_initialize() {
  * from where it left_btn off.
  */
 void autonomous() {
-	fullAutoTwoYang(true);
+	skillsOneYang();
+	// fullAutoTwoYang(true);
 	// AutoChooser::runSelected();
-	// driveForward(48);
-	// driveForward(-48);
-	// rotate(720);
-	// driveCircle(12);
-	// driveDistanceGyro(24);
-	// rotateTest();
-	// testBasicFeedbackDrive();
-	// rushWithArm();
 
 	// Drive::brake();
 	// Intake::setNotMoving();

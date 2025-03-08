@@ -18,8 +18,8 @@
 
 #include "replay.hpp"
 
-#define RECORD_NAME "replay_skills_4.txt"
-#define PLAY_NAME "replay_skills_4.txt"
+#define RECORD_NAME "replay_skills_5.txt"
+#define PLAY_NAME "replay_skills_5.txt"
 
 #define RECORD false
 // #define RECORD_TIME 15000 // 30 sec

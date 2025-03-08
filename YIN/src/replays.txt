@@ -10,3 +10,5 @@ bad
 replay_skills_4.txt
 made on practice field
 
+replay_skills_5.txt
+purdue

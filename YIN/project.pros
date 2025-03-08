@@ -1,7 +1,7 @@
 {
   "py/object": "pros.conductor.project.Project",
   "py/state": {
-    "project_name": "YIN purple ",
+    "project_name": "YIN purple",
     "target": "v5",
     "templates": {
       "kernel": {
@@ -255,7 +255,7 @@
       }
     },
     "upload_options": {
-      "description": "yin",
+      "description": "yin purple",
       "icon": "X",
       "slot": 1
     },

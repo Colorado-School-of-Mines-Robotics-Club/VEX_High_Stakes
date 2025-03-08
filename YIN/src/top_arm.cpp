@@ -2,7 +2,7 @@
 #include "constants.h"
 
 const double MOGO_POSITION = 0;
-double RING_POSITION = -110;
+double RING_POSITION = -115;
 const double HIGH_STAKE_POSITION = -720;
 
 double TopArm::desiredPosition = 0;
@@ -83,6 +83,9 @@ void TopArm::control(bool mogo_button, bool upper_toggle_button) {
             pros::lcd::print(1, "MOGO");
             if(upper_toggle_button) {
                 approachRingFromMogo();
+            } else if (mogo_button) {
+                topArmMotor.tare_position();
+                desiredPosition = 0;
             }
         break;
         case TopArmState::RING:

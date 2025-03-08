@@ -23,6 +23,7 @@ public:
     static void setConveyingForward();
     static void setConveyingReverse();
     static void setNotMoving();
+    static void conveyWithUnjam();
     static double getPosition();
     static void direct(double velocity);
 };

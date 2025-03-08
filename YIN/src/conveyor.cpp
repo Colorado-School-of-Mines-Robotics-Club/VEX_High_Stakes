@@ -64,6 +64,19 @@ void Conveyor::setConveyingReverse() {
     conveyorMotors.move(-CONVEYOR_REVERSE_SPEED);
 }
 
+void Conveyor::conveyWithUnjam() {
+    if(conveyorState == ConveyorState::NOT_MOVING) {
+        setConveyingForward();
+    } else if (conveyorState == ConveyorState::FORWARD) {
+        if (conveyorMotors.get_current_draw() > 15) {
+            setConveyingReverse();
+        }
+    } else if (conveyorState == ConveyorState::REVERSE) {
+        pros::delay(100);
+        setConveyingForward();
+    }
+}
+
 void Conveyor::setNotMoving() {
     conveyorState = ConveyorState::NOT_MOVING;
     conveyorMotors.move(0);

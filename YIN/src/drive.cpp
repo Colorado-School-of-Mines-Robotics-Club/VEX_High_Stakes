@@ -139,6 +139,23 @@ void Drive::driveDistance(double distance, int32_t power) {
 	Drive::move(0, 0);
 }
 
+void Drive::driveToTarget(double distance, int32_t power) {
+	left.tare_position_all();
+	right.tare_position_all();
+	double target =  distance * DRIVE_UNIT_MULTIPLIER;
+	power = distance > 0 ? power : -power; // Drive backwards if negative distance
+	Drive::move(power, power);
+}
+
+bool Drive::reachedTarget(double distance) {
+	double target = distance * DRIVE_UNIT_MULTIPLIER;
+	if(abs(average(left.get_position_all(), right.get_position_all())) < abs(target)) {
+		Drive::move(0, 0);
+		return true;
+	}
+	return false;
+}
+
 
 void Drive::driveDistanceGyro(double distance, int32_t power) {
 	left.tare_position_all();

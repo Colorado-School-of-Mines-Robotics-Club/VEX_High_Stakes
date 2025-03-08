@@ -75,6 +75,8 @@ class Drive {
 		 * @param power The power to apply to the motors while driving
 		 */
 		static void driveDistance(double distance, int32_t power);
+		static void driveToTarget(double distance, int32_t power);
+		static bool reachedTarget(double distance);
 		static void driveDistanceGyro(double distance, int32_t power);
 		static void driveDistanceFeedbackBasic(double distance, int32_t minPower, int32_t maxPower);
 		/**

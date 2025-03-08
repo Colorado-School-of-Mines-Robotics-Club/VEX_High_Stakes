@@ -18,10 +18,10 @@
 
 #include "replay.hpp"
 
-#define RECORD_NAME "replay_skills_5.txt"
-#define PLAY_NAME "replay_skills_5.txt"
+#define RECORD_NAME "replay_skills_7.txt"
+#define PLAY_NAME "replay_skills_7.txt"
 
-#define RECORD false
+#define RECORD true
 // #define RECORD_TIME 15000 // 30 sec
 #define RECORD_TIME 30000 // 1 min
 
@@ -135,7 +135,7 @@ void competition_initialize() {
  */
 void autonomous() {
 	// fullAutoOneYin(is_blue);
-	yinRush(is_blue);
+	// yinRush(is_blue);
 	// pros::delay(10000);
 	// AutoChooser::runSelected();
 	// driveForward(48);
@@ -146,10 +146,10 @@ void autonomous() {
 	// rotateTest();
 	// testBasicFeedbackDrive();
 	// rushWithArm();
-	Drive::brake();
-	Intake::setNotMoving();
-	Conveyor::setNotMoving();
-	return;
+	// Drive::brake();
+	// Intake::setNotMoving();
+	// Conveyor::setNotMoving();
+	// return;
 
 	// bool y = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y);
 	// if(!y) {

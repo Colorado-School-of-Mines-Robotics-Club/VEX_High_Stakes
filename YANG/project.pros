@@ -255,9 +255,9 @@
       }
     },
     "upload_options": {
-      "icon": "pizza",
-      "description": "testing",
-      "slot": 1
+      "icon": "X",
+      "description": "skills",
+      "slot": 3
     },
     "use_early_access": false
   }

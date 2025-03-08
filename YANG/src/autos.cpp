@@ -306,6 +306,7 @@ void fullAutoOneYang(bool isBlue) {
 void fullAutoTwoYang(bool isBlue) {
     static const int32_t slowSpeed = 30;
     static const int32_t driveSpeed = 50;
+    static const int32_t cornerSpeed = 60;
     static const int32_t fastSpeed = 70;
     Drive::setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
     Drive::resetHeading();
@@ -314,24 +315,22 @@ void fullAutoTwoYang(bool isBlue) {
         {
             Intake::setIntaking();
             Conveyor::setNotMoving();
-            Drive::driveDistance(15.5, slowSpeed);
+            Drive::driveDistance(13.5, slowSpeed);
             Intake::setNotMoving();
-            Drive::driveDistance(15, slowSpeed);
+            Drive::driveDistance(17, slowSpeed);
         }
         {
-            Drive::turn(-30, slowSpeed);
-            Drive::driveDistance(-15, driveSpeed);
-            pros::delay(400);
-            Drive::driveDistance(-13, slowSpeed);
+            Drive::turn(-35, slowSpeed);
+            Drive::driveDistance(-30, slowSpeed);
         }
         {
             GoalGrabber::setGrabbing();
             Intake::setIntaking();
             Conveyor::setConveyingForward();
-            pros::delay(1000);
+            pros::delay(1400);
             Conveyor::setNotMoving();
             Intake::setNotMoving();
-            Drive::driveDistance(9.5, slowSpeed);
+            Drive::driveDistance(6.75, slowSpeed);
         }
         {
             Drive::turn(-50, slowSpeed);
@@ -340,12 +339,12 @@ void fullAutoTwoYang(bool isBlue) {
             Drive::driveDistance(-11.5, slowSpeed);
         }
         {
-            Drive::turn(65, driveSpeed);
+            Drive::turn(67, driveSpeed);
             Drive::driveDistance(27, driveSpeed);
             Intake::setIntaking();
             Conveyor::setConveyingForward();
             Drive::driveDistance(15, driveSpeed);
-            pros::delay(1300);
+            pros::delay(1700);
             Conveyor::setNotMoving();
             Intake::setNotMoving();
         }
@@ -355,12 +354,14 @@ void fullAutoTwoYang(bool isBlue) {
             Drive::turn(-20, slowSpeed);
             Drive::driveDistance(12, driveSpeed);
             Drive::driveTime(400, driveSpeed, 0.85*driveSpeed);
-            Drive::turn(150, driveSpeed);
+            Drive::turn(150, fastSpeed);
             Drive::driveTime(500, -0.9*driveSpeed, -driveSpeed);
             GoalGrabber::setNotGrabbing();
             Arm::setArmUp();
-            Drive::driveTime(1000, 0.8*driveSpeed, driveSpeed);
-            Drive::driveDistance(7, driveSpeed);
+            Drive::driveDistance(15, driveSpeed);
+            Drive::driveTime(3000, -slowSpeed, -slowSpeed);
+            Drive::driveTime(400, 0.75*driveSpeed, driveSpeed);
+            Drive::driveDistance(25, driveSpeed);
             Drive::brake();
         }
     } else {
@@ -382,7 +383,7 @@ void fullAutoTwoYang(bool isBlue) {
             pros::delay(1000);
             Conveyor::setNotMoving();
             Intake::setNotMoving();
-            Drive::driveDistance(7, slowSpeed);
+            Drive::driveDistance(8, slowSpeed);
         }
         {
             Drive::turn(50, slowSpeed);
@@ -406,11 +407,14 @@ void fullAutoTwoYang(bool isBlue) {
             Drive::turn(20, slowSpeed);
             Drive::driveDistance(12, driveSpeed);
             Drive::driveTime(400, 0.85*driveSpeed, driveSpeed);
-            Drive::turn(190, driveSpeed);
+            Drive::turn(190, fastSpeed);
             Drive::driveTime(500, -driveSpeed, -0.9*driveSpeed);
             GoalGrabber::setNotGrabbing();
             Arm::setArmUp();
-            Drive::driveDistance(20, driveSpeed);
+            Drive::driveDistance(15, driveSpeed);
+            Drive::driveTime(3000, -slowSpeed, -slowSpeed);
+            Drive::driveTime(400, driveSpeed, 0.75*driveSpeed);
+            Drive::driveDistance(25, driveSpeed);
             Drive::brake();
         }
     }
@@ -427,7 +431,7 @@ void skillsOneYang() {
         Intake::setIntaking();
         Drive::driveDistance(12, slowSpeed);
         pros::delay(250);
-        Drive::driveDistance(-15, slowSpeed);
+        Drive::driveDistance(-15.5, slowSpeed);
         Intake::setIntaking();
         Conveyor::setConveyingForward();
         pros::delay(1500);
@@ -473,7 +477,7 @@ void skillsOneYang() {
         Drive::driveDistance(-16, driveSpeed);
         Drive::brake();
         pros::delay(250);
-        Drive::turn(25, slowSpeed);
+        Drive::turn(15, slowSpeed);
         Drive::driveTime(2000, fastSpeed, fastSpeed);
         Drive::driveArc(24, -0.125, -driveSpeed);
         pros::delay(250);

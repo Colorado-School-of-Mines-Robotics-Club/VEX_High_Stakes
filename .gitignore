@@ -16,7 +16,8 @@ temp.errors
 *.ini
 .d/
 
-# Direnv state
+# Direnv state & Derivaiton builds
 .direnv/
+/result
 
 rpi-test

@@ -1,7 +1,7 @@
 {
   "py/object": "pros.conductor.project.Project",
   "py/state": {
-    "project_name": "YIN replay",
+    "project_name": "YIN purple",
     "target": "v5",
     "templates": {
       "kernel": {
@@ -255,9 +255,9 @@
       }
     },
     "upload_options": {
-      "description": "replay",
+      "description": "match",
       "icon": "X",
-      "slot": 3
+      "slot": 1
     },
     "use_early_access": false
   }

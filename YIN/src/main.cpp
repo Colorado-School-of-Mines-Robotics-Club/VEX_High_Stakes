@@ -21,7 +21,7 @@
 #define RECORD_NAME "replay_skills_7.txt"
 #define PLAY_NAME "replay_skills_7.txt"
 
-#define RECORD true
+#define RECORD false
 // #define RECORD_TIME 15000 // 30 sec
 #define RECORD_TIME 30000 // 1 min
 
@@ -135,7 +135,7 @@ void competition_initialize() {
  */
 void autonomous() {
 	// fullAutoOneYin(is_blue);
-	// yinRush(is_blue);
+	yinRush(is_blue);
 	// pros::delay(10000);
 	// AutoChooser::runSelected();
 	// driveForward(48);
@@ -146,10 +146,10 @@ void autonomous() {
 	// rotateTest();
 	// testBasicFeedbackDrive();
 	// rushWithArm();
-	// Drive::brake();
-	// Intake::setNotMoving();
-	// Conveyor::setNotMoving();
-	// return;
+	Drive::brake();
+	Intake::setNotMoving();
+	Conveyor::setNotMoving();
+	return;
 
 	// bool y = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y);
 	// if(!y) {
@@ -215,20 +215,21 @@ void opcontrol() {
 
 	int replay_step = 0;
 	while (true) {
-		double left_x = controllerMain.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X);
-		double left_y = controllerMain.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
-		double right_x = controllerMain.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
-		double right_y = controllerMain.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
-		bool l1 = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_L1);
-		bool l2 = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_L2);
-		bool r1 = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1);
-		bool r2 = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2);
-		bool a = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A);
-		bool b = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_B);
-		bool x = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X);
-		bool up_arrow = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_UP);
-		bool down_arrow = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN);
-		bool left_arrow = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT);
+		double left_x = controllerMain.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X); // turn for arcade
+		// double left_y = controllerMain.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y); // left tank
+		// double right_x = controllerMain.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X); // not used
+		double right_y = controllerMain.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y); // arcade forward and right tank
+		bool l1 = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_L1); // control conveyor and intake
+		bool l2 = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_L2); // reverse conveyor and intake
+		bool r1 = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1); // goal grabber
+		bool r2 = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2); // toggle between load and high stake position
+		// bool a = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A); // toggle drive direction
+		bool b = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_B); // precision mode
+		bool x = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X); // go to mogo position
+		bool y = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y); // spin 3throw button
+		bool up_arrow = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_UP); // intake only button
+		bool down_arrow = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN); // corner arm
+		bool left_arrow = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT); // save replay
 		// Drive::controlDirection(a);
 		// Drive::controlTank(left_y, right_y, b);
 		Drive::controlArcade(right_y, left_x, b);
@@ -236,16 +237,20 @@ void opcontrol() {
 		Intake::control(up_arrow, l1, l2, false);
 		// Intake::control(l2, l1, up_arrow, Optical::getColor() == Color::BLUE);
 
-
 		GoalGrabber::control(r1);
 		Arm::control(down_arrow);
 		TopArm::control(x, r2);
 
-		pros::lcd::print(6, "%s", Optical::colorString());
+		// pros::lcd::print(6, "%s", Optical::colorString());
 		// pros::lcd::print(3, "%.2f", Optical::getRGB().red);
 		// pros::lcd::print(4, "%.2f", Optical::getRGB().green);
 		// pros::lcd::print(5, "%.2f", Optical::getRGB().blue);
-		pros::lcd::print(7, "%.2f", Optical::getHue());
+		// pros::lcd::print(7, "%.2f", Optical::getHue());
+
+		if(y) {
+			Drive::driveArc(0, 1.5, 127);
+			GoalGrabber::setNotGrabbing();
+		}
 
 		if(recording) {
 			ReplayStep current_step;

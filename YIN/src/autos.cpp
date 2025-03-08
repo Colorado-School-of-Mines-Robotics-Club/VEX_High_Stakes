@@ -272,7 +272,7 @@ void yinRush(bool isBlue) {
         // Drive::driveDistance(30, slowSpeed);
         Conveyor::setNotMoving();
 
-        Drive::driveDistance(23, slowSpeed);
+        Drive::driveDistance(22.5, slowSpeed);
 
         Drive::brake();
         

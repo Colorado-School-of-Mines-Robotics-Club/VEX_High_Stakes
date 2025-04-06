@@ -1,13 +1,16 @@
 #include <chrono>
-#include <ctime>    
+#include <ctime>
 
 #include "main.h"
 #include "constants.h"
-#include "drive.h"
-#include "intake.h"
-#include "conveyor.h"
+
 #include "arm.h"
+#include "conveyor.h"
+#include "drive.h"
 #include "goal_grabber.h"
+#include "intake.h"
+#include "optical.h"
+#include "top_arm.h"
 // #include "auto_chooser.h"
 #include "autos.h"
 
@@ -22,6 +25,7 @@ bool driver = true;
 bool recording = RECORD;
 std::vector<ReplayStep> replay(0);
 
+bool is_blue = true;
 pros::Controller controllerMain(pros::E_CONTROLLER_MASTER);
 
 /**
@@ -52,6 +56,7 @@ void disabled() {
 	Drive::setDriveVelocity(0);
 	Intake::brake();
 	Conveyor::brake();
+	Optical::setLED(false);
 	// GoalGrabber::setNotGrabbing();
 
 	if(recording && replay.size() > 0) {
@@ -185,32 +190,41 @@ void opcontrol() {
 	// pros::delay(2000);
 	// fullAutoOneYang(false);
 
-	// return; 
+	// return;
 	Drive::setBrakeMode(pros::E_MOTOR_BRAKE_COAST);
 
+	Optical::setLED(true);
+	Optical::setTeamColor(is_blue);
+
+	TopArm::tarePosition();
+
 	while (driver) {
-		double left_x = controllerMain.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X);
-		double left_y = controllerMain.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
-		double right_x = controllerMain.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
-		double right_y = controllerMain.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
-		bool l1 = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_L1);
-		bool l2 = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_L2);
-		bool r1 = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1);
-		bool r2 = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2);
-		bool a = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A);
-		bool b = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_B);
-		bool up_arrow = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_UP);
-		bool x = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X);
+		// double left_x = controllerMain.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X);
+		double left_y = controllerMain.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y); // tank left
+		// double right_x = controllerMain.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
+		double right_y = controllerMain.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y); // tank right
+		bool l1 = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_L1); // intake with conveyor
+		bool l2 = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_L2); // intake only
+		bool r1 = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1); // goal grabber
+		bool r2 = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2); // toggle top arm
+		bool x = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X); // return top arm to start
+		// bool a = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A);
+		bool b = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_B); // precision button
+		bool up_arrow = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_UP); // reverse intake
+		bool down_arrow = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN); // corner arm
+		bool left_arrow = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT); // save replay
+
 
 		// Drive::controlDirection(a);
 		Drive::controlTank(left_y, right_y, b);
 		// Drive::controlArcade(right_y, left_x, b);
 
-		bool intake_forward = l1 || l2;
-		Intake::control(intake_forward, up_arrow);
+		Intake::control(l2, l1, up_arrow, Optical::oppositeColorDetected());
+
 		GoalGrabber::control(r1);
-		Conveyor::control(l1, up_arrow);
-		Arm::control(r2);
+		// Conveyor::control(l1, up_arrow);
+		Arm::control(down_arrow);
+		TopArm::control(x, r2);
 
 		int replay_step = 0;
 		if(recording) {
@@ -229,14 +243,14 @@ void opcontrol() {
 			current_step.grabber = GoalGrabber::grabValue;
 			replay.push_back(current_step);
 
-			if(replay_step >= RECORD_TIME || x) {
+			if(replay_step >= RECORD_TIME || left_arrow) {
 				// driver = false;
 				recording = false;
 				write_replay(replay, FILENAME);
 				pros::lcd::set_text(1, "Saved replay!");
 			}
 			replay_step++;
-		} 
+		}
 		pros::delay(2);
 	}
 }

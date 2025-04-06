@@ -18,7 +18,6 @@ pros::Motor Drive::right_motor_3(RIGHT_PORT_3);
 pros::MotorGroup Drive::left(LEFT_DRIVE_PORTS);
 pros::MotorGroup Drive::right(RIGHT_DRIVE_PORTS);
 pros::IMU Drive::tinyBox(IMU_PORT);
-pros::Optical Drive::colorSensor(COLOR_SENSOR_PORT);
 
 double abs(double x) {
 	if(x < 0) {
@@ -144,7 +143,7 @@ void Drive::driveDistanceGyro(double distance, int32_t power) {
 
 	double target =  distance * DRIVE_UNIT_MULTIPLIER;
 	power = distance > 0 ? power : -power; // Drive backwards if negative distance
-	
+
 	while(abs(average(left.get_position_all(), right.get_position_all())) < abs(target)) {
 		double left_power;
 		double right_power;
@@ -168,7 +167,7 @@ void Drive::driveDistanceFeedbackBasic(double distance, int32_t minPower, int32_
 	double target =  abs(distance * DRIVE_UNIT_MULTIPLIER);
 	double distance_traveled = 0;
 	int dir = distance > 0 ? 1 : -1; // Drive backwards if negative distance
-	
+
 	while(distance_traveled < target) {
 		distance_traveled = abs(average(left.get_position_all(), right.get_position_all()));
 
@@ -184,7 +183,7 @@ void Drive::driveDistanceFeedbackBasic(double distance, int32_t minPower, int32_
 
 void Drive::turn(double deg, int32_t power) {
 	left.tare_position_all();
-	right.tare_position_all();	
+	right.tare_position_all();
 	tinyBox.tare_rotation();
 	double cw = (deg > 0) ? 1.0 : -1.0; // Turn cw if deg is positive
 	Drive::move(power * cw, -power * cw);
@@ -247,28 +246,28 @@ void Drive::driveTime(uint32_t milis, int32_t left_power, int32_t right_power) {
 	Drive::move(0, 0);
 }
 
-void Drive::driveUntilColor(uint32_t color, int32_t left_power, int32_t right_power) {
-	double red = (color & 0x00FF0000) >> 16;
-	double green = (color & 0x0000FF00) >> 8;
-	double blue = (color & 0x000000FF);
+// void Drive::driveUntilColor(uint32_t color, int32_t left_power, int32_t right_power) {
+// 	double red = (color & 0x00FF0000) >> 16;
+// 	double green = (color & 0x0000FF00) >> 8;
+// 	double blue = (color & 0x000000FF);
 	
-	while (true) {
-		auto sensedColor = colorSensor.get_rgb();
-		if (
-			(red - sensedColor.red) < COLOR_SENSOR_TOLERANCE
-			&& (green - sensedColor.green) < COLOR_SENSOR_TOLERANCE
-			&& (blue - sensedColor.blue) < COLOR_SENSOR_TOLERANCE
-		) {
-			break;
-		}
+// 	while (true) {
+// 		auto sensedColor = colorSensor.get_rgb();
+// 		if (
+// 			(red - sensedColor.red) < COLOR_SENSOR_TOLERANCE
+// 			&& (green - sensedColor.green) < COLOR_SENSOR_TOLERANCE
+// 			&& (blue - sensedColor.blue) < COLOR_SENSOR_TOLERANCE
+// 		) {
+// 			break;
+// 		}
 
-		Drive::move(left_power, right_power);
-		pros::delay(10);
-	}
+// 		Drive::move(left_power, right_power);
+// 		pros::delay(10);
+// 	}
 
-	left.brake();
-	right.brake();
-}
+// 	left.brake();
+// 	right.brake();
+// }
 
 void Drive::driveUntilMotorVoltage(double voltage, int32_t left_power, int32_t right_power) {
 	while (left.get_voltage() < voltage && right.get_voltage() < voltage) {

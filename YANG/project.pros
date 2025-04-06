@@ -1,7 +1,7 @@
 {
   "py/object": "pros.conductor.project.Project",
   "py/state": {
-    "project_name": "YANG skills",
+    "project_name": "YANG arm testing",
     "target": "v5",
     "templates": {
       "kernel": {
@@ -255,9 +255,9 @@
       }
     },
     "upload_options": {
-      "icon": "X",
-      "description": "skills",
-      "slot": 3
+      "icon": "pizza",
+      "description": "skills testing",
+      "slot": 1
     },
     "use_early_access": false
   }

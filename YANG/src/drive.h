@@ -21,7 +21,6 @@ class Drive {
 
 
 		static pros::IMU tinyBox;
-		static pros::Optical colorSensor;
 		static void move(double left_speed, double right_speed);
 	public:
 		// everything is public now

@@ -49,9 +49,18 @@
 // Arm
 #define ARM_PORT 'B'
 
+// Top Arm
+#define TOP_ARM_PORT 3
+// #define TOP_ARM_SLOW_SPEED 100
+// #define TOP_ARM_NORMAL_SPEED 200
+// #define TOP_ARM_FAST_SPEED 300
+#define TOP_ARM_SLOW_SPEED 60
+#define TOP_ARM_NORMAL_SPEED 80
+#define TOP_ARM_FAST_SPEED 127
+
 // Sensors
-#define COLOR_SENSOR_TOLERANCE 10 // needs testing
-#define COLOR_SENSOR_PORT 42 // CHANGEME
+// #define OPTICAL_SENSOR_TOLERANCE 10 // needs testing
+#define OPTICAL_PORT 1
 
 // Unused
 // #define FRONT_RIGHT_DRIVE_PORTS { 19,  20}

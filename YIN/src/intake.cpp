@@ -13,22 +13,7 @@ Intake::Intake() {
 }
 
 void Intake::control(bool intakeButton, bool bothButton, bool reverseButton, bool oppositeRingDetected) {
-    pros::lcd::print(2, "Countdown: %i", countdown);
-    if(oppositeRingDetected && countdown == 0 && intakeState != IntakeState::THROWING) {
-        countdown = DELAY_TO_STOP;
-    } else if (countdown > 0) {
-        countdown--;
-        if(countdown == 0 ) {
-            if(intakeState != IntakeState::THROWING) {
-                intakeMotor.move(0);
-                Conveyor::setNotMoving();
-                intakeState = IntakeState::THROWING;
-                countdown = STOP_TIME;
-            } else if(intakeState == IntakeState::THROWING) {
-                setNotMovingWithConveyor();
-            }
-        }
-    }
+    // pros::lcd::print(7, "Countdown: %i", countdown);
 
     if(intakeState == IntakeState::NOT_MOVING) {
         if (intakeButton && !bothButton && !reverseButton) {
@@ -43,13 +28,38 @@ void Intake::control(bool intakeButton, bool bothButton, bool reverseButton, boo
             setNotMovingWithConveyor();
         } else if (bothButton && !reverseButton) {
             setIntakingWithConveyor();
+        } else if (oppositeRingDetected) {
+            setQueueThrow();
         }
     } else if (intakeState == IntakeState::INTAKING_WITH_CONVEYOR) {
         if ((!bothButton) || reverseButton) {
             setNotMovingWithConveyor();
+        } else if (oppositeRingDetected) {
+            setQueueThrow();
         }
     } else if (intakeState == IntakeState::OUTTAKING_WITH_CONVEYOR) {
         if (!reverseButton || intakeButton || bothButton) {
+            setNotMovingWithConveyor();
+        }
+    } else if (intakeState == IntakeState::QUEUE_THROW) {
+        countdown--;
+        if(countdown <= 0) {
+            setThrowing();
+        } else if ((!intakeButton && !bothButton) || reverseButton) {
+            countdown = 0;
+            setNotMovingWithConveyor();
+        }
+    } else if(intakeState == IntakeState::THROWING) {
+        countdown--;
+        if(countdown <= 0) {
+            countdown = 0;
+            if (intakeButton && !bothButton && !reverseButton) {
+                setIntaking();
+            } else if (bothButton && !intakeButton && !reverseButton) {
+                setIntakingWithConveyor();
+            } else if(reverseButton && !intakeButton && !bothButton) {
+                setOuttakingWithConveyor();
+            }
             setNotMovingWithConveyor();
         }
     }
@@ -89,6 +99,18 @@ void Intake::setNotMoving() {
 }
 void Intake::setNotMovingWithConveyor() {
     intakeState = IntakeState::NOT_MOVING;
+    intakeMotor.move(0);
+    Conveyor::setNotMoving();
+}
+
+void Intake::setQueueThrow() {
+    countdown = DELAY_TO_STOP;
+    intakeState = IntakeState::QUEUE_THROW;
+}
+
+void Intake::setThrowing() {
+    countdown = STOP_TIME;
+    intakeState = IntakeState::THROWING;
     intakeMotor.move(0);
     Conveyor::setNotMoving();
 }

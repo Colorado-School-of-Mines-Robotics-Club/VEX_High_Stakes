@@ -63,7 +63,7 @@
 #define TOP_ARM_FAST_SPEED 127
 
 // Sensors
-#define OPTICAL_SENSOR_TOLERANCE 10 // needs testing
+// #define OPTICAL_SENSOR_TOLERANCE 10 // needs testing
 #define OPTICAL_PORT 1
 
 // Unused

@@ -2,11 +2,12 @@
 
 #include "main.h"
 
-#define DELAY_TO_STOP 40
-#define STOP_TIME 200
+#define DELAY_TO_STOP 45
+#define STOP_TIME 100
 
 enum class IntakeState {
     NOT_MOVING,
+    QUEUE_THROW,
     THROWING,
     INTAKING,
     INTAKING_WITH_CONVEYOR,
@@ -44,5 +45,7 @@ public:
     static void setOuttakingWithConveyor();
     static void setNotMoving();
     static void setNotMovingWithConveyor();
+    static void setQueueThrow();
+    static void setThrowing();
     static void direct(double velocity);
 };

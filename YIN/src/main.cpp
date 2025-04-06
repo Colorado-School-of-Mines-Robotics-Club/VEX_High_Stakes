@@ -1,17 +1,18 @@
-#include <chrono>
+// #include <chrono>
 #include <ctime>
 #include <vector>
 #include <string>
 #include <format>
 
 #include "main.h"
-// #include "constants.h"
+#include "constants.h"
+
+#include "arm.h"
+#include "conveyor.h"
 #include "drive.h"
 #include "intake.h"
-#include "conveyor.h"
-#include "arm.h"
-#include "top_arm.h"
 #include "goal_grabber.h"
+#include "top_arm.h"
 // #include "auto_chooser.h"
 #include "autos.h"
 #include "optical.h"
@@ -210,9 +211,11 @@ void opcontrol() {
 	// autonomous();
 	// pros::delay(2000);
 	Drive::setBrakeMode(pros::E_MOTOR_BRAKE_COAST);
-	Optical::setLED(false);
+	Optical::setTeamColor(is_blue);
+	Optical::setLED(true);
 	TopArm::approachMogo();
 
+	bool last_detected = false;
 	int replay_step = 0;
 	while (true) {
 		double left_x = controllerMain.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X); // turn for arcade
@@ -226,21 +229,21 @@ void opcontrol() {
 		// bool a = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A); // toggle drive direction
 		bool b = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_B); // precision mode
 		bool x = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X); // go to mogo position
-		bool y = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y); // spin 3throw button
+		bool y = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y); // spin throw button
 		bool up_arrow = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_UP); // intake only button
 		bool down_arrow = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN); // corner arm
 		bool left_arrow = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT); // save replay
 		// Drive::controlDirection(a);
 		// Drive::controlTank(left_y, right_y, b);
 		Drive::controlArcade(right_y, left_x, b);
-		// Intake::control(l1, l2);
-		Intake::control(up_arrow, l1, l2, false);
+		Intake::control(up_arrow, l1, l2, Optical::oppositeColorDetected());
 		// Intake::control(l2, l1, up_arrow, Optical::getColor() == Color::BLUE);
 
 		GoalGrabber::control(r1);
 		Arm::control(down_arrow);
 		TopArm::control(x, r2);
 
+		// pros::lcd::print(5, "%.2f", Optical::getProximity());
 		// pros::lcd::print(6, "%s", Optical::colorString());
 		// pros::lcd::print(3, "%.2f", Optical::getRGB().red);
 		// pros::lcd::print(4, "%.2f", Optical::getRGB().green);

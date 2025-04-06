@@ -22,8 +22,8 @@ class Drive {
 
 		static pros::IMU tinyBox;
 		static pros::Optical colorSensor;
-		static void move(double left_speed, double right_speed);
 	public:
+		static void move(double left_speed, double right_speed);
 		// everything is public now
 		static pros::MotorGroup left;
 		static pros::MotorGroup right;
@@ -53,6 +53,12 @@ class Drive {
 		 * 
 		 */
 		static void resetHeading();
+		/**
+		 * @brief Get the current yaw
+		 * 
+		 * @return double The current yaw
+		 */
+		static double getYaw();
 		static void brake();
 		/**
 		 * @brief Set brake mode

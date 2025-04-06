@@ -626,4 +626,4 @@ void rotateTest() {
     Drive::setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
     Drive::turn(90, turnSpeed); // Turn to face post
     Drive::turn(-180, turnSpeed); // Turn to face post
-}   
+}

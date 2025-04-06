@@ -7,6 +7,7 @@
 
 #include "main.h"
 
+#include "pros/adi.hpp"
 #include "pros/llemu.hpp"
 #include "pros/rtos.h"
 #include "pros/rtos.hpp"
@@ -32,12 +33,17 @@ const size_t BUFFER_SIZE = 1024;
  */
 Data latest_serial_communication({0., 0., 0.});
 
+// pros::adi::DigitalIn digital_in('C');
+// bool latest_rx = false;
+
 void read_serial_task() {
 	uint8_t byteRead;
 	uint8_t dataBuffer[BUFFER_SIZE];
 	size_t dataBufferIndex = 0;
 
 	while (true) {
+		// pros::delay(100);
+		// latest_rx = digital_in.get_value();
 		size_t out = fread(&byteRead, 1, 1, stdin);
 		if (byteRead != '\0') {
 			dataBuffer[dataBufferIndex] = byteRead;
@@ -70,6 +76,7 @@ void display_serial_task() {
 		pros::lcd::print(2, "X: %.6f", latest_serial_communication.x);
 		pros::lcd::print(3, "Y: %.6f", latest_serial_communication.y);
 		pros::lcd::print(4, "H: %.6f", latest_serial_communication.h);
+		// pros::lcd::print(2, "SIGNAL?: %s", latest_rx ? "true" : "false");
 		pros::delay(50);
 	}
 }
@@ -82,7 +89,7 @@ void display_serial_task() {
  */
 void initialize() {
 	pros::lcd::initialize();
-	pros::lcd::set_text(1, "Hello PROS User!");
+	pros::lcd::set_text(1, "alksjdkla PROS User!");
 	pros::lcd::set_text(7, "              Recalibrate");
 
 	pros::c::serctl(SERCTL_BLKWRITE, NULL);
@@ -93,18 +100,18 @@ void initialize() {
 		fwrite(&byte, sizeof(Codes), 1, stderr);
 	});
 
-	pros::Task::create(
-		[] {
-			Codes byte = Codes::KEEPALIVE;
-			while (true) {
-				fwrite(&byte, sizeof(Codes), 1, stderr);
-				pros::delay(500);
-			}
-		},
-		TASK_PRIORITY_DEFAULT,
-		TASK_STACK_DEPTH_MIN,
-		"Send keepalive task"
-	);
+	// pros::Task::create(
+	// 	[] {
+	// 		Codes byte = Codes::KEEPALIVE;
+	// 		while (true) {
+	// 			fwrite(&byte, sizeof(Codes), 1, stderr);
+	// 			pros::delay(500);
+	// 		}
+	// 	},
+	// 	TASK_PRIORITY_DEFAULT,
+	// 	TASK_STACK_DEPTH_MIN,
+	// 	"Send keepalive task"
+	// );
 	pros::Task::create(
 		read_serial_task,
 		TASK_PRIORITY_DEFAULT,

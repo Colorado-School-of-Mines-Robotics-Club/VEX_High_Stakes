@@ -15,10 +15,7 @@ from enum import IntEnum
 
 # V5 Brain
 BRAIN_BAUD_RATE = 115200
-BRAIN_PORTS = [
-	"/dev/serial/by-id/usb-VEX_Robotics__Inc_VEX_Robotics_V5_Brain_-_5CDA4900-if02",
-	"/dev/serial/by-id/usb-VEX_Robotics__Inc_VEX_Robotics_V5_Brain_-_B7757A00-if02"
-]
+BRAIN_PORT = "/dev/serial/by-id/usb-VEX_Robotics__Inc_VEX_Robotics_V5_Brain_-_5CDA4900-if02"
 BRAIN_TIMEOUT = 1
 
 # Control codes sent from V5 Brain
@@ -35,31 +32,24 @@ OFFSET_ANGLE = 0
 
 ############ UTIL FUNCTIONS ############
 
-def make_serial(port) -> serial.Serial():
-		serial_connection = serial.Serial()
-		serial_connection.baudrate = BRAIN_BAUD_RATE
-		serial_connection.port = port
-		serial_connection.timeout = BRAIN_TIMEOUT
-		return serial_connection
-
 def connect_to_brain() -> serial.Serial:
 	print("Attempting to connect to v5 brain...")
-	# Open a serial connection for each possible port
-	serial_connections = map(make_serial, BRAIN_PORTS)
+	serial_connection = serial.Serial()
+	serial_connection.baudrate = BRAIN_BAUD_RATE
+	serial_connection.port = BRAIN_PORT
+	serial_connection.timeout = BRAIN_TIMEOUT
 	i = 0
 	while True:
-		for serial_connection in serial_connections:
-			try:
-				serial_connection.open()
-				print("Successfully connected to v5 brain!")
-				return serial_connection
-			except:
-				continue
-
-		time.sleep(1)
-		if i % 30 == 0:
-			print(f"Unable to connect after {i} attempts...")
-		i = i + 1
+		try:
+			serial_connection.open()
+			print("Successfully connected to v5 brain!")
+			return serial_connection
+		except:
+			time.sleep(1)
+			if i % 30 == 0:
+				print(f"Unable to connect after {i} attempts...")
+			i = i + 1
+			continue
 
 recv_buffer = bytearray()
 
@@ -174,30 +164,21 @@ def main():
 					print("Recalibrate code received, calibrating sensor and zeroing position")
 					optical_device.calibrateImu()
 					optical_device.resetTracking()
-
-		# Then get position
+		# Then send data
 		try:
+			# Get position and write over serial to the brain
 			current_position = optical_device.getPosition()
-		except socket.error as e:
-			print(f"WARNING: Unrecognized socket error thrown:\n{e}")
-		except Exception as e:
-			if not optical_device.is_connected():
-				print("WARNING: Lost connection to optical tracking sensor, waiting for reconnection...")
-				while True:
-					time.sleep(0.5)
-					if optical_device.is_connected():
-						print("Reconnected to optical tracking sensor, continuing")
-						break
-			print(f"WARNING: Unrecognized error thrown:\n{e}")
 
-		# And finally send it to the brain
-		try:
 			send_data(connection, current_position)
 		except serial.SerialTimeoutException:
 			print("WARNING: Disconnected from brain, attempting to reconnect")
 			connection = connect_to_brain()
 		except socket.error as e:
-			print(f"WARNING: Unrecognized socket error thrown:\n{e}")
+			if e.errno == socket.errno.EPIPE:
+				print("Socket closed, exiting...")
+				sys.exit(0)
+			else:
+				print(f"WARNING: Unrecognized socket error thrown:\n{e}")
 		except Exception as e:
 			print(f"WARNING: Unrecognized error thrown:\n{e}")
 		
@@ -205,9 +186,7 @@ def main():
 
 if __name__ == '__main__':
 	try:
-		while True:
-			print("Starting main...")
-			main()
+		main()
 	except (KeyboardInterrupt, SystemExit) as exErr:
 		print("\nEnding program")
 		sys.exit(0)

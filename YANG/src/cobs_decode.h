@@ -1,5 +1,4 @@
-#ifndef COBS_DECODE
-#define COBS_DECODE
+#pragma once
 #include <cstddef>
 #include <cstdint>
 
@@ -13,5 +12,3 @@
  * @return size_t The length of the decoded data
  */
 size_t cobs_decode(uint8_t* buffer, size_t bufferSize);
-
-#endif // COBS_DECODE

@@ -46,7 +46,6 @@ double average(std::vector<double> x, std::vector<double> y) {
 	return total / (x.size() + y.size());
 }
 
-
 Drive::Drive() {
 	left.set_gearing(pros::E_MOTOR_GEAR_BLUE);
 	right.set_gearing(pros::E_MOTOR_GEAR_BLUE);
@@ -109,6 +108,10 @@ void Drive::setFacingGrabber() {
 
 void Drive::resetHeading() {
 	tinyBox.reset(true);
+}
+
+double Drive::getYaw() {
+	return tinyBox.get_heading();
 }
 
 void Drive::brake() {

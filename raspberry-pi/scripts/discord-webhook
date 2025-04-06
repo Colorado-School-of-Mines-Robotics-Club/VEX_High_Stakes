@@ -5,7 +5,9 @@ DISCORD_WEBHOOK_URL="https://discord.com/api/webhooks/.../..."
 MESSAGE_ID="..."
 MESSAGE_PREFIX="..."
 
-if [ "$IFACE" = "wlan0" ]; then
-    IP_ADDR="$(ip addr | grep -P '.+\d+\.\d+\.\d+\.\d.+wlan0' | grep -Po '\d+\.\d+\.\d+\.\d+' | head -n 1)"
-    curl --interface wlan0 "$DISCORD_WEBHOOK_URL/messages/$MESSAGE_ID" -X PATCH -H "Content-Type: application/json" --data "{\"content\":\"${MESSAGE_PREFIX}${IP_ADDR}\"}" || exit 0
-fi
+case "$IFACE" in
+    wl*)
+        IP_ADDR="$(ip addr | grep -P '.+\d+\.\d+\.\d+\.\d.+wlan0' | grep -Po '\d+\.\d+\.\d+\.\d+' | head -n 1)"
+        curl --interface wlan0 "$DISCORD_WEBHOOK_URL/messages/$MESSAGE_ID" -X PATCH -H "Content-Type: application/json" --data "{\"content\":\"${MESSAGE_PREFIX}${IP_ADDR}\"}" || exit 0
+    ;;
+esac

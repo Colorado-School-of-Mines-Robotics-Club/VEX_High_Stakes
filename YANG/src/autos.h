@@ -20,3 +20,6 @@ void driveDistanceGyro(double distance);
 void testIntake();
 void testBasicFeedbackDrive();
 void testArc();
+
+// OTOS autos
+// void otosAuto();

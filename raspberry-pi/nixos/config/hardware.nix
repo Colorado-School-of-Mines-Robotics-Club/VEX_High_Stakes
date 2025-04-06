@@ -33,13 +33,13 @@
     };
 
     boot.kernelParams = [
-        "modules-load=dwc2,g_ether"
+        # "modules-load=dwc2,g_ether"
 
-        "g_ether.dev_addr=f2:5d:47:5e:e5:05"
-        "g_ether.host_addr=f2:5d:47:5e:e5:06"
+        # "g_ether.dev_addr=f2:5d:47:5e:e5:05"
+        # "g_ether.host_addr=f2:5d:47:5e:e5:06"
 
         "g_ether.dev_addr=f2:5d:47:5e:e5:07"
-        "g_ether.host_addr=f2:5d:47:5e:e5:08"
+        "g_ether.host_addr=f2:w5d:47:5e:e5:08"
     ];
 
     security.rtkit.enable = true;

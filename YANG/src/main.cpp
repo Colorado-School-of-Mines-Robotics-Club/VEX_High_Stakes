@@ -201,6 +201,7 @@ void opcontrol() {
 		bool b = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_B);
 		bool up_arrow = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_UP);
 		bool x = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X);
+		bool right_arrow = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT);
 
 		// Drive::controlDirection(a);
 		Drive::controlTank(left_y, right_y, b);

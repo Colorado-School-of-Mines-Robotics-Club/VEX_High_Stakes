@@ -10,7 +10,7 @@ ROOT=.
 FWDIR:=$(ROOT)/firmware
 BINDIR=$(ROOT)/bin
 SRCDIR=$(ROOT)/src
-INCDIR=$(ROOT)/include
+INCDIR=$(ROOT)/../.pros/include
 
 WARNFLAGS+=
 EXTRA_CFLAGS=
@@ -44,4 +44,4 @@ TEMPLATE_FILES=$(INCDIR)/$(LIBNAME)/*.h $(INCDIR)/$(LIBNAME)/*.hpp
 ################################################################################
 ################################################################################
 ########## Nothing below this line should be edited by typical users ###########
--include ./common.mk
+-include ../.pros/common.mk

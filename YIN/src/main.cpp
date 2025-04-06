@@ -21,7 +21,7 @@
 #define RECORD_NAME "replay_skills_7.txt"
 #define PLAY_NAME "replay_skills_7.txt"
 
-#define RECORD true
+#define RECORD false
 // #define RECORD_TIME 15000 // 30 sec
 #define RECORD_TIME 30000 // 1 min
 
@@ -149,7 +149,7 @@ void autonomous() {
 	// Drive::brake();
 	// Intake::setNotMoving();
 	// Conveyor::setNotMoving();
-	// return;
+	return;
 
 	// bool y = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y);
 	// if(!y) {

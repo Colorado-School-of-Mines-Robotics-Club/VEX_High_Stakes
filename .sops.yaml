@@ -1,0 +1,13 @@
+keys:
+    # Encryption keys
+  - &admin_ty A6299C20250223DCDEBA5E2C933B9437A97A56B8
+    # Decryption keys
+  - &host_rpi age19dguzraeckctnqjrpgfvsxr5mhjxhm3jc0ql3rtl4c64crep8fuskheyrw
+creation_rules:
+    # RPI
+  - path_regex: rpi-nix/secrets\.yaml$
+    key_groups:
+      - pgp:
+          - *admin_ty
+        age:
+          - *host_rpi

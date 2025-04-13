@@ -20,3 +20,5 @@ temp.errors
 .direnv/
 
 rpi-test
+key.txt
+nixos-anywhere-extras

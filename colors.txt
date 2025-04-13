@@ -1,2 +1,0 @@
-YIN = black with white dot
-YANG = white with black dot

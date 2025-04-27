@@ -323,18 +323,30 @@ void yinRush(bool isBlue) {
         pros::delay(200);
 
         Drive::driveArc(0, -0.15, turnSpeed); // Turn towards pile
-        Intake::setIntaking();
-        Drive::driveDistance(17, slowSpeed); // Grab pile
+        Intake::setIntaking(); // Start grabbing ring
+        Drive::driveDistance(17, slowSpeed); // Approach ring
         Drive::brake(); // Stop
-        pros::delay(2000); // Wait for intake
 
-        Drive::driveDistance(-10, slowSpeed);
-        Drive::driveDistance(10, slowSpeed);
+        // STATE: 1 Blue on Mogo, 1 Blue in intake
+
+        Conveyor::setConveyingReverse();
+        pros::delay(500);
+        Conveyor::setConveyingForward();
+        pros::delay(2000); // Wait for intake to grab ring
+        // Intake::setNotMovingWithConveyor();
+
+        Drive::driveDistance(-10, slowSpeed); // Back up to let red settle
         Drive::brake();
-        pros::delay(2000); // Wait for intake
+
+        Drive::driveDistance(20, slowSpeed);
+
+        // Drive::driveArc(0, -0.05, turnSpeed); // Turn towards wall
+        // Drive::brake();
+
+        // STATE: Facing wall, holding mogo w/ 2 blues
+        // Drive::driveArc(13, 0.25, slowSpeed);
 
         Intake::setNotMoving();
-
         Conveyor::setNotMoving();
 
         // Drive::driveDistance(22.5, slowSpeed);

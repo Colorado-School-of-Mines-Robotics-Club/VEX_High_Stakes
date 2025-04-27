@@ -4,6 +4,9 @@
 
 #define DELAY_TO_STOP 45
 #define STOP_TIME 100
+#define REVERSE_TIME 200
+#define FORWARD_TIME 300
+
 
 enum class IntakeState {
     NOT_MOVING,
@@ -13,6 +16,8 @@ enum class IntakeState {
     INTAKING_WITH_CONVEYOR,
     OUTTAKING,
     OUTTAKING_WITH_CONVEYOR,
+    UNJAM_REVERSE,
+    UNJAM_FORWARD
 };
 
 class Intake
@@ -34,6 +39,7 @@ public:
      * @param reverseButton run intake and conveyor backwards
      */
     static void control(bool intakeButton, bool bothButton, bool reverseButton, bool oppositeRingDetected);
+    static void autoControl(bool intakeOnly, bool both, bool reverse, bool oppositeRingDetected);
 
         /**
      * @brief Stop intake
@@ -49,5 +55,8 @@ public:
     static void setNotMovingWithConveyor();
     static void setQueueThrow();
     static void setThrowing();
+    static void setUnjamReverse();
+    static void setUnjamForward();
+
     static void direct(double velocity);
 };

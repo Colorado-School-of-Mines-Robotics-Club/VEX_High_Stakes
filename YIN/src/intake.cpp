@@ -16,7 +16,13 @@ Intake::Intake() {
 
 void Intake::toggleColorSort(bool toggle) {
     if(toggle) {
-        colorSortEnabled = !colorSortEnabled;
+        if(colorSortEnabled) {
+            colorSortEnabled = false;
+            Optical::disable();
+        } else {
+            colorSortEnabled = true;
+            Optical::enable();
+        }
     }
 }
 
@@ -51,7 +57,7 @@ void Intake::control(bool intakeButton, bool bothButton, bool reverseButton, boo
         }
     } else if (intakeState == IntakeState::QUEUE_THROW) {
         countdown--;
-        if(countdown <= 0) {
+        if(countdown <= 0 && colorSortEnabled) {
             setThrowing();
         } else if ((!intakeButton && !bothButton) || reverseButton || !colorSortEnabled) {
             countdown = 0;
@@ -59,7 +65,7 @@ void Intake::control(bool intakeButton, bool bothButton, bool reverseButton, boo
         }
     } else if(intakeState == IntakeState::THROWING) {
         countdown--;
-        if(countdown <= 0) {
+        if(countdown <= 0 || !colorSortEnabled) {
             countdown = 0;
             if (intakeButton && !bothButton && !reverseButton) {
                 setIntaking();
@@ -71,7 +77,86 @@ void Intake::control(bool intakeButton, bool bothButton, bool reverseButton, boo
             setNotMovingWithConveyor();
         }
     }
+}
 
+
+void Intake::autoControl(bool intake, bool both, bool reverse, bool oppositeRingDetected) {
+    pros::lcd::print(3, "%i", Intake::intakeMotor.get_current_draw());
+    pros::lcd::print(4, "%i", Intake::intakeMotor.get_voltage());
+    pros::lcd::print(5, "%f", Intake::intakeMotor.get_torque());
+    pros::lcd::print(6, "%f", Intake::intakeMotor.get_actual_velocity());
+
+    if(intakeState == IntakeState::NOT_MOVING) {
+        if (intake && !both && !reverse) {
+            setIntaking();
+        } else if (both && !intake && !reverse) {
+            setIntakingWithConveyor();
+        } else if(reverse && !intake && !both) {
+            setOuttakingWithConveyor();
+        }
+    } else if (intakeState == IntakeState::INTAKING) {
+        if ((!intake && !both) || reverse) {
+            setNotMovingWithConveyor();
+        } else if (both && !reverse) {
+            setIntakingWithConveyor();
+        } else if (oppositeRingDetected && colorSortEnabled) {
+            setQueueThrow();
+        } else if(intakeMotor.get_current_draw() > 900 && intakeMotor.get_torque() > 0.4 && intakeMotor.get_actual_velocity() < 1) {
+            setUnjamReverse();
+        }
+    } else if (intakeState == IntakeState::INTAKING_WITH_CONVEYOR) {
+        if ((!both) || reverse) {
+            setNotMovingWithConveyor();
+        } else if (oppositeRingDetected && colorSortEnabled) {
+            setQueueThrow();
+        } else if(intakeMotor.get_current_draw() > 900 && intakeMotor.get_torque() > 0.4 && intakeMotor.get_actual_velocity() < 1) {
+            setUnjamReverse();
+        }
+    } else if (intakeState == IntakeState::OUTTAKING_WITH_CONVEYOR) {
+        if (!reverse || intake || both) {
+            setNotMovingWithConveyor();
+        }
+    } else if (intakeState == IntakeState::QUEUE_THROW) {
+        countdown--;
+        if(countdown <= 0 && colorSortEnabled) {
+            setThrowing();
+        } else if ((!intake && !both) || reverse || !colorSortEnabled) {
+            countdown = 0;
+            setNotMovingWithConveyor();
+        }
+    } else if(intakeState == IntakeState::THROWING) {
+        countdown--;
+        if(countdown <= 0 || !colorSortEnabled) {
+            countdown = 0;
+            if (intake && !both && !reverse) {
+                setIntaking();
+            } else if (both && !intake && !reverse) {
+                setIntakingWithConveyor();
+            } else if(reverse && !intake && !both) {
+                setOuttakingWithConveyor();
+            }
+            setNotMovingWithConveyor();
+        }
+    } else if(intakeState == IntakeState::UNJAM_REVERSE) {
+        countdown--;
+        if(countdown <= 0) {
+            countdown = 0;
+            setUnjamForward();
+        }
+    } else if(intakeState == IntakeState::UNJAM_FORWARD) {
+        countdown--;
+        if(countdown <= 0) {
+            countdown = 0;
+            if (intake && !both && !reverse) {
+                setIntaking();
+            } else if (both && !intake && !reverse) {
+                setIntakingWithConveyor();
+            } else if(reverse && !intake && !both) {
+                setOuttakingWithConveyor();
+            }
+            setNotMovingWithConveyor();
+        }
+    }
 }
 
 void Intake::brake() {
@@ -121,6 +206,20 @@ void Intake::setThrowing() {
     intakeState = IntakeState::THROWING;
     intakeMotor.move(0);
     Conveyor::setNotMoving();
+}
+
+void Intake::setUnjamReverse() {
+    countdown = REVERSE_TIME;
+    intakeState = IntakeState::UNJAM_REVERSE;
+    Conveyor::setConveyingReverse();
+    intakeMotor.move(-OUTTAKE_SPEED);
+}
+
+void Intake::setUnjamForward() {
+    countdown = FORWARD_TIME;
+    intakeState = IntakeState::UNJAM_FORWARD;
+    Conveyor::setConveyingForward();
+    intakeMotor.move(INTAKE_SPEED);
 }
 
 void Intake::direct(double velocity) {

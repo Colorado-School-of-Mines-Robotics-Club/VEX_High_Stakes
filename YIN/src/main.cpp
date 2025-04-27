@@ -12,6 +12,8 @@
 #include "drive.h"
 #include "intake.h"
 #include "goal_grabber.h"
+#include "pros/colors.hpp"
+#include "pros/screen.hpp"
 #include "top_arm.h"
 // #include "auto_chooser.h"
 #include "autos.h"
@@ -137,12 +139,13 @@ void competition_initialize() {
  * from where it left_btn off.
  */
 void autonomous() {
+	// testAutoIntake(true);
 	// testCornerSort(true);
-	testDriveWithSort(true);
+	// testDriveWithSort(true);
 	// fullAutoOneYin(is_blue);
 	// Intake::setIntaking();
-	// pros::delay(1000000);
-	// yinRush(is_blue); // REAL CODE
+
+	yinRush(is_blue); // REAL CODE
 	// pros::delay(10000);
 	// AutoChooser::runSelected();
 	// driveForward(48);
@@ -218,12 +221,20 @@ void opcontrol() {
 	// pros::delay(2000);
 	Drive::setBrakeMode(pros::E_MOTOR_BRAKE_COAST);
 	Optical::setTeamColor(is_blue);
-	Optical::setLED(true);
+	Optical::enable();
 	TopArm::approachMogo();
+
 
 	bool last_detected = false;
 	int replay_step = 0;
 	while (true) {
+
+		// pros::lcd::print(3, "%i", Intake::intakeMotor.get_current_draw());
+		// pros::lcd::print(4, "%i", Intake::intakeMotor.get_voltage());
+		// pros::lcd::print(5, "%f", Intake::intakeMotor.get_torque());
+		// pros::lcd::print(6, "%f", Intake::intakeMotor.get_actual_velocity());
+
+
 		double left_x = controllerMain.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X); // turn for arcade
 		// double left_y = controllerMain.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y); // left tank
 		// double right_x = controllerMain.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X); // not used
@@ -244,7 +255,7 @@ void opcontrol() {
 		Drive::controlArcade(right_y, left_x, b);
 
 		Intake::toggleColorSort(a);
-		Intake::control(up_arrow, l1, l2, a, Optical::oppositeColorDetected());
+		Intake::control(up_arrow, l1, l2, Optical::oppositeColorDetected());
 		// Intake::control(l2, l1, up_arrow, Optical::getColor() == Color::BLUE);
 
 		GoalGrabber::control(r1);

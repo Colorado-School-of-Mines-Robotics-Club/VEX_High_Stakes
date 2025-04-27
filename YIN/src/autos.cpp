@@ -147,14 +147,42 @@ void fullAutoOneYin(bool isBlue) {
     }
 }
 
-void driveWithSort(double distance, double speed) {
+void testAutoIntake(bool isBlue) {
+    Drive::setBrakeMode(pros::E_MOTOR_BRAKE_COAST);
+    Intake::setNotMovingWithConveyor();
+	Optical::setTeamColor(isBlue);
+	Optical::setLED(true);
+	TopArm::approachMogo();
+    while(true) {
+        Intake::autoControl(false, true, false, Optical::oppositeColorDetected());
+        pros::delay(2);
+    }
+}
+
+void driveWithSort(double distance, double speed, int max_counts) {
     Drive::setDistance(distance);
     Drive::move(speed, speed);
-    while(!Drive::atTarget()) {
-        Intake::control(false, true, false, Optical::oppositeColorDetected());
+    // Intake::setIntakingWithConveyor();
+    int count = 0;
+    while(!Drive::atTarget() && count < max_counts) {
+        Intake::autoControl(false, true, false, Optical::oppositeColorDetected());
+        count++;
+        pros::delay(2);
     }
-    Intake::brake();
+    // Intake::brake();
     Drive::brake();
+}
+
+void dontMoveSort(int counts) {
+    Drive::brake();
+    // Intake::setIntakingWithConveyor();
+    int count = 0;
+    while(count < counts) {
+        Intake::autoControl(false, true, false, Optical::oppositeColorDetected());
+        count++;
+        pros::delay(2);
+    }
+    // Intake::brake();
 }
 
 void testCornerSort(bool isBlue) {
@@ -162,19 +190,23 @@ void testCornerSort(bool isBlue) {
     static const int32_t driveSpeed = 50;
     static const int32_t cornerSpeed = 60;
     static const int32_t fastSpeed = 70;
-    Drive::setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
-    Drive::resetHeading();
+	Drive::setBrakeMode(pros::E_MOTOR_BRAKE_COAST);
+    Intake::setNotMovingWithConveyor();
+	Optical::setTeamColor(isBlue);
+	Optical::setLED(true);
+	TopArm::approachMogo();
 
-    Optical::setTeamColor(isBlue);
-    Optical::setLED(true);
+    GoalGrabber::setGrabbing();
+    pros::delay(2000);
+
     if(isBlue) {
-        driveWithSort(20, driveSpeed);
-        driveWithSort(-20, driveSpeed);
-        driveWithSort(20, driveSpeed);
-        driveWithSort(-20, driveSpeed);
-        driveWithSort(20, driveSpeed);
-        driveWithSort(-20, driveSpeed);
+        for(int i = 0; i < 5; i++) {
+            driveWithSort(12, driveSpeed, 750);
+            dontMoveSort(500);
+            driveWithSort(-12, -slowSpeed, 750);
+        }
     }
+    GoalGrabber::setNotGrabbing();
 }
 
 void testDriveWithSort(bool isBlue) {
@@ -191,8 +223,8 @@ void testDriveWithSort(bool isBlue) {
     GoalGrabber::setGrabbing(); // Grab onto mogo
     pros::delay(2000);
     if(isBlue) {
-        driveWithSort(40, slowSpeed);
-        driveWithSort(-40, slowSpeed);
+        driveWithSort(40, slowSpeed, 4000);
+        driveWithSort(-40, -slowSpeed, 4000);
         pros::lcd::set_text(4, "Finished!");
     } else {
 
@@ -293,7 +325,8 @@ void yinRush(bool isBlue) {
     const int32_t driveSpeed = 50;
     const int32_t slowSpeed = 30;
     const int32_t turnSpeed = 50;
-
+    Optical::setTeamColor(isBlue);
+    Optical::enable();
     // if (isBlue) {
         GoalGrabber::setNotGrabbing();
         Arm::setArmDown();
@@ -306,7 +339,7 @@ void yinRush(bool isBlue) {
         // Drive::driveArc(TRACK_WIDTH/2, -0.052, slowSpeed);
 
         pros::delay(100);
-        Drive::driveDistance(-12, driveSpeed); // Run away
+        Drive::driveDistance(-16, driveSpeed); // Run away
         Arm::setArmDown();
         pros::delay(200);
         // Drive::driveDistance(-6, driveSpeed);
@@ -316,35 +349,39 @@ void yinRush(bool isBlue) {
         Arm::setArmUp();
         Drive::driveArc(0, -0.3, turnSpeed);
 
-        Drive::driveDistance(-18, slowSpeed);
+        Drive::driveDistance(-20, slowSpeed);
         GoalGrabber::setGrabbing();
         Conveyor::setConveyingForward();
-        Drive::driveDistance(12, slowSpeed);
+        Drive::driveDistance(10, slowSpeed);
         pros::delay(200);
 
-        Drive::driveArc(0, -0.15, turnSpeed); // Turn towards pile
-        Intake::setIntaking(); // Start grabbing ring
-        Drive::driveDistance(17, slowSpeed); // Approach ring
+        Drive::driveArc(0, -0.14, turnSpeed); // Turn towards pile
+        driveWithSort(20, slowSpeed, 5000);
+
         Drive::brake(); // Stop
 
         // STATE: 1 Blue on Mogo, 1 Blue in intake
 
-        Conveyor::setConveyingReverse();
-        pros::delay(500);
-        Conveyor::setConveyingForward();
-        pros::delay(2000); // Wait for intake to grab ring
+
+        // Conveyor::setConveyingReverse();
+        // pros::delay(500);
+        // Conveyor::setConveyingForward();
+        // pros::delay(2000); // Wait for intake to grab ring
         // Intake::setNotMovingWithConveyor();
 
-        Drive::driveDistance(-10, slowSpeed); // Back up to let red settle
-        Drive::brake();
+        Drive::driveArc(0, -0.075, turnSpeed); // Turn towards corner
+        driveWithSort(8, driveSpeed, 750);
 
-        Drive::driveDistance(20, slowSpeed);
+        for(int i = 0; i < 7; i++) {
+            driveWithSort(12, driveSpeed, 750);
+            dontMoveSort(500);
+            driveWithSort(-12, -slowSpeed, 750);
+        }
+        Conveyor::setNotMoving();
 
-        // Drive::driveArc(0, -0.05, turnSpeed); // Turn towards wall
-        // Drive::brake();
+        Drive::driveArc(0, 0.4, turnSpeed); // Turn towards stake
 
-        // STATE: Facing wall, holding mogo w/ 2 blues
-        // Drive::driveArc(13, 0.25, slowSpeed);
+        Drive::driveDistance(46, slowSpeed);
 
         Intake::setNotMoving();
         Conveyor::setNotMoving();

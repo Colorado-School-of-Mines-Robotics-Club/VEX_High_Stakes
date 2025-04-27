@@ -1,13 +1,16 @@
 { lib, self, system, ... }:
 {
     systemd.services.otos-sensor = {
-        description = "matrix authentication server";
+        description = "otos sensor";
         wantedBy = [ "multi-user.target" ];
 
+        environment = {
+            PYTHONUNBUFFERED = "true"; # Fix logging
+        };
+
         serviceConfig = {
-            DynamicUser = true;
-            User = "otos";
-            Group = "otos";
+            User = "root";
+            Group = "root";
 
             ExecStart = "${lib.getExe self.packages.${system}.otos-script}";
         };

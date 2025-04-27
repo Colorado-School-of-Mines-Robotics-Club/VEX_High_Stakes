@@ -19,6 +19,7 @@ temp.errors
 # Direnv state
 .direnv/
 
+result
 rpi-test
 key.txt
 nixos-anywhere-extras

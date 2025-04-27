@@ -1,7 +1,7 @@
 { config, pkgs, lib, piNumber, ... }:
 {
     networking = {
-        hostName = "raspberry-pi-${builtins.toString piNumber}";
+        hostName = "mines-rpi0-${builtins.toString piNumber}";
 
         firewall.enable = false; # TODO Maybe?
 

@@ -1,4 +1,5 @@
 {
+    python314,
     python314Packages,
     qwiic-otos,
     ...
@@ -9,10 +10,11 @@ python314Packages.buildPythonApplication {
     pyproject = false;
     dontUnpack = true;
 
-    dependencies = with python314Packages; [
-        cobs
-        pyserial
-        qwiic-otos
+    propagatedBuildInputs = [
+        (python314.withPackages (pythonPackages: with pythonPackages; [
+            cobs
+            pyserial
+        ] ++ [ qwiic-otos ]))
     ];
 
     installPhase = ''

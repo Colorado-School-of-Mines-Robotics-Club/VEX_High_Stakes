@@ -10,7 +10,7 @@ ROOT=.
 FWDIR:=$(ROOT)/firmware
 BINDIR=$(ROOT)/bin
 SRCDIR=$(ROOT)/src
-INCDIR=$(ROOT)/include
+INCDIR=$(ROOT)/../.pros/include
 
 WARNFLAGS+=
 EXTRA_CFLAGS=
@@ -21,11 +21,11 @@ USE_PACKAGE:=1
 
 # Add libraries you do not wish to include in the cold image here
 # EXCLUDE_COLD_LIBRARIES:= $(FWDIR)/your_library.a
-EXCLUDE_COLD_LIBRARIES:= 
+EXCLUDE_COLD_LIBRARIES:=
 
 # Set this to 1 to add additional rules to compile your project as a PROS library template
 IS_LIBRARY:=0
-# TODO: CHANGE THIS! 
+# TODO: CHANGE THIS!
 # Be sure that your header files are in the include directory inside of a folder with the
 # same name as what you set LIBNAME to below.
 LIBNAME:=libbest

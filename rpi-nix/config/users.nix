@@ -9,5 +9,7 @@
         groups.pi = {};
     };
 
+    security.sudo.wheelNeedsPassword = false;
+
     nix.settings.trusted-users = [ "pi" ];
 }

@@ -30,7 +30,9 @@
                     pros-nix.packages.${system}.pros-cli
                     self.packages.${system}.qwiic-otos
                     colmena.packages.${system}.colmena
-                ] ++ (with pkgs.python314Packages; [
+                ] ++ (with pkgs; [
+                    pv
+                ]) ++ (with pkgs.python314Packages; [
                     cobs
                     pyserial
                 ]);

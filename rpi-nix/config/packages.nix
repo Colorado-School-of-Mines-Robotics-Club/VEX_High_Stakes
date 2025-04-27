@@ -1,6 +1,7 @@
-{ system, inputs, ... }:
+{ pkgs, ... }:
 {
-    environment.systemPackages = [
-        inputs.nixos-facter.packages.${system}.nixos-facter
+    environment.systemPackages = with pkgs; [
+        neovim
+        btop
     ];
 }

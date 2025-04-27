@@ -136,7 +136,9 @@ void competition_initialize() {
  */
 void autonomous() {
 	// fullAutoOneYin(is_blue);
-	yinRush(is_blue);
+	// Intake::setIntaking();
+	// pros::delay(1000000);
+	yinRush(is_blue); // REAL CODE
 	// pros::delay(10000);
 	// AutoChooser::runSelected();
 	// driveForward(48);

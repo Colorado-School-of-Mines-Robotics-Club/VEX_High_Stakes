@@ -8,4 +8,6 @@
         };
         groups.pi = {};
     };
+
+    nix.settings.trusted-users = [ "pi" ];
 }

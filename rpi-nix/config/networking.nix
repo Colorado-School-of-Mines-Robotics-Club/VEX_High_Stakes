@@ -50,9 +50,15 @@
     };
 
     services.openssh.enable = true;
-    users.users.pi.openssh.authorizedKeys.keys = [
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIH/2p94CtvFXI/CXLudCu5KYFf8Afes1o3G7T1wLFeGP openpgp:0x0D009703"
-    ];
+    users.users =
+        let
+            keys = [
+                "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIH/2p94CtvFXI/CXLudCu5KYFf8Afes1o3G7T1wLFeGP openpgp:0x0D009703"
+            ];
+        in {
+            pi.openssh.authorizedKeys.keys = keys;
+            root.openssh.authorizedKeys.keys = keys;
+        };
 
     services.tailscale = {
         enable = true;

@@ -20,6 +20,10 @@ To setup development for python:
 
 When the PI powers on (when the robot powers on), it should be completely stable and flat on the ground to ensure accurate calibration. The python script is set to run on boot with an enabled systemd service, so make sure the sensor and LiPO shim is connected on boot. The script also takes an optional `--mode` argument that allows you to specify the mode of connection to the brain. The first (and default) is `serial`, which will attempt to connect over `/dev/ttyACM1`. The second (mainly used for development) is `network` which listens on port 8080 for a connection by `host-bridge.py`, which is run on a computer directly connected to the brain. Lastly, `stdout` can be used to have the script just output all data to the console in a user-friendly format, for debugging if the sensor works properly.
 
+## RPI connection to PROS
+
+The microusb port on the RPI zero can only be used in one mode at the same time: USB OTG Host mode, and USB OTG device mode. In device mode, the RPI can use a handful of modules (such as g_ether, to provide ssh over USB) as a device to a host computer (like a laptop). In host mode, the RPI acts as a proper computer, and can connect to other devices (such as the v5 brain). Thus, the RPI MUST NOT have g_ether enabled to be able to connect to the v5 brain over serial.
+
 ## PROS Serial format
 
 By default PROS outputs stdout and stderr over serial encoded with null-terminated COBS-encoded data. Read all data until you get a null byte, and then cobs-decode everything excluding the null byte. The first 4 chars are the stream identifier (`sout` or `serr`), and the next data is the actual data, such as a single byte or a null-terminated string in the case of a string literal.

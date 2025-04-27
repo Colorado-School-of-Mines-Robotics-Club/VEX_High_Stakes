@@ -1,3 +1,2 @@
 CompileFlags:
-  Add:
-    - "--include-directory=/home/ty/Dev/VEX_High_Stakes/.pros/include"
+  Add: [-I/home/ty/Dev/VEX_High_Stakes/common/include]

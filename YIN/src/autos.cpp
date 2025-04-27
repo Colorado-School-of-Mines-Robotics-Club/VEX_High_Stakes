@@ -192,6 +192,7 @@ void testDriveWithSort(bool isBlue) {
     pros::delay(2000);
     if(isBlue) {
         driveWithSort(40, slowSpeed);
+        driveWithSort(-40, slowSpeed);
         pros::lcd::set_text(4, "Finished!");
     } else {
 

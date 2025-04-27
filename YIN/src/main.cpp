@@ -137,11 +137,12 @@ void competition_initialize() {
  * from where it left_btn off.
  */
 void autonomous() {
+	// testCornerSort(true);
 	testDriveWithSort(true);
 	// fullAutoOneYin(is_blue);
 	// Intake::setIntaking();
 	// pros::delay(1000000);
-	yinRush(is_blue); // REAL CODE
+	// yinRush(is_blue); // REAL CODE
 	// pros::delay(10000);
 	// AutoChooser::runSelected();
 	// driveForward(48);

@@ -4,6 +4,7 @@
 #include "arm.h"
 #include "top_arm.h"
 #include "goal_grabber.h"
+#include "optical.h"
 #include "constants.h"
 
 void doNothing() {
@@ -145,6 +146,58 @@ void fullAutoOneYin(bool isBlue) {
         Drive::driveTime(4000, slowSpeed, slowSpeed * 0.8);
     }
 }
+
+void driveWithSort(double distance, double speed) {
+    Drive::setDistance(distance);
+    Drive::move(speed, speed);
+    while(!Drive::atTarget()) {
+        Intake::control(false, true, false, Optical::oppositeColorDetected());
+    }
+    Intake::brake();
+    Drive::brake();
+}
+
+void testCornerSort(bool isBlue) {
+    static const int32_t slowSpeed = 30;
+    static const int32_t driveSpeed = 50;
+    static const int32_t cornerSpeed = 60;
+    static const int32_t fastSpeed = 70;
+    Drive::setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
+    Drive::resetHeading();
+
+    Optical::setTeamColor(isBlue);
+    Optical::setLED(true);
+    if(isBlue) {
+        driveWithSort(20, driveSpeed);
+        driveWithSort(-20, driveSpeed);
+        driveWithSort(20, driveSpeed);
+        driveWithSort(-20, driveSpeed);
+        driveWithSort(20, driveSpeed);
+        driveWithSort(-20, driveSpeed);
+    }
+}
+
+void testDriveWithSort(bool isBlue) {
+    static const int32_t slowSpeed = 30;
+    static const int32_t driveSpeed = 50;
+    static const int32_t cornerSpeed = 60;
+    static const int32_t fastSpeed = 70;
+    Drive::setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
+    Drive::resetHeading();
+
+    Optical::setTeamColor(isBlue);
+    Optical::setLED(true);
+
+    GoalGrabber::setGrabbing(); // Grab onto mogo
+    pros::delay(2000);
+    if(isBlue) {
+        driveWithSort(40, slowSpeed);
+        pros::lcd::set_text(4, "Finished!");
+    } else {
+
+    }
+}
+
 
 /*
 yang:

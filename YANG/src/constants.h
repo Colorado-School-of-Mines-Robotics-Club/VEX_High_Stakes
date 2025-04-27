@@ -42,7 +42,6 @@
 #define CONVEYOR_PORT 5
 #define CONVEYOR_FORWARD_SPEED 127
 #define CONVEYOR_REVERSE_SPEED 63
-
 // Goal Grabber
 #define GOAL_GRABBER_PORT 'A'
 

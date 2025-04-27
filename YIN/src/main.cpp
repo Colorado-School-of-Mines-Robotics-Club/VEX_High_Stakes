@@ -69,6 +69,8 @@ void disabled() {
 	Drive::setDriveVelocity(0);
 	Intake::brake();
 	Conveyor::brake();
+	Optical::setLED(false);
+	TopArm::tarePosition();
 
 	if(recording && replay.size() > 0) {
 		write_replay(replay, RECORD_NAME);
@@ -135,8 +137,10 @@ void competition_initialize() {
  * from where it left_btn off.
  */
 void autonomous() {
+	testDriveWithSort(true);
 	// fullAutoOneYin(is_blue);
-	yinRush(is_blue);
+	// yinRush(is_blue);
+
 	// pros::delay(10000);
 	// AutoChooser::runSelected();
 	// driveForward(48);
@@ -226,7 +230,7 @@ void opcontrol() {
 		bool l2 = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_L2); // reverse conveyor and intake
 		bool r1 = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1); // goal grabber
 		bool r2 = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2); // toggle between load and high stake position
-		// bool a = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A); // toggle drive direction
+		bool a = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A); // toggle color sort
 		bool b = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_B); // precision mode
 		bool x = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X); // go to mogo position
 		bool y = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y); // spin throw button
@@ -236,19 +240,14 @@ void opcontrol() {
 		// Drive::controlDirection(a);
 		// Drive::controlTank(left_y, right_y, b);
 		Drive::controlArcade(right_y, left_x, b);
-		Intake::control(up_arrow, l1, l2, Optical::oppositeColorDetected());
+
+		Intake::toggleColorSort(a);
+		Intake::control(up_arrow, l1, l2, a, Optical::oppositeColorDetected());
 		// Intake::control(l2, l1, up_arrow, Optical::getColor() == Color::BLUE);
 
 		GoalGrabber::control(r1);
 		Arm::control(down_arrow);
 		TopArm::control(x, r2);
-
-		// pros::lcd::print(5, "%.2f", Optical::getProximity());
-		// pros::lcd::print(6, "%s", Optical::colorString());
-		// pros::lcd::print(3, "%.2f", Optical::getRGB().red);
-		// pros::lcd::print(4, "%.2f", Optical::getRGB().green);
-		// pros::lcd::print(5, "%.2f", Optical::getRGB().blue);
-		// pros::lcd::print(7, "%.2f", Optical::getHue());
 
 		if(y) {
 			Drive::driveArc(0, 1.5, 127);

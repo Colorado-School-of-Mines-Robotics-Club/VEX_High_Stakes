@@ -10,6 +10,8 @@ void fullAutoOneYang(bool isBlue);
 
 
 // Test autos
+void testCornerSort(bool isBlue);
+void testDriveWithSort(bool isBlue);
 void driveForward(double distance);
 void rushWithArm();
 void rotate(double degrees);

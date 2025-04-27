@@ -22,6 +22,8 @@ pros::MotorGroup Drive::right(RIGHT_DRIVE_PORTS);
 pros::IMU Drive::tinyBox(IMU_PORT);
 pros::Optical Drive::colorSensor(OPTICAL_PORT);
 
+double Drive::m_target{0};
+
 double abs(double x) {
 	if(x < 0) {
 		x *= -1;
@@ -53,6 +55,16 @@ Drive::Drive() {
 	left.set_gearing(pros::E_MOTOR_GEAR_BLUE);
 	right.set_gearing(pros::E_MOTOR_GEAR_BLUE);
 	tinyBox.reset();
+}
+
+void Drive::setDistance(double distance) {
+	left.tare_position_all();
+	right.tare_position_all();
+	m_target =  distance * DRIVE_UNIT_MULTIPLIER;
+}
+
+bool Drive::atTarget() {
+	return abs(average(left.get_position_all(), right.get_position_all())) > abs(m_target);
 }
 
 void Drive::move(double left_speed, double right_speed) {

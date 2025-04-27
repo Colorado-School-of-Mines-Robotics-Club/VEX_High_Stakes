@@ -21,6 +21,7 @@ class TopArm{
     public:
         TopArm();
         static pros::Motor topArmMotor;
+        static void tarePosition();
 
         static void control(bool mogo_button, bool upper_toggle_button);
         static TopArmState getTopArmState();

@@ -2,7 +2,7 @@
 
 #include "main.h"
 
-#define DELAY_TO_STOP 50
+#define DELAY_TO_STOP 45
 #define STOP_TIME 100
 
 enum class IntakeState {
@@ -18,12 +18,15 @@ enum class IntakeState {
 class Intake
 {
 private:
+    static bool colorSortEnabled;
     static int countdown;
     static enum IntakeState intakeState;
 
 public:
     static pros::Motor intakeMotor;
     Intake();
+    static void toggleColorSort(bool toggle);
+
     /**
      * @brief Driver control for intake
      * 
@@ -31,7 +34,6 @@ public:
      * @param reverseButton run intake and conveyor backwards
      */
     static void control(bool intakeButton, bool bothButton, bool reverseButton, bool oppositeRingDetected);
-
 
         /**
      * @brief Stop intake

@@ -3,7 +3,7 @@
 #include "pros/motors.h"
 
 const double MOGO_POSITION = 0;
-double RING_POSITION = -100;
+double RING_POSITION = -114;
 const double HIGH_STAKE_POSITION = -600;
 
 double TopArm::desiredPosition = 0;
@@ -154,4 +154,8 @@ void TopArm::reachRing() {
 void TopArm::reachHighStake() {
     // topArmMotor.move(0);
     topArmState = TopArmState::HIGH_STAKE;
+}
+
+bool TopArm::atRingPosition() {
+    return topArmState == TopArmState::RING;
 }

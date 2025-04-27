@@ -3,6 +3,7 @@
 #include "conveyor.h"
 #include "arm.h"
 #include "goal_grabber.h"
+#include "optical.h"
 #include "constants.h"
 
 enum MoveSpeed {

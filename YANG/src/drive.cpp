@@ -19,6 +19,8 @@ pros::MotorGroup Drive::left(LEFT_DRIVE_PORTS);
 pros::MotorGroup Drive::right(RIGHT_DRIVE_PORTS);
 pros::IMU Drive::tinyBox(IMU_PORT);
 
+double Drive::m_target{0};
+
 double abs(double x) {
 	if(x < 0) {
 		x *= -1;
@@ -50,6 +52,16 @@ Drive::Drive() {
 	left.set_gearing(pros::E_MOTOR_GEAR_BLUE);
 	right.set_gearing(pros::E_MOTOR_GEAR_BLUE);
 	tinyBox.reset();
+}
+
+void Drive::setDistance(double distance) {
+	left.tare_position_all();
+	right.tare_position_all();
+	m_target =  distance * DRIVE_UNIT_MULTIPLIER;
+}
+
+bool Drive::atTarget() {
+	return abs(average(left.get_position_all(), right.get_position_all())) < abs(m_target);
 }
 
 void Drive::move(double left_speed, double right_speed) {
@@ -228,7 +240,7 @@ void Drive::driveArcDistance(double radius, double inches, double power) {
 	bool clockwise = inches > 0;
 	if(clockwise) {
 		left_power = power;
-		right_power = power * ((radius - wheel_distance) / (radius + wheel_distance)); 
+		right_power = power * ((radius - wheel_distance) / (radius + wheel_distance));
 		Drive::move(left_power, right_power);
 		while(abs(average(left.get_position_all())) < distance) {}
 	} else {

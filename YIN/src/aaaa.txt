@@ -1,0 +1,7 @@
+in and out corner
+color sort during drive
+auto selector
+color selector
+
+button to turn off color sort
+

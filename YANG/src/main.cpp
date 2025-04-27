@@ -57,6 +57,7 @@ void disabled() {
 	Intake::brake();
 	Conveyor::brake();
 	Optical::setLED(false);
+	TopArm::tarePosition();
 	// GoalGrabber::setNotGrabbing();
 
 	if(recording && replay.size() > 0) {
@@ -124,7 +125,7 @@ void competition_initialize() {
  * from where it left_btn off.
  */
 void autonomous() {
-	skillsOneYang();
+	// skillsOneYang();
 	// fullAutoTwoYang(true);
 	// AutoChooser::runSelected();
 
@@ -208,7 +209,7 @@ void opcontrol() {
 		bool r1 = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1); // goal grabber
 		bool r2 = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2); // toggle top arm
 		bool x = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X); // return top arm to start
-		// bool a = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A);
+		bool a = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A);
 		bool b = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_B); // precision button
 		bool up_arrow = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_UP); // reverse intake
 		bool down_arrow = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN); // corner arm
@@ -219,7 +220,9 @@ void opcontrol() {
 		Drive::controlTank(left_y, right_y, b);
 		// Drive::controlArcade(right_y, left_x, b);
 
+		Intake::toggleColorSort(a);
 		Intake::control(l2, l1, up_arrow, Optical::oppositeColorDetected());
+		// Intake::control(l2, l1, up_arrow, false);
 
 		GoalGrabber::control(r1);
 		// Conveyor::control(l1, up_arrow);

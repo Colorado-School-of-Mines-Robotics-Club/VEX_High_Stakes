@@ -21,12 +21,16 @@ class Drive {
 
 
 		static pros::IMU tinyBox;
-		static void move(double left_speed, double right_speed);
+
+		static double m_target;
 	public:
 		// everything is public now
 		static pros::MotorGroup left;
 		static pros::MotorGroup right;
 		Drive();
+		static void setDistance(double distance);
+		static bool atTarget();
+		static void move(double left_speed, double right_speed);
 		static void driveDirect(double left_speeds[4], double right_speeds[4]);
 		/**
 		 * @brief Driver control using tank drive

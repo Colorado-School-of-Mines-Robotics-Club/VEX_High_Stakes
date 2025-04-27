@@ -35,4 +35,6 @@ class TopArm{
         static void reachRing();
         static void reachHighStake();
 
+        static bool atRingPosition();
+
 };

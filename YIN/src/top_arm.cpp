@@ -18,6 +18,11 @@ TopArm::TopArm() {
     desiredPosition = 0;
 }
 
+void TopArm::tarePosition() {
+    topArmMotor.tare_position();
+    desiredPosition = 0;
+}
+
 bool TopArm::atDesiredPosition() {
     return (topArmMotor.get_position() - 5 <= desiredPosition)
         && (topArmMotor.get_position() + 5 >= desiredPosition);

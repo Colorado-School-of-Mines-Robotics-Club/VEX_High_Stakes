@@ -18,12 +18,15 @@ enum class IntakeState {
 class Intake
 {
 private:
+    static bool colorSortEnabled;
     static int countdown;
     static enum IntakeState intakeState;
 
 public:
     static pros::Motor intakeMotor;
     Intake();
+    static void toggleColorSort(bool toggle);
+
     /**
      * @brief Driver control for intake
      * 
@@ -31,7 +34,6 @@ public:
      * @param reverseButton run intake and conveyor backwards
      */
     static void control(bool intakeButton, bool bothButton, bool reverseButton, bool oppositeRingDetected);
-
 
         /**
      * @brief Stop intake

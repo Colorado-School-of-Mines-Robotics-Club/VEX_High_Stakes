@@ -1,7 +1,9 @@
 #include "intake.h"
 #include "conveyor.h"
 #include "constants.h"
+#include "optical.h"
 
+bool Intake::colorSortEnabled = true;
 int Intake::countdown = 0;
 enum IntakeState Intake::intakeState(IntakeState::NOT_MOVING);
 
@@ -10,6 +12,12 @@ pros::Motor Intake::intakeMotor(INTAKE_PORT);
 Intake::Intake() {
     countdown = 0;
     intakeMotor.set_gearing(pros::E_MOTOR_GEAR_BLUE);
+}
+
+void Intake::toggleColorSort(bool toggle) {
+    if(toggle) {
+        colorSortEnabled = !colorSortEnabled;
+    }
 }
 
 void Intake::control(bool intakeButton, bool bothButton, bool reverseButton, bool oppositeRingDetected) {
@@ -28,13 +36,13 @@ void Intake::control(bool intakeButton, bool bothButton, bool reverseButton, boo
             setNotMovingWithConveyor();
         } else if (bothButton && !reverseButton) {
             setIntakingWithConveyor();
-        } else if (oppositeRingDetected) {
+        } else if (oppositeRingDetected && colorSortEnabled) {
             setQueueThrow();
         }
     } else if (intakeState == IntakeState::INTAKING_WITH_CONVEYOR) {
         if ((!bothButton) || reverseButton) {
             setNotMovingWithConveyor();
-        } else if (oppositeRingDetected) {
+        } else if (oppositeRingDetected && colorSortEnabled) {
             setQueueThrow();
         }
     } else if (intakeState == IntakeState::OUTTAKING_WITH_CONVEYOR) {
@@ -45,7 +53,7 @@ void Intake::control(bool intakeButton, bool bothButton, bool reverseButton, boo
         countdown--;
         if(countdown <= 0) {
             setThrowing();
-        } else if ((!intakeButton && !bothButton) || reverseButton) {
+        } else if ((!intakeButton && !bothButton) || reverseButton || !colorSortEnabled) {
             countdown = 0;
             setNotMovingWithConveyor();
         }

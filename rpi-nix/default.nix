@@ -1,4 +1,4 @@
-{ inputs, lib, piNumber, isSd, ... }:
+{ inputs, lib, piNumber, ... }:
 {
     system.stateVersion = "25.05";
 
@@ -9,6 +9,10 @@
         # Base for the Pi Zero
         rpiModules.raspberry-pi-02.base
 
+        # Allow building an SD card from this config
+        rpiModules.sd-image
+        { sdImage.compressImage = false; }
+
         # Add raspberry pi overlays to nixpkgs
         rpiModules.nixpkgs-rpi
         rpiLib.inject-overlays
@@ -17,15 +21,7 @@
         ./secrets.nix
 
         ./config
-    ] ++ (lib.optionals (!isSd) [
-        # Disko and facter
-        inputs.disko.nixosModules.disko
-        ./disk-configuration.nix
-
-        # inputs.nixos-facter-modules.nixosModules.facter
-        # { facter.reportPath = ./facter.json; }
-        ./hardware-configuration.nix
-    ]);
+    ];
 
     # Enable binary caches on system
     nix.settings = {

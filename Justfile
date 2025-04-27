@@ -1,11 +1,13 @@
 upload-yin:
     pros mu --name "YIN" --slot 2 --project ./YIN
 
-# TODO :c
-install-rpi1 ssh-host:
-    @echo "Using nixos-anywhere w/ latest stable kexec image..."
-    nix run github:nix-community/nixos-anywhere -- \
+ssh-gadget:
+    ssh -b 10.0.0.101 pi@10.0.0.2
+
+upload-rpi ssh-host="pi@raspberry-pi-1":
+    nixos-rebuild \
         --flake .#rpi1 \
-        --generate-hardware-config nixos-generate-config ./rpi-nix/hardware-configuration.nix \
-        --extra-files ./nixos-anywhere-extras \
-        --target-host "{{ssh-host}}"
+        --accept-flake-config \
+        --use-remote-sudo \
+        --target-host "{{ssh-host}}" \
+        switch

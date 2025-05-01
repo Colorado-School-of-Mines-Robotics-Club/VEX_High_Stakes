@@ -2,8 +2,8 @@
 
 #include "main.h"
 
-#define DELAY_TO_STOP 45
-#define STOP_TIME 100
+#define DELAY_TO_STOP 0
+#define THROW_TIME 100
 #define REVERSE_TIME 200
 #define FORWARD_TIME 300
 

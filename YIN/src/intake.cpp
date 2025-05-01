@@ -81,10 +81,10 @@ void Intake::control(bool intakeButton, bool bothButton, bool reverseButton, boo
 
 
 void Intake::autoControl(bool intake, bool both, bool reverse, bool oppositeRingDetected) {
-    pros::lcd::print(3, "%i", Intake::intakeMotor.get_current_draw());
-    pros::lcd::print(4, "%i", Intake::intakeMotor.get_voltage());
-    pros::lcd::print(5, "%f", Intake::intakeMotor.get_torque());
-    pros::lcd::print(6, "%f", Intake::intakeMotor.get_actual_velocity());
+    // pros::lcd::print(3, "%i", Intake::intakeMotor.get_current_draw());
+    // pros::lcd::print(4, "%i", Intake::intakeMotor.get_voltage());
+    // pros::lcd::print(5, "%f", Intake::intakeMotor.get_torque());
+    // pros::lcd::print(6, "%f", Intake::intakeMotor.get_actual_velocity());
 
     if(intakeState == IntakeState::NOT_MOVING) {
         if (intake && !both && !reverse) {
@@ -202,10 +202,10 @@ void Intake::setQueueThrow() {
 }
 
 void Intake::setThrowing() {
-    countdown = STOP_TIME;
+    countdown = THROW_TIME;
     intakeState = IntakeState::THROWING;
     intakeMotor.move(0);
-    Conveyor::setNotMoving();
+    Conveyor::move(-CONVEYOR_FORWARD_SPEED);
 }
 
 void Intake::setUnjamReverse() {

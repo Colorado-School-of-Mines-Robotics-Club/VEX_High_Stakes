@@ -28,7 +28,7 @@
 // #define RECORD_TIME 15000 // 30 sec
 #define RECORD_TIME 30000 // 1 min
 
-bool is_blue = true;
+bool is_blue = false;
 bool recording = RECORD;
 std::vector<ReplayStep> replay(0);
 
@@ -255,7 +255,7 @@ void opcontrol() {
 		Drive::controlArcade(right_y, left_x, b);
 
 		Intake::toggleColorSort(a);
-		Intake::control(up_arrow, l1, l2, Optical::oppositeColorDetected());
+		Intake::control(up_arrow, l1, l2, Optical::stoppedDetectingOpposite());
 		// Intake::control(l2, l1, up_arrow, Optical::getColor() == Color::BLUE);
 
 		GoalGrabber::control(r1);

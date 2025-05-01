@@ -56,6 +56,7 @@ class Drive {
 		 * 
 		 */
 		static void resetHeading();
+		static double getYaw();
 		static void brake();
 		/**
 		 * @brief Set brake mode

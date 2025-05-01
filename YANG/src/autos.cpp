@@ -2,6 +2,8 @@
 #include "intake.h"
 #include "conveyor.h"
 #include "arm.h"
+#include "pros/llemu.hpp"
+#include "top_arm.h"
 #include "goal_grabber.h"
 #include "optical.h"
 #include "constants.h"
@@ -494,6 +496,81 @@ void skillsOneYang() {
 }
 
 // Test autos
+
+void driveWithSort(double distance, double speed, int max_counts) {
+    Drive::setDistance(distance);
+    Drive::move(speed, speed);
+    // Intake::setIntakingWithConveyor();
+    int count = 0;
+    while(!Drive::atTarget() && count < max_counts) {
+        Intake::autoControl(false, true, false, Optical::stoppedDetectingOpposite());
+        count++;
+        pros::delay(2);
+    }
+    // Intake::brake();
+    Drive::brake();
+}
+
+void dontMoveSort(int counts) {
+    Drive::brake();
+    // Intake::setIntakingWithConveyor();
+    int count = 0;
+    while(count < counts) {
+        Intake::autoControl(false, true, false, Optical::stoppedDetectingOpposite());
+        count++;
+        pros::delay(2);
+    }
+    // Intake::brake();
+}
+
+
+void testCornerSort(bool isBlue) {
+    static const int32_t slowSpeed = 30;
+    static const int32_t driveSpeed = 50;
+    static const int32_t cornerSpeed = 60;
+    static const int32_t fastSpeed = 70;
+    Drive::resetHeading();
+	Drive::setBrakeMode(pros::E_MOTOR_BRAKE_COAST);
+    Intake::setNotMovingWithConveyor();
+	Optical::setTeamColor(isBlue);
+	Optical::enable();
+	TopArm::approachMogo();
+
+    GoalGrabber::setGrabbing();
+    pros::delay(2000);
+    driveWithSort(6,driveSpeed, 500);
+    if(isBlue) {
+        for(int i = 0; i < 5; i++) {
+            driveWithSort(6, driveSpeed, 500);
+            dontMoveSort(500);
+            driveWithSort(-6, -slowSpeed, 500);
+        }
+    }
+    Drive::brake();
+    Intake::setNotMovingWithConveyor();
+    GoalGrabber::setNotGrabbing();
+}
+
+void testDriveWithSort(bool isBlue) {
+    static const int32_t slowSpeed = 30;
+    static const int32_t driveSpeed = 50;
+    static const int32_t cornerSpeed = 60;
+    static const int32_t fastSpeed = 70;
+    Drive::setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
+
+    Optical::setTeamColor(isBlue);
+    Optical::enable();
+
+    GoalGrabber::setGrabbing(); // Grab onto mogo
+    pros::delay(2000);
+    if(isBlue) {
+        driveWithSort(20, slowSpeed, 4000);
+        driveWithSort(-20, -slowSpeed, 4000);
+        pros::lcd::set_text(4, "Finished!");
+    } else {
+
+    }
+}
 
 void driveForward(double distance) {
     Drive::setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);

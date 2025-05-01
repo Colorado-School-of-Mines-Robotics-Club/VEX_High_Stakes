@@ -13,7 +13,8 @@ void skillsOneYang();
 
 
 // Test autos
-
+void testCornerSort(bool isBlue);
+void testDriveWithSort(bool isBlue);
 void rushWithArm();
 void rotateOnce();
 void driveCircle(double radius);

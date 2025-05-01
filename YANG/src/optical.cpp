@@ -4,6 +4,26 @@
 pros::Optical Optical::opticalSensor(OPTICAL_PORT);
 enum Color Optical::teamColor(Color::OTHER);
 bool Optical::prev_detected_opposite = false;
+bool Optical::enabled = true;
+
+void Optical::enable() {
+    enabled = true;
+    setLED(true);
+    if(teamColor == Color::BLUE) {
+        // pros::screen::set_pen(pros::Color::blue);
+        // pros::screen::fill_rect(0, 0, 512, 1024);
+    } else {
+        // pros::screen::set_pen(pros::Color::red);
+        // pros::screen::fill_rect(0, 0, 512, 1024);
+    }
+}
+
+void Optical::disable() {
+    setLED(false);
+    enabled = false;
+    // pros::screen::set_pen(pros::Color::white);
+    // pros::screen::fill_rect(0, 0, 512, 1024);
+}
 
 void Optical::setTeamColor(bool isBlue) {
     if(isBlue) {
@@ -18,6 +38,7 @@ void Optical::setTeamColor(enum Color color) {
 }
 
 bool Optical::oppositeColorDetected() {
+    if(!enabled) return false;
     if(teamColor == Color::BLUE) {
         return getColor() == Color::RED;
     } else if (teamColor == Color::RED) {
@@ -47,11 +68,13 @@ pros::Optical Optical::getOptical() {
 }
 
 Color Optical::getColor() {
+    pros::lcd::print(2, "%i", opticalSensor.get_proximity());
+    pros::lcd::print(3, "%f", opticalSensor.get_hue());
     double hue = opticalSensor.get_hue();
     if(opticalSensor.get_proximity() >= 250) {
         if(170 < hue && hue < 260 ) {
             return Color::BLUE;
-        } else if (340 < hue || hue < 20) {
+        } else if (335 < hue || hue < 50) {
             return Color::RED;
         }
     }

@@ -125,13 +125,16 @@ void competition_initialize() {
  * from where it left_btn off.
  */
 void autonomous() {
+	testCornerSort(true);
+	// testDriveWithSort(true);
 	// skillsOneYang();
 	// fullAutoTwoYang(true);
 	// AutoChooser::runSelected();
 
-	// Drive::brake();
-	// Intake::setNotMoving();
-	// Conveyor::setNotMoving();
+	Drive::brake();
+	Intake::setNotMoving();
+	Conveyor::setNotMoving();
+	return;
 
 	// bool y = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y);
 	// if(!y) {
@@ -194,8 +197,8 @@ void opcontrol() {
 	// return;
 	Drive::setBrakeMode(pros::E_MOTOR_BRAKE_COAST);
 
-	Optical::setLED(true);
 	Optical::setTeamColor(is_blue);
+	Optical::enable();
 
 	TopArm::tarePosition();
 
@@ -217,17 +220,17 @@ void opcontrol() {
 
 
 		// Drive::controlDirection(a);
-		Drive::controlTank(left_y, right_y, b);
+		Drive::controlTank(left_y, right_y, false);
 		// Drive::controlArcade(right_y, left_x, b);
 
-		Intake::toggleColorSort(a);
-		Intake::control(l2, l1, up_arrow, Optical::oppositeColorDetected());
+		Intake::toggleColorSort(x);
+		Intake::control(l2, l1, up_arrow, Optical::stoppedDetectingOpposite());
 		// Intake::control(l2, l1, up_arrow, false);
 
 		GoalGrabber::control(r1);
 		// Conveyor::control(l1, up_arrow);
 		Arm::control(down_arrow);
-		TopArm::control(x, r2);
+		TopArm::control(b, r2);
 
 		int replay_step = 0;
 		if(recording) {

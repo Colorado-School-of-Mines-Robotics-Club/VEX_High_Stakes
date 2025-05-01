@@ -61,7 +61,7 @@ void Drive::setDistance(double distance) {
 }
 
 bool Drive::atTarget() {
-	return abs(average(left.get_position_all(), right.get_position_all())) < abs(m_target);
+	return abs(average(left.get_position_all(), right.get_position_all())) > abs(m_target);
 }
 
 void Drive::move(double left_speed, double right_speed) {
@@ -120,6 +120,10 @@ void Drive::setFacingGrabber() {
 
 void Drive::resetHeading() {
 	tinyBox.reset(true);
+}
+
+double Drive::getYaw() {
+	return tinyBox.get_yaw();
 }
 
 void Drive::brake() {

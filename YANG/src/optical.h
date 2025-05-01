@@ -17,8 +17,11 @@ private:
     static pros::Optical opticalSensor;
     static enum Color teamColor;
     static bool prev_detected_opposite;
+    static bool enabled;
 public:
     Optical();
+    static void enable();
+    static void disable();
     static void setTeamColor(bool isBlue);
     static void setTeamColor(enum Color color);
     static bool oppositeColorDetected();

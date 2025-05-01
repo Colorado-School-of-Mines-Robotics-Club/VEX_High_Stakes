@@ -25,7 +25,7 @@ bool driver = true;
 bool recording = RECORD;
 std::vector<ReplayStep> replay(0);
 
-bool is_blue = true;
+bool is_blue = false;
 pros::Controller controllerMain(pros::E_CONTROLLER_MASTER);
 
 /**

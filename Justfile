@@ -46,7 +46,14 @@ upload-rpi number="1" ssh-host-prefix="pi@mines-rpi0":
         switch
 
 qemu-build-sd number="1":
-    nix build --accept-flake-config --builders '' '.#rpi{{number}}-sd'
+    #!/usr/bin/env bash
+
+    nix build \
+        --accept-flake-config \
+        --out-link "./.gcroots/rpi{{number}}-sd" \
+        --print-out-paths \
+        --builders '' \
+        '.#rpi{{number}}-sd'
 
 write-sd path="result" device="sdb":
     run0 sh -c "$(which pv) -Y  < {{path}}/sd-image/nixos-sd-image-rpi02-uboot.img > /dev/{{device}}"

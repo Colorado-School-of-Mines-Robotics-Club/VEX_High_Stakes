@@ -13,9 +13,7 @@
                 # Mines unauthenticated network
                 "Mines-Legacy" = {
                     priority = 100;
-                    auth = ''
-                        key_mgmt=NONE
-                    '';
+                    authProtocols = [ "NONE" ];
                 };
                 # Tyler hotspot
                 "typixel" = {
@@ -74,7 +72,7 @@
             "--accept-routes"
             "--advertise-tags=tag:rpi"
             "--login-server=https://ts.myriation.xyz"
-            "--operator=ty"
+            "--operator=pi"
         ];
     };
     systemd.services.tailscaled.environment = { "TS_DEBUG_MTU" = "1350"; }; # https://github.com/tailscale/tailscale/issues/2633

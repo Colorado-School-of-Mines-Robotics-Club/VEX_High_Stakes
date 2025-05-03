@@ -17,6 +17,9 @@
             url = "github:Mic92/sops-nix";
             inputs.nixpkgs.follows = "nixpkgs";
         };
+        nixos-facter-modules = {
+            url = "github:nix-community/nixos-facter-modules";
+        };
     };
 
     outputs = inputs@{ self, nixpkgs, pros-nix, flake-utils, nixos-raspberrypi, colmena, ... }:
@@ -32,6 +35,7 @@
                     colmena.packages.${system}.colmena
                 ] ++ (with pkgs; [
                     pv
+                    cachix
                 ]) ++ (with pkgs.python314Packages; [
                     cobs
                     pyserial
@@ -58,7 +62,10 @@
                 rpi-nixpkgs = nixos-raspberrypi.inputs.nixpkgs;
                 mkNixos = piNumber: rpi-nixpkgs.lib.nixosSystem {
                     system = "aarch64-linux";
-                    pkgs = rpi-nixpkgs.legacyPackages."aarch64-linux";
+                    pkgs = import rpi-nixpkgs {
+                        system = "aarch64-linux";
+                        config.allowUnfree = true;
+                    };
 
                     specialArgs = { inherit inputs piNumber self; system = "aarch64-linux"; };
 

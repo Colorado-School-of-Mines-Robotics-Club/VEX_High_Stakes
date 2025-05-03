@@ -1,3 +1,0 @@
-sparkfun-qwiic-otos
-pyserial
-cobs

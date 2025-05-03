@@ -222,8 +222,10 @@ void opcontrol() {
 	Drive::setBrakeMode(pros::E_MOTOR_BRAKE_COAST);
 	Optical::setTeamColor(is_blue);
 	Optical::enable();
-	TopArm::approachMogo();
+	TopArm::tarePosition();
 
+	controllerMain.print(0, 0, "Color: %s", is_blue ? "blue" : "red");
+	controllerMain.print(1, 0, "Sort: enabled ");
 
 	bool last_detected = false;
 	int replay_step = 0;
@@ -244,7 +246,7 @@ void opcontrol() {
 		bool r1 = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1); // goal grabber
 		bool r2 = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2); // toggle between load and high stake position
 		bool a = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A); // toggle color sort
-		bool b = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_B); // precision mode
+		bool b = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B); // precision mode
 		bool x = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X); // go to mogo position
 		bool y = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y); // spin throw button
 		bool up_arrow = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_UP); // intake only button
@@ -252,15 +254,15 @@ void opcontrol() {
 		bool left_arrow = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT); // save replay
 		// Drive::controlDirection(a);
 		// Drive::controlTank(left_y, right_y, b);
-		Drive::controlArcade(right_y, left_x, b);
+		Drive::controlArcade(right_y, left_x, false);
 
-		Intake::toggleColorSort(a);
+		Intake::toggleColorSort(x, controllerMain);
 		Intake::control(up_arrow, l1, l2, Optical::stoppedDetectingOpposite());
 		// Intake::control(l2, l1, up_arrow, Optical::getColor() == Color::BLUE);
 
-		GoalGrabber::control(r1);
+		GoalGrabber::control(r1, controllerMain);
 		Arm::control(down_arrow);
-		TopArm::control(x, r2);
+		TopArm::control(b, r2);
 
 		if(y) {
 			Drive::driveArc(0, 1.5, 127);

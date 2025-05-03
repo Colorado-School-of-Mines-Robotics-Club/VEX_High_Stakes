@@ -201,6 +201,8 @@ void opcontrol() {
 	Optical::enable();
 
 	TopArm::tarePosition();
+	controllerMain.print(0, 0, "Color: %s", is_blue ? "blue" : "red");
+	controllerMain.print(1, 0, "Sort: enabled ");
 
 	while (driver) {
 		// double left_x = controllerMain.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X);
@@ -213,17 +215,15 @@ void opcontrol() {
 		bool r2 = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2); // toggle top arm
 		bool x = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X); // return top arm to start
 		bool a = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A);
-		bool b = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_B); // precision button
+		bool b = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B); // precision button
 		bool up_arrow = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_UP); // reverse intake
 		bool down_arrow = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN); // corner arm
 		bool left_arrow = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT); // save replay
 
-
 		// Drive::controlDirection(a);
 		Drive::controlTank(left_y, right_y, false);
 		// Drive::controlArcade(right_y, left_x, b);
-
-		Intake::toggleColorSort(x);
+		Intake::toggleColorSort(x, controllerMain);
 		Intake::control(l2, l1, up_arrow, Optical::stoppedDetectingOpposite());
 		// Intake::control(l2, l1, up_arrow, false);
 

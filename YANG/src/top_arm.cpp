@@ -1,9 +1,8 @@
 #include "top_arm.h"
 #include "constants.h"
-#include "pros/motors.h"
 
 const double MOGO_POSITION = 0;
-double RING_POSITION = -114;
+double RING_POSITION = -107;
 const double HIGH_STAKE_POSITION = -600;
 
 double TopArm::desiredPosition = 0;
@@ -12,11 +11,9 @@ enum TopArmState TopArm::topArmState(TopArmState::MOGO);
 
 pros::Motor TopArm::topArmMotor(TOP_ARM_PORT);
 
-
 TopArm::TopArm() {
     topArmMotor.set_encoder_units(pros::E_MOTOR_ENCODER_DEGREES);
     topArmMotor.set_gearing(pros::E_MOTOR_GEAR_RED);
-    topArmMotor.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
     topArmMotor.tare_position();
     desiredPosition = 0;
 }
@@ -141,7 +138,7 @@ void TopArm::approachHighStake() {
 }
 
 void TopArm::reachMogo() {
-    topArmMotor.brake();
+    topArmMotor.move(0);
     // topArmMotor.tare_position();
     topArmState = TopArmState::MOGO;
 }
@@ -154,8 +151,4 @@ void TopArm::reachRing() {
 void TopArm::reachHighStake() {
     // topArmMotor.move(0);
     topArmState = TopArmState::HIGH_STAKE;
-}
-
-bool TopArm::atRingPosition() {
-    return topArmState == TopArmState::RING;
 }

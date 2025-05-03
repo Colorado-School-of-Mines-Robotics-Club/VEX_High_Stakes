@@ -22,7 +22,7 @@ public:
      * 
      * @param grabButton Input digital signal to toggle grab
      */
-    static void control(bool grabButton);
+    static void control(bool grabButton, pros::Controller& controller);
     static void setGrabbing();
     static void setNotGrabbing();
     static void direct(bool grabState);

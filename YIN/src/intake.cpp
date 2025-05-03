@@ -14,14 +14,16 @@ Intake::Intake() {
     intakeMotor.set_gearing(pros::E_MOTOR_GEAR_BLUE);
 }
 
-void Intake::toggleColorSort(bool toggle) {
+void Intake::toggleColorSort(bool toggle, pros::Controller& controller) {
     if(toggle) {
         if(colorSortEnabled) {
             colorSortEnabled = false;
             Optical::disable();
+            controller.print(1, 0, "Sort: disabled");
         } else {
             colorSortEnabled = true;
             Optical::enable();
+            controller.print(1, 0, "Sort: enabled ");
         }
     }
 }

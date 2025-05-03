@@ -11,10 +11,12 @@ void GoalGrabber::setGrabberValue(bool value) {
     grabValue = value;
 }
 
-void GoalGrabber::control(bool grabButton) {
+void GoalGrabber::control(bool grabButton, pros::Controller& controller) {
     if(grabState == GrabState::GRABBING && grabButton) {
+        controller.print(2, 0, "open   ");
         setNotGrabbing();
     } else if (grabState == GrabState::NOT_GRABBING && grabButton) {
+        controller.print(2, 0, "CLAMPED");
         setGrabbing();
     }
 }

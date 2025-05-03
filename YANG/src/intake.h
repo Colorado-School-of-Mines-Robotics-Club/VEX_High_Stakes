@@ -30,7 +30,7 @@ private:
 public:
     static pros::Motor intakeMotor;
     Intake();
-    static void toggleColorSort(bool toggle);
+    static void toggleColorSort(bool toggle, pros::Controller& controller);
 
     /**
      * @brief Driver control for intake

@@ -86,6 +86,11 @@ double Conveyor::getPosition() {
     return conveyorMotors.get_position();
 }
 
+bool Conveyor::isJammed() {
+    return conveyorMotors.get_current_draw() > 900 && conveyorMotors.get_torque() > 0.4 && conveyorMotors.get_actual_velocity() < 1;
+}
+
+
 void Conveyor::direct(double velocity) {
     conveyorMotors.move_velocity(velocity);
 }

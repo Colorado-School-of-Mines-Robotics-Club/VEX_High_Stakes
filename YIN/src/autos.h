@@ -5,9 +5,11 @@ void driveForwardContactLadder();
 void driveForwardRushMogo();
 void figureEight(bool isBlue);
 void fullAutoOneYin(bool isBlue);
-void yinRush(bool isBlue);
-void fullAutoOneYang(bool isBlue);
 
+// used in comp:
+void yinRushNegative(bool isBlue);
+void yinRushPositive(bool isBlue);
+void yinRushCenter(bool isBlue);
 
 // Test autos
 void testAutoIntake(bool isBlue);

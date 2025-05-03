@@ -25,5 +25,8 @@ public:
     static void setNotMoving();
     static void conveyWithUnjam();
     static double getPosition();
+
+    static bool isJammed();
+    
     static void direct(double velocity);
 };

@@ -28,8 +28,10 @@
 // #define RECORD_TIME 15000 // 30 sec
 #define RECORD_TIME 30000 // 1 min
 
-bool is_blue = false;
+bool isBlue = true;
+char side = 'N'; // NPC: Negative, Positive, Center
 bool recording = RECORD;
+
 std::vector<ReplayStep> replay(0);
 
 pros::Controller controllerMain(pros::E_CONTROLLER_MASTER);
@@ -139,27 +141,26 @@ void competition_initialize() {
  * from where it left_btn off.
  */
 void autonomous() {
+	if(side == 'N') {
+		yinRushNegative(isBlue);
+	} else if(side == 'P') {
+		// TODO
+		yinRushPositive(isBlue);
+	} else if(side == 'C') {
+		yinRushCenter(isBlue);
+	}
+
+	Drive::brake();
+	Intake::setNotMoving();
+	Conveyor::setNotMoving();
+	return;
+
 	// testAutoIntake(true);
 	// testCornerSort(true);
 	// testDriveWithSort(true);
 	// fullAutoOneYin(is_blue);
 	// Intake::setIntaking();
 
-	yinRush(is_blue); // REAL CODE
-	// pros::delay(10000);
-	// AutoChooser::runSelected();
-	// driveForward(48);
-	// driveForward(-48);
-	// rotate(720);
-	// driveCircle(12);
-	// driveDistanceGyro(24);
-	// rotateTest();
-	// testBasicFeedbackDrive();
-	// rushWithArm();
-	Drive::brake();
-	Intake::setNotMoving();
-	Conveyor::setNotMoving();
-	return;
 
 	// bool y = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y);
 	// if(!y) {
@@ -220,11 +221,11 @@ void opcontrol() {
 	// autonomous();
 	// pros::delay(2000);
 	Drive::setBrakeMode(pros::E_MOTOR_BRAKE_COAST);
-	Optical::setTeamColor(is_blue);
+	Optical::setTeamColor(isBlue);
 	Optical::enable();
 	TopArm::tarePosition();
 
-	controllerMain.print(0, 0, "Color: %s", is_blue ? "blue" : "red");
+	controllerMain.print(0, 0, "Color: %s", isBlue ? "blue" : "red");
 	controllerMain.print(1, 0, "Sort: enabled ");
 
 	bool last_detected = false;

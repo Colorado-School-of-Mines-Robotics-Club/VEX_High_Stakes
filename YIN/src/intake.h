@@ -58,5 +58,7 @@ public:
     static void setUnjamReverse();
     static void setUnjamForward();
 
+    static bool isJammed();
+
     static void direct(double velocity);
 };

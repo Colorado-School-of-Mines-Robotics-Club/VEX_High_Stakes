@@ -78,7 +78,7 @@ setup-rpi number="1" sops-key-path="sops-key.txt":
 # Push new NixOS configuration to raspberry pi
 [group("rpi")]
 upload-rpi number="1" ssh-host-prefix="pi@mines-rpi0":
-    NIX_SSHOPTS="-o BindAddress=10.0.0.100 -o StrictHostKeyChecking=no" \
+    NIX_SSHOPTS="${NIX_SSHOPTS:-} -o StrictHostKeyChecking=no" \
     nixos-rebuild \
         --flake '.#rpi{{number}}' \
         --accept-flake-config \

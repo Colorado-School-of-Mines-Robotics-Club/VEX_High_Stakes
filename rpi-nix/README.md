@@ -45,4 +45,5 @@ The configuration includes:
 - Only in the initial configuration used to build the SD image: USB OTG gadget ethernet enabled to setup over USB initially
 
 ### sops-nix
+
 TODO

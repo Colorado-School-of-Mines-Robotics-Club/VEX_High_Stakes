@@ -68,8 +68,8 @@ pros::Optical Optical::getOptical() {
 }
 
 Color Optical::getColor() {
-    // pros::lcd::print(2, "%i", opticalSensor.get_proximity());
-    // pros::lcd::print(3, "%f", opticalSensor.get_hue());
+    pros::lcd::print(2, "%i", opticalSensor.get_proximity());
+    pros::lcd::print(3, "%f", opticalSensor.get_hue());
     double hue = opticalSensor.get_hue();
     if(opticalSensor.get_proximity() >= 250) {
         if(170 < hue && hue < 260 ) {

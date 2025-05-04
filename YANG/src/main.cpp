@@ -1,9 +1,6 @@
-#include <chrono>
 #include <ctime>
 
 #include "main.h"
-#include "constants.h"
-
 #include "arm.h"
 #include "conveyor.h"
 #include "drive.h"
@@ -20,12 +17,13 @@
 #define RECORD false
 // #define RECORD_TIME 15000 // 30 seconds
 #define RECORD_TIME 30000 // 1 min
+#define AUTO_TIME_LIMIT true // TURN OFF FOR COMPETITION PLEASE PLEASE
 
 bool driver = true;
 bool recording = RECORD;
 std::vector<ReplayStep> replay(0);
 
-bool is_blue = false;
+static bool is_blue = false;
 pros::Controller controllerMain(pros::E_CONTROLLER_MASTER);
 
 /**
@@ -57,47 +55,13 @@ void disabled() {
 	Intake::brake();
 	Conveyor::brake();
 	Optical::setLED(false);
+	GoalGrabber::setNotGrabbing();
 	TopArm::tarePosition();
 	// GoalGrabber::setNotGrabbing();
 
 	if(recording && replay.size() > 0) {
 		write_replay(replay, FILENAME);
 	}
-
-// 	// Competition initialize
-// 	auto left_btn = 0;
-// 	auto center_btn = 0;
-// 	auto right_btn = 0;
-
-// 	pros::lcd::print(0, "Choose the auto!");
-// 	pros::lcd::print(1, "Current Auto:");
-// 	pros::lcd::print(3, "Current Color:");
-// 	while (true) {
-// 		auto lcd_buttons = pros::lcd::read_buttons();
-
-// 		auto old_left_btn = left_btn;
-// 		auto old_center_btn = center_btn;
-// 		auto old_right_btn = right_btn;
-
-// 		left_btn = lcd_buttons & LCD_BTN_LEFT;
-// 		center_btn = lcd_buttons & LCD_BTN_CENTER;
-// 		right_btn = lcd_buttons & LCD_BTN_RIGHT;
-
-// 		if (left_btn != old_left_btn && left_btn) {
-// 			pros::lcd::print(5, "left_btn pressed");
-// 			AutoChooser::selectPrev();
-// 		} else if (center_btn != old_center_btn && center_btn) {
-// 			pros::lcd::print(5, "center_btn pressed");
-// 			AutoChooser::toggleColor();
-// 		} else if (right_btn != old_right_btn && right_btn) {
-// 			pros::lcd::print(5, "right_btn pressed");
-// 			AutoChooser::selectNext();
-// 		}
-// 		pros::lcd::print(2, "%s", AutoChooser::getName());
-// 		pros::lcd::print(4, "%s", AutoChooser::isBlue() ? "blue" : "red");
-
-// 		pros::delay(25);
-// 	}
 }
 
 /**
@@ -110,7 +74,42 @@ void disabled() {
  * starts.
  */
 void competition_initialize() {
+	// Competition initialize
+	bool left_btn = 0;
+	bool center_btn = 0;
+	bool right_btn = 0;
 
+	pros::lcd::print(0, "Choose the auto!");
+	// pros::lcd::print(1, "Current Auto:");
+	pros::lcd::print(3, "Current Color:");
+
+	for (;;) {
+		auto lcd_buttons = pros::lcd::read_buttons();
+
+		bool old_left_btn = left_btn;
+		bool old_center_btn = center_btn;
+		bool old_right_btn = right_btn;
+
+		left_btn = lcd_buttons & LCD_BTN_LEFT;
+		center_btn = lcd_buttons & LCD_BTN_CENTER;
+		right_btn = lcd_buttons & LCD_BTN_RIGHT;
+
+		if (left_btn != old_left_btn && left_btn) {
+			// UNUSED
+		} else if (center_btn != old_center_btn && center_btn) {
+			// is_blue = !is_blue;
+		} else if (right_btn != old_right_btn && right_btn) {
+			// UNUSED
+		}
+		pros::lcd::print(4, "%s", is_blue ? "blue" : "red");
+
+		if (!is_blue) {
+			controllerMain.set_text(0, 0, "C: B [R]");
+		} else {
+			controllerMain.set_text(0, 0, "C:[B] R ");
+		}
+		pros::delay(50);
+	}
 }
 
 /**
@@ -125,11 +124,32 @@ void competition_initialize() {
  * from where it left_btn off.
  */
 void autonomous() {
+	if (AUTO_TIME_LIMIT) {
+		auto main_task = pros::Task::current();
+		uint32_t start = pros::c::millis();
+		pros::Task::create(
+			[&]{
+				while (true) {
+					if (pros::c::millis() - start > 30 /* sec */ * 1000 /* ms */) {
+						main_task.suspend();
+						disabled();
+						pros::Task::current().suspend();
+					}
+
+					pros::delay(100);
+				}
+			},
+			TASK_PRIORITY_DEFAULT,
+			TASK_STACK_DEPTH_DEFAULT,
+			"stop after 30s"
+		);
+	}
+
 	// testCornerSort(true);
 	// testDriveWithSort(true);
 	// skillsOneYang();
 	// fullAutoTwoYang(true);
-	fullAutoThreeYang(true); // USE THIS AUTO FOR WORLDS
+	fullAutoThreeYang(is_blue); // USE THIS AUTO FOR WORLDS
 	// AutoChooser::runSelected();
 
 	Drive::brake();

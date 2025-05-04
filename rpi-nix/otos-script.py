@@ -150,7 +150,8 @@ class OtosProgram:
 
 	def handle_packet(self, data):
 		if data.startswith(b"sout"):
-			print(f"[STDOUT] {data[4:]}")
+			for line in str(data[4:]).splitlines():
+				print(f"[STDOUT] {line}")
 		elif data.startswith(b"serr"):
 			match data[4]:
 				case Constants.Codes.KEEPALIVE:

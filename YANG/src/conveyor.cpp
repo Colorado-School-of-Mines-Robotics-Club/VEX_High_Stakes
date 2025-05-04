@@ -7,7 +7,7 @@ pros::Motor Conveyor::conveyorMotor(CONVEYOR_PORT);
 Conveyor::Conveyor() {
     conveyorMotor.tare_position();
     conveyorMotor.set_gearing(pros::E_MOTOR_GEAR_BLUE);
-} 
+}
 
 void Conveyor::control(bool forwardButton, bool reverseButton) {
     if (forwardButton && !reverseButton) {
@@ -69,4 +69,6 @@ void Conveyor::direct(double velocity) {
     conveyorMotor.move_velocity(velocity);
 }
 
-
+bool Conveyor::isJammed() {
+    return conveyorMotor.get_current_draw() > 2000 && conveyorMotor.get_torque() > 0.9 && conveyorMotor.get_actual_velocity() < 1;
+}

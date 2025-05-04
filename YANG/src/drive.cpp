@@ -126,6 +126,10 @@ double Drive::getYaw() {
 	return tinyBox.get_yaw();
 }
 
+double Drive::getHeading() {
+	return tinyBox.get_heading();
+}
+
 void Drive::brake() {
 	left.brake();
 	right.brake();
@@ -197,6 +201,12 @@ void Drive::driveDistanceFeedbackBasic(double distance, int32_t minPower, int32_
 	Drive::move(0, 0);
 }
 
+void Drive::turnTo(double deg, int32_t power) {
+	double start_yaw = tinyBox.get_yaw();
+
+	turn(deg - start_yaw, power);
+}
+
 void Drive::turn(double deg, int32_t power) {
 	left.tare_position_all();
 	right.tare_position_all();
@@ -213,14 +223,14 @@ void Drive::driveArc(double radius, double percentage, double power) {
 
 	double left_power{0};
 	double right_power{0};
-	
+
 	left.tare_position_all();
 	right.tare_position_all();
 
 	bool clockwise = percentage > 0;
 	if(clockwise) {
 		left_power = power;
-		right_power = power * ((radius - wheel_distance) / (radius + wheel_distance)); 
+		right_power = power * ((radius - wheel_distance) / (radius + wheel_distance));
 		Drive::move(left_power, right_power);
 		while(abs(average(left.get_position_all())) < distance) {}
 	} else {
@@ -266,7 +276,7 @@ void Drive::driveTime(uint32_t milis, int32_t left_power, int32_t right_power) {
 // 	double red = (color & 0x00FF0000) >> 16;
 // 	double green = (color & 0x0000FF00) >> 8;
 // 	double blue = (color & 0x000000FF);
-	
+
 // 	while (true) {
 // 		auto sensedColor = colorSensor.get_rgb();
 // 		if (
@@ -289,7 +299,7 @@ void Drive::driveUntilMotorVoltage(double voltage, int32_t left_power, int32_t r
 	while (left.get_voltage() < voltage && right.get_voltage() < voltage) {
 		Drive::move(left_power, right_power);
 	}
-	
+
 	left.brake();
 	right.brake();
 }

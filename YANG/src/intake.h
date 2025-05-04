@@ -3,7 +3,7 @@
 #include "main.h"
 
 #define DELAY_TO_STOP 0
-#define THROW_TIME 40
+#define THROW_TIME 100
 #define REVERSE_TIME 200
 #define FORWARD_TIME 300
 
@@ -34,7 +34,7 @@ public:
 
     /**
      * @brief Driver control for intake
-     * 
+     *
      * @param forwardButton run intake and conveyor forward
      * @param reverseButton run intake and conveyor backwards
      */
@@ -43,8 +43,8 @@ public:
 
         /**
      * @brief Stop intake
-     * 
-     * 
+     *
+     *
      */
     static void brake();
     static void setIntaking();
@@ -53,11 +53,12 @@ public:
     static void setOuttakingWithConveyor();
     static void setNotMoving();
     static void setNotMovingWithConveyor();
-    static void setOppositeDetected();
     static void setQueueThrow();
     static void setThrowing();
     static void setUnjamReverse();
     static void setUnjamForward();
+
+    static bool isJammed();
 
     static void direct(double velocity);
 };

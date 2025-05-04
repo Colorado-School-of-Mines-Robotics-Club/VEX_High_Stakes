@@ -24,5 +24,8 @@ public:
     static void setConveyingReverse();
     static void setNotMoving();
     static double getPosition();
+
+    static bool isJammed();
+
     static void direct(double velocity);
 };

@@ -174,7 +174,7 @@ void Drive::driveDistanceGyro(double distance, int32_t power) {
 	right.tare_position_all();
 	tinyBox.tare();
 	tinyBox.set_heading(180);
-
+	
 	double target =  distance * DRIVE_UNIT_MULTIPLIER;
 	power = distance > 0 ? power : -power; // Drive backwards if negative distance
 	

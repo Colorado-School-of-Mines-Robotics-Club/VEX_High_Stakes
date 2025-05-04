@@ -41,6 +41,9 @@
 #define INTAKE_SPEED 127
 #define OUTTAKE_SPEED 127
 
+// Climb
+#define CLIMB_PORT 'X'
+
 // Conveyor
 #define CONVEYOR_PORTS {-2, 9}
 #define CONVEYOR_FORWARD_SPEED 127

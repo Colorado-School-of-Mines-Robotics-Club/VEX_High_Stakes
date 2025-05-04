@@ -1,5 +1,6 @@
 // #include <chrono>
 #include <ctime>
+#include <functional>
 #include <vector>
 #include <string>
 #include <format>
@@ -8,6 +9,7 @@
 #include "constants.h"
 
 #include "arm.h"
+#include "climb.h"
 #include "conveyor.h"
 #include "drive.h"
 #include "intake.h"
@@ -230,6 +232,10 @@ void opcontrol() {
 
 	bool last_detected = false;
 	int replay_step = 0;
+
+	bool activate_climb = false;
+	bool prev_climb = false;
+
 	while (true) {
 
 		// pros::lcd::print(3, "%i", Intake::intakeMotor.get_current_draw());
@@ -246,13 +252,25 @@ void opcontrol() {
 		bool l2 = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_L2); // reverse conveyor and intake
 		bool r1 = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1); // goal grabber
 		bool r2 = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2); // toggle between load and high stake position
-		bool a = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A); // toggle color sort
-		bool b = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B); // precision mode
-		bool x = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X); // go to mogo position
-		bool y = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y); // spin throw button
+		// bool a = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A);
+		bool b = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B); // top arm mogo position
+		bool x = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X); // toggle color sort
 		bool up_arrow = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_UP); // intake only button
 		bool down_arrow = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN); // corner arm
 		bool left_arrow = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT); // save replay
+
+		bool y = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_Y); // climb activation 1
+		bool right_arrow = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_Y); // climb activation 2
+
+		if(y && right_arrow && !prev_climb) {
+			activate_climb = true;
+		} else {
+			activate_climb = false;
+		}
+		prev_climb = y && right_arrow;
+
+		Climb::control(activate_climb);
+
 		// Drive::controlDirection(a);
 		// Drive::controlTank(left_y, right_y, b);
 		Drive::controlArcade(right_y, left_x, false);
@@ -265,10 +283,10 @@ void opcontrol() {
 		Arm::control(down_arrow);
 		TopArm::control(b, r2);
 
-		if(y) {
-			Drive::driveArc(0, 1.5, 127);
-			GoalGrabber::setNotGrabbing();
-		}
+		// if(y) {
+		// 	Drive::driveArc(0, 1.5, 127);
+		// 	GoalGrabber::setNotGrabbing();
+		// }
 
 		if(recording) {
 			ReplayStep current_step;

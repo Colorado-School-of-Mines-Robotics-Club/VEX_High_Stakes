@@ -32,7 +32,7 @@ pros::Controller controllerMain(pros::E_CONTROLLER_MASTER);
  * A callback function for LLEMU's center_btn button.
  */
 void on_center_button() {
-	
+
 }
 
 /**
@@ -68,7 +68,7 @@ void disabled() {
 // 	auto left_btn = 0;
 // 	auto center_btn = 0;
 // 	auto right_btn = 0;
-	
+
 // 	pros::lcd::print(0, "Choose the auto!");
 // 	pros::lcd::print(1, "Current Auto:");
 // 	pros::lcd::print(3, "Current Color:");
@@ -125,10 +125,11 @@ void competition_initialize() {
  * from where it left_btn off.
  */
 void autonomous() {
-	testCornerSort(true);
+	// testCornerSort(true);
 	// testDriveWithSort(true);
 	// skillsOneYang();
 	// fullAutoTwoYang(true);
+	fullAutoThreeYang(true); // USE THIS AUTO FOR WORLDS
 	// AutoChooser::runSelected();
 
 	Drive::brake();

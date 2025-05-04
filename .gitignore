@@ -21,6 +21,6 @@ temp.errors
 
 result
 rpi-test
-key.txt
+sops-key.txt
 nixos-anywhere-extras
 .gcroots

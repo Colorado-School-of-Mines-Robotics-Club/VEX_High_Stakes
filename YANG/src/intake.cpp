@@ -103,16 +103,12 @@ void Intake::autoControl(bool intake, bool both, bool reverse, bool oppositeRing
             setIntakingWithConveyor();
         } else if (oppositeRingDetected && colorSortEnabled) {
             setQueueThrow();
-        } else if(intakeMotor.get_current_draw() > 900 && intakeMotor.get_torque() > 0.4 && intakeMotor.get_actual_velocity() < 1) {
-            setUnjamReverse();
         }
     } else if (intakeState == IntakeState::INTAKING_WITH_CONVEYOR) {
         if ((!both) || reverse) {
             setNotMovingWithConveyor();
         } else if (oppositeRingDetected && colorSortEnabled) {
             setQueueThrow();
-        } else if(intakeMotor.get_current_draw() > 900 && intakeMotor.get_torque() > 0.4 && intakeMotor.get_actual_velocity() < 1) {
-            setUnjamReverse();
         }
     } else if (intakeState == IntakeState::OUTTAKING_WITH_CONVEYOR) {
         if (!reverse || intake || both) {
@@ -129,25 +125,6 @@ void Intake::autoControl(bool intake, bool both, bool reverse, bool oppositeRing
     } else if(intakeState == IntakeState::THROWING) {
         countdown--;
         if(countdown <= 0 || !colorSortEnabled) {
-            countdown = 0;
-            if (intake && !both && !reverse) {
-                setIntaking();
-            } else if (both && !intake && !reverse) {
-                setIntakingWithConveyor();
-            } else if(reverse && !intake && !both) {
-                setOuttakingWithConveyor();
-            }
-            setNotMovingWithConveyor();
-        }
-    } else if(intakeState == IntakeState::UNJAM_REVERSE) {
-        countdown--;
-        if(countdown <= 0) {
-            countdown = 0;
-            setUnjamForward();
-        }
-    } else if(intakeState == IntakeState::UNJAM_FORWARD) {
-        countdown--;
-        if(countdown <= 0) {
             countdown = 0;
             if (intake && !both && !reverse) {
                 setIntaking();
@@ -227,6 +204,3 @@ void Intake::setUnjamForward() {
 void Intake::direct(double velocity) {
     intakeMotor.move_velocity(velocity);
 }
-
-
-

@@ -1,10 +1,10 @@
 {
-    python314Packages,
+    python3Packages,
     qwiic-i2c,
     fetchPypi,
     ...
 }:
-python314Packages.buildPythonPackage rec {
+python3Packages.buildPythonPackage rec {
     pname = "qwiic-otos";
     version = "2.0.0";
     pyproject = true;
@@ -15,7 +15,7 @@ python314Packages.buildPythonPackage rec {
         hash = "sha256-YzyWw0ix/YyaRfAtVvQ0toNOM+Tsmgym6KnU11S21zQ=";
     };
 
-    build-system = with python314Packages; [
+    build-system = with python3Packages; [
         setuptools
         setuptools-scm
     ];

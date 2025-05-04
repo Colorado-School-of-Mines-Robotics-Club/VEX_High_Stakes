@@ -28,6 +28,7 @@
         useDHCP = false;
     };
 
+    # Use systemd-networkd for DHCP on the Wi-Fi interface
     systemd.network = {
         enable = true;
 
@@ -47,17 +48,7 @@
         };
     };
 
-    services.openssh.enable = true;
-    users.users =
-        let
-            keys = [
-                "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIH/2p94CtvFXI/CXLudCu5KYFf8Afes1o3G7T1wLFeGP openpgp:0x0D009703"
-            ];
-        in {
-            pi.openssh.authorizedKeys.keys = keys;
-            root.openssh.authorizedKeys.keys = keys;
-        };
-
+    # Enable tailscale for easy connection on any network
     services.tailscale = {
         enable = true;
         useRoutingFeatures = "both";
@@ -68,27 +59,18 @@
         extraUpFlags = [
             "--reset"
             "--ssh"
-            "--accept-dns"
-            "--accept-routes"
             "--advertise-tags=tag:rpi"
             "--login-server=https://ts.myriation.xyz"
             "--operator=pi"
         ];
     };
-    systemd.services.tailscaled.environment = { "TS_DEBUG_MTU" = "1350"; }; # https://github.com/tailscale/tailscale/issues/2633
-    networking.networkmanager.dispatcherScripts = [{
-        type = "pre-up";
-        source = lib.getExe (pkgs.writeShellScriptBin "tailscale-optimizations" ''
-            ${lib.getExe pkgs.ethtool} -K $DEVICE_IP_IFACE rx-udp-gro-forwarding on rx-gro-list off
-        '');
-    }];
     services.networkd-dispatcher = {
         enable = true;
         rules = {
-            tailscale-optimizations = {
+            "50-tailscale-optimizations" = {
                 onState = [ "routable" ];
                 script = ''
-                    ${lib.getExe pkgs.ethtool} -K $IFACE rx-udp-gro-forwarding on rx-gro-list off
+                    ${lib.getExe pkgs.ethtool} -K "$IFACE" rx-udp-gro-forwarding on rx-gro-list off
                 '';
             };
         };

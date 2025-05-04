@@ -1,9 +1,9 @@
 {
-    python314Packages,
+    python3Packages,
     fetchPypi,
     ...
 }:
-python314Packages.buildPythonPackage rec {
+python3Packages.buildPythonPackage rec {
     pname = "qwiic-i2c";
     version = "2.0.0";
     pyproject = true;
@@ -14,12 +14,12 @@ python314Packages.buildPythonPackage rec {
         hash = "sha256-HpVngVwcekwD+sDZygGiS33rE2jTGbAU2qRdllgp+rY=";
     };
 
-    build-system = with python314Packages; [
+    build-system = with python3Packages; [
         setuptools
         setuptools-scm
     ];
 
-    dependencies = with python314Packages; [
+    dependencies = with python3Packages; [
         smbus2
     ];
 

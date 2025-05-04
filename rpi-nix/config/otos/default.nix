@@ -5,7 +5,7 @@
         wantedBy = [ "multi-user.target" ];
 
         environment = {
-            PYTHONUNBUFFERED = "true"; # Fix logging
+            PYTHONUNBUFFERED = "true"; # Fix python stdout/stderr with syslog
         };
 
         serviceConfig = {

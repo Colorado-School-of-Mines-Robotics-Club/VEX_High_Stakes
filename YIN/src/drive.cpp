@@ -125,6 +125,12 @@ void Drive::setFacingGrabber() {
 
 void Drive::resetHeading() {
 	tinyBox.reset(true);
+	tinyBox.tare();
+}
+
+void Drive::resetHeading(bool blocking) {
+	tinyBox.reset(blocking);
+	tinyBox.tare();
 }
 
 void Drive::brake() {
@@ -215,13 +221,35 @@ void Drive::driveDistanceFeedbackBasic(double distance, int32_t minPower, int32_
 	Drive::move(0, 0);
 }
 
+pros::IMU* Drive::getIMU() {
+	return &tinyBox;
+}
+
+double Drive::getYaw() {
+	return tinyBox.get_yaw();
+}
+
+void Drive::turnTo(double deg, int32_t power) {
+	double cw = (deg > 0) ? 1.0 : -1.0; // Turn cw if deg is positive
+	Drive::move(power * cw, -power * cw);
+
+	while(abs(tinyBox.get_rotation() - abs(deg * DRIVE_DEG_MULTIPLIER)) > 2.0 || abs(tinyBox.get_rotation() - abs(deg * DRIVE_DEG_MULTIPLIER)) < -2.0) {}
+
+	Drive::brake();
+}
+
 void Drive::turn(double deg, int32_t power) {
-	left.tare_position_all();
-	right.tare_position_all();
+	// left.tare_position_all();
+	// right.tare_position_all();
 	tinyBox.tare_rotation();
 	double cw = (deg > 0) ? 1.0 : -1.0; // Turn cw if deg is positive
 	Drive::move(power * cw, -power * cw);
-	while(abs(tinyBox.get_rotation()) < (abs(deg) * DRIVE_DEG_MULTIPLIER)) {}
+
+	pros::Controller controllerMain(pros::E_CONTROLLER_MASTER);
+
+	while(abs(tinyBox.get_rotation()) < (abs(deg) * DRIVE_DEG_MULTIPLIER)) {
+		controllerMain.print(0, 0, "rot: %f", tinyBox.get_rotation());
+	}
 	Drive::brake();
 }
 

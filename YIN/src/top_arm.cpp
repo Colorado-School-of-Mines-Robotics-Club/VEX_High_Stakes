@@ -4,7 +4,7 @@
 const double MOGO_POSITION = 0;
 // double RING_POSITION = -120;
 double RING_POSITION = -120;
-const double HIGH_STAKE_POSITION = -720;
+const double HIGH_STAKE_POSITION = -600;
 
 double TopArm::desiredPosition = 0;
 
@@ -49,7 +49,7 @@ void TopArm::control(bool mogo_button, bool upper_toggle_button) {
                 reachMogo();
                 topArmMotor.tare_position();
                 desiredPosition = 0;
-                double RING_POSITION = -50;
+                double RING_POSITION = -120;
             }
         break;
         case TopArmState::APPROACH_RING_FROM_MOGO:

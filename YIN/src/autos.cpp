@@ -232,7 +232,7 @@ void testDriveWithSort(bool isBlue) {
 }
 
 void yinRushNegative(bool isBlue) {
-    Drive::resetHeading();
+    Drive::resetHeading(false);
     const int32_t rushSpeed = 128;
     const int32_t fastSpeed = 90;
     const int32_t driveSpeed = 50;
@@ -264,28 +264,25 @@ void yinRushNegative(bool isBlue) {
 
         Drive::driveDistance(-20, slowSpeed); // Line up Goal
         GoalGrabber::setGrabbing(); // Grab Goal
-        driveWithSort(10, slowSpeed, 2000); // Put on Preload
+        driveWithSort(10, driveSpeed, 1000); // Put on Preload
+        Drive::brake();
         pros::delay(200);
 
-        Drive::driveArc(0, -0.14, turnSpeed); // Turn towards pile
-        driveWithSort(20, slowSpeed, 2000); // Approach pile
+        Drive::driveArc(0, -0.225, turnSpeed); // Turn towards pile
+        driveWithSort(40, driveSpeed, 1000); // Approach corner
 
         Drive::brake(); // Stop
-
-        // STATE: 1 Blue on Mogo, 1 Blue in intake
-
-        Drive::driveArc(0, -0.06, turnSpeed); // Turn towards corner
-        driveWithSort(8, driveSpeed, 750); // Approach corner w/ sorting
-
         // Color sort corner
-        for(int i = 0; i < 8; i++) {
-            driveWithSort(6, driveSpeed, 750);
+        for(int i = 0; i < 6; i++) {
             dontMoveSort(250);
-            driveWithSort(-6, -slowSpeed, 750);
+            driveWithSort(-8, -slowSpeed, 1000);
+            dontMoveSort(250);
+            driveWithSort(11, driveSpeed, 1000);
         }
-        Conveyor::setNotMoving();
 
-        Drive::driveArc(0, 0.48, turnSpeed); // Turn towards stake
+        dontMoveSort(250);
+        driveWithSort(-6, -slowSpeed, 750);
+        Drive::driveArc(0, 0.47, turnSpeed); // Turn towards stake
 
         driveWithSort(48, slowSpeed, 5000); // Approach stake
 
@@ -293,13 +290,60 @@ void yinRushNegative(bool isBlue) {
         Conveyor::setNotMoving();
         Drive::brake();
     } else {
+        GoalGrabber::setNotGrabbing();
+        Arm::setArmDown();
+        // Drive::driveArc(TRACK_WIDTH/2, 0.052, rushSpeed); // Align with mogo
+        Drive::driveDistanceFeedbackBasic(22, rushSpeed, rushSpeed); // Move to mogo
+        Drive::driveDistance(7, slowSpeed); // Approach slowly
+        Arm::setArmUp();
+        Drive::driveDistance(2, slowSpeed); // Approach slowly
 
+        // Drive::driveArc(TRACK_WIDTH/2, -0.052, slowSpeed);
+
+        pros::delay(100);
+        Drive::driveDistance(-16, driveSpeed); // Run away
+        Arm::setArmDown();
+        pros::delay(200);
+        // Drive::driveDistance(-6, driveSpeed);
+        // Arm::setArmUp();
+        // pros::delay(200);
+        Drive::driveArc(0, -0.1, turnSpeed); // Start Turn
+        Arm::setArmUp(); // Drop goal during turn
+        Drive::driveArc(0, -0.3, turnSpeed); // Finish Turn
+
+        Drive::driveDistance(-20, slowSpeed); // Line up Goal
+        GoalGrabber::setGrabbing(); // Grab Goal
+        driveWithSort(10, driveSpeed, 1000); // Put on Preload
+        Drive::brake();
+        pros::delay(200);
+
+        Drive::driveArc(0, 0.22, turnSpeed); // Turn towards pile
+        driveWithSort(40, driveSpeed, 1000); // Approach corner
+
+        Drive::brake(); // Stop
+        // Color sort corner
+        for(int i = 0; i < 6; i++) {
+            dontMoveSort(250);
+            driveWithSort(-8, -slowSpeed, 1000);
+            dontMoveSort(250);
+            driveWithSort(11, driveSpeed, 1000);
+        }
+
+        dontMoveSort(250);
+        driveWithSort(-6, -slowSpeed, 750);
+        Drive::driveArc(0, -0.47, turnSpeed); // Turn towards stake
+
+        driveWithSort(50, slowSpeed, 5000); // Approach stake
+
+        Intake::setNotMoving();
+        Conveyor::setNotMoving();
+        Drive::brake();
     }
 }
 
 // TODO
 void yinRushPositive(bool isBlue) {
-    Drive::resetHeading();
+    Drive::resetHeading(false);
     const int32_t rushSpeed = 128;
     const int32_t fastSpeed = 90;
     const int32_t driveSpeed = 50;
@@ -314,27 +358,29 @@ void yinRushPositive(bool isBlue) {
 }
 
 void yinRushCenter(bool isBlue) {
-    Drive::resetHeading();
+    Drive::resetHeading(false);
     const int32_t rushSpeed = 128;
     const int32_t fastSpeed = 90;
     const int32_t driveSpeed = 50;
     const int32_t slowSpeed = 30;
     const int32_t turnSpeed = 50;
+    pros::Controller controllerMain(pros::E_CONTROLLER_MASTER);
+
     Optical::setTeamColor(isBlue);
     Optical::enable();
     if (isBlue) {
         GoalGrabber::setNotGrabbing();
-        Arm::setArmDown();
         // Drive::driveArc(TRACK_WIDTH/2, 0.052, rushSpeed); // Align with mogo
         Intake::setOuttaking();
-        Drive::driveArc(11, -0.19, fastSpeed);
+        Drive::driveArc(11, -0.185, fastSpeed);
+        Arm::setArmDown();
+
         // Drive::driveDistanceFeedbackBasic(21, rushSpeed, rushSpeed); // Move to mogo
-        Drive::driveDistance(17, rushSpeed);
-        Drive::driveDistance(7, slowSpeed); // Approach slowly
+        Drive::driveDistance(18, rushSpeed);
+        Drive::driveDistance(6, slowSpeed); // Approach slowly
         Arm::setArmUp();
         Drive::driveDistance(2, slowSpeed); // Approach slowly
         Intake::setNotMoving();
-
 
         pros::delay(100);
         Drive::driveDistance(-16, fastSpeed); // Run away
@@ -343,38 +389,88 @@ void yinRushCenter(bool isBlue) {
         // Arm::setArmUp();
         // pros::delay(200);
         Drive::driveArc(0, -0.1, turnSpeed);
-        Arm::setArmUp();
+        Arm::setArmUp(); // Let go of goal mid turn
         Drive::driveArc(0, -0.25, turnSpeed);
 
-        Drive::driveDistance(-20, slowSpeed);
+        Drive::driveDistance(-5, driveSpeed);
+        Drive::driveDistance(-15, slowSpeed);
+
         GoalGrabber::setGrabbing();
         Drive::driveDistance(6, slowSpeed);
-        Drive::driveArc(0, 0.04, turnSpeed); // Turn towards double stack
-        driveWithSort(36, slowSpeed, 2000);
-        dontMoveSort(2000);
-        driveWithSort(12, -slowSpeed, 500);
-
-        Drive::driveArc(0, -0.01, turnSpeed); // Turn towards corner
+        driveWithSort(8, driveSpeed, 1000);
+        Drive::driveArc(0, -0.005, turnSpeed); // Turn towards corner
+        driveWithSort(24, driveSpeed, 2000);
         Drive::brake();
-        driveWithSort(15, slowSpeed, 750); // Approach corner w/ sorting
 
         // Color sort corner
         for(int i = 0; i < 8; i++) {
-            driveWithSort(6, driveSpeed, 750);
-            dontMoveSort(250);
+            driveWithSort(8, driveSpeed, 750);
+            dontMoveSort(200);
             driveWithSort(-6, -slowSpeed, 750);
+            dontMoveSort(200);
         }
         Conveyor::setNotMoving();
 
         Intake::setNotMovingWithConveyor();
-        Drive::driveArc(0, 0.47, turnSpeed); // Turn towards stake
+        Drive::driveArc(0, 0.5, turnSpeed); // Turn towards stake
 
-        driveWithSort(48, slowSpeed, 4000   );
+        driveWithSort(48, slowSpeed, 4000);
 
         Intake::setNotMoving();
         Conveyor::setNotMoving();
         Drive::brake();
     } else {
+        GoalGrabber::setNotGrabbing();
+        // Drive::driveArc(TRACK_WIDTH/2, 0.052, rushSpeed); // Align with mogo
+        Intake::setOuttaking();
+        Drive::driveArc(11, 0.145, fastSpeed);
+        Arm::setArmDown();
+
+        // Drive::driveDistanceFeedbackBasic(21, rushSpeed, rushSpeed); // Move to mogo
+        Drive::driveDistance(23, rushSpeed);
+        Drive::driveDistance(7, slowSpeed); // Approach slowly
+        Arm::setArmUp();
+        Drive::driveDistance(2, slowSpeed); // Approach slowly
+        Intake::setNotMoving();
+
+        pros::delay(100);
+        Drive::driveDistance(-16, fastSpeed); // Run away
+        pros::delay(200);
+        // Drive::driveDistance(-6, driveSpeed);
+        // Arm::setArmUp();
+        // pros::delay(200);
+        Drive::driveArc(0, -0.1, turnSpeed);
+        Arm::setArmUp(); // Let go of goal mid turn
+        Drive::driveArc(0, -0.25, turnSpeed);
+
+        Drive::driveDistance(-5, driveSpeed);
+        Drive::driveDistance(-15, slowSpeed);
+
+        GoalGrabber::setGrabbing();
+        Drive::driveDistance(6, slowSpeed);
+        Drive::driveArc(0, 0.03, turnSpeed); // Turn towards corner
+
+        driveWithSort(8, slowSpeed, 1000);
+        driveWithSort(24, driveSpeed, 2000);
+        Drive::getIMU()->tare_rotation();
+        // Color sort corner
+        for(int i = 0; i < 8; i++) {
+            driveWithSort(8, driveSpeed, 750);
+            dontMoveSort(200);
+            driveWithSort(-6, -slowSpeed, 750);
+            dontMoveSort(200);
+        }
+        Conveyor::setNotMoving();
+        Intake::setNotMovingWithConveyor();
+        // Drive::turnTo(230, turnSpeed); // Turn towards stake
+        Drive::driveArc(0, -0.525, turnSpeed); // Turn towards stake
+
+        driveWithSort(34, driveSpeed, 4000);
+        driveWithSort(10, slowSpeed, 4000);
+
+        Intake::setNotMoving();
+        Conveyor::setNotMoving();
+        Drive::brake();
     }
 
 }
@@ -555,6 +651,35 @@ void rotateTest() {
     int turnSpeed = 50;
     Drive::resetHeading();
     Drive::setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
-    Drive::turn(90, turnSpeed); // Turn to face post
-    Drive::turn(-180, turnSpeed); // Turn to face post
+    pros::Controller controllerMain(pros::E_CONTROLLER_MASTER);
+
+    // Drive::turn(90, turnSpeed); // Turn to face post
+    // Drive::turn(-180, turnSpeed); // Turn to face post
+    controllerMain.print(2, 0, "start");
+    Drive::getIMU()->tare_rotation();
+    Drive::turnTo(0, turnSpeed);
+    Drive::turnTo(90,turnSpeed);
+    controllerMain.print(2, 0, "finish 90");
+
+    Drive::turnTo(0, turnSpeed);
+    Drive::turnTo(180, turnSpeed);
+    controllerMain.print(2, 0, "finish 180");
+
+    Drive::turnTo(0, turnSpeed);
+    Drive::turnTo(270, turnSpeed);
+    controllerMain.print(2, 0, "finish 270");
+
+    Drive::turnTo(0, turnSpeed);
+    Drive::turnTo(-90, turnSpeed);
+    controllerMain.print(2, 0, "finish -90");
+
+    Drive::turnTo(0, turnSpeed);
+    Drive::turnTo(-180, turnSpeed);
+    controllerMain.print(2, 0, "finish -180");
+
+    Drive::turnTo(0, turnSpeed);
+    Drive::turnTo(-270, turnSpeed);
+    controllerMain.print(2, 0, "finish all");
+
+    Drive::brake();
 }

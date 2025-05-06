@@ -1,7 +1,7 @@
 {
   "py/object": "pros.conductor.project.Project",
   "py/state": {
-    "project_name": "YIN blue negative",
+    "project_name": "YIN red center",
     "target": "v5",
     "templates": {
       "kernel": {

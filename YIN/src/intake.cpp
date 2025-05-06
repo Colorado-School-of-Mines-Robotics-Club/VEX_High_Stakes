@@ -105,7 +105,7 @@ void Intake::autoControl(bool intake, bool both, bool reverse, bool oppositeRing
                 setIntakingWithConveyor();
             } else if (oppositeRingDetected && colorSortEnabled) {
                 setQueueThrow();
-            } else if(isJammed() || Conveyor::isJammed()) {
+            } else if(Conveyor::isJammed()) {
                 setUnjamReverse();
             }
         break;
@@ -114,7 +114,7 @@ void Intake::autoControl(bool intake, bool both, bool reverse, bool oppositeRing
                 setNotMovingWithConveyor();
             } else if (oppositeRingDetected && colorSortEnabled) {
                 setQueueThrow();
-            } else if(isJammed() || Conveyor::isJammed()) {
+            } else if(Conveyor::isJammed()) {
                 setUnjamReverse();
         }
         break;

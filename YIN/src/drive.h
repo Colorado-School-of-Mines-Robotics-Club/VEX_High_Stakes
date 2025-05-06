@@ -59,6 +59,7 @@ class Drive {
 		 * 
 		 */
 		static void resetHeading();
+		static void resetHeading(bool blocking);
 		static void brake();
 		/**
 		 * @brief Set brake mode
@@ -83,6 +84,9 @@ class Drive {
 		static bool reachedTarget(double distance);
 		static void driveDistanceGyro(double distance, int32_t power);
 		static void driveDistanceFeedbackBasic(double distance, int32_t minPower, int32_t maxPower);
+		static pros::IMU* getIMU();
+		static double getYaw();
+		static void turnTo(double deg, int32_t power);
 		/**
 		 * @brief Turn degress
 		 * 

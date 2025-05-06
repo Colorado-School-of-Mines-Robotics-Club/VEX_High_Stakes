@@ -29,9 +29,10 @@
 #define RECORD false
 // #define RECORD_TIME 15000 // 30 sec
 #define RECORD_TIME 30000 // 1 min
+#define AUTO_TIME_LIMIT true // TURN OFF FOR COMPETITION PLEASE PLEASE
 
-bool isBlue = true;
-char side = 'N'; // NPC: Negative, Positive, Center
+bool isBlue = false;
+char side = 'C'; // NPC: Negative, Positive, Center
 bool recording = RECORD;
 
 std::vector<ReplayStep> replay(0);
@@ -75,7 +76,7 @@ void disabled() {
 	Drive::setDriveVelocity(0);
 	Intake::brake();
 	Conveyor::brake();
-	Optical::setLED(false);
+	Optical::disable();
 	TopArm::tarePosition();
 
 	if(recording && replay.size() > 0) {
@@ -143,6 +144,27 @@ void competition_initialize() {
  * from where it left_btn off.
  */
 void autonomous() {
+	if (AUTO_TIME_LIMIT) {
+		auto main_task = pros::Task::current();
+		uint32_t start = pros::c::millis();
+		pros::Task::create(
+			[&]{
+				while (true) {
+					if (pros::c::millis() - start > 30 /* sec */ * 1000 /* ms */) {
+						main_task.suspend();
+						disabled();
+						pros::Task::current().suspend();
+					}
+
+					pros::delay(100);
+				}
+			},
+			TASK_PRIORITY_DEFAULT,
+			TASK_STACK_DEPTH_DEFAULT,
+			"stop after 30s"
+		);
+	}
+
 	if(side == 'N') {
 		yinRushNegative(isBlue);
 	} else if(side == 'P') {
@@ -242,7 +264,6 @@ void opcontrol() {
 		// pros::lcd::print(4, "%i", Intake::intakeMotor.get_voltage());
 		// pros::lcd::print(5, "%f", Intake::intakeMotor.get_torque());
 		// pros::lcd::print(6, "%f", Intake::intakeMotor.get_actual_velocity());
-
 
 		double left_x = controllerMain.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X); // turn for arcade
 		// double left_y = controllerMain.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y); // left tank

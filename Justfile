@@ -3,25 +3,33 @@ _default:
 
 # Upload the YIN bot's code
 [group("pros")]
-upload-yin qualifier="competition":
-    pros mu --name "YIN {{qualifier}}" --slot 1 --project ./YIN
+upload-yin qualifier="competition" slot="1":
+    pros mu --name "YIN {{qualifier}}" --slot "{{slot}}" --project ./YIN
 
 # Upload the YANG bot's code
 [group("pros")]
-upload-yang qualifier="competition":
-    pros mu --name "YANG {{qualifier}}" --slot 1 --project ./YANG
+upload-yang qualifier="competition" slot="1":
+    pros mu --name "YANG {{qualifier}}" --slot "{{slot}}" --project ./YANG
 
 # Start YIN's code for testing
 [group("pros")]
 run-yin: (upload-yin "testing")
-    -sleep 2
+    read -p "Press any key to start program..." -n 1 -r
     pros v5 run 1
 
 # Start YANG's code for testing
 [group("pros")]
 run-yang: (upload-yang "testing")
-    -sleep 2
+    read -p "Press any key to start program..." -n 1 -r
     pros v5 run 1
+
+# Start YANG's skills code for testing
+[group("pros")]
+run-skills-yang:
+    sed -i "s/#define SKILLS false/#define SKILLS true/g" ./YANG/src/main.cpp
+    just upload-yang "skills testing" "2"
+    read -p "Press any key to start program..." -n 1 -r
+    pros v5 run 2
 
 # Setup raspberry pi using ethernet gadget, to be used after first boot from SD
 [group("rpi")]

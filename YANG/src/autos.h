@@ -8,7 +8,8 @@ void figureEight(bool isBlue);
 void fullAutoOneYin(bool isBlue);
 void fullAutoOneYang(bool isBlue);
 void fullAutoTwoYang(bool isBlue);
-void fullAutoThreeYang(bool isBlue);
+void worldsAutoYang(bool isBlue);
+void worldsSkillsYang();
 void skillsOneYang();
 
 

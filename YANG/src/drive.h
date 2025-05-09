@@ -56,6 +56,7 @@ class Drive {
 		 *
 		 */
 		static void resetHeading();
+		static void tareYaw();
 		static double getYaw();
 		static double getHeading();
 		static void brake();

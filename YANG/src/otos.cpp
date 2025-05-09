@@ -33,6 +33,8 @@ void read_serial_task() {
 			}
 			dataBufferIndex = 0; // Reset data buffer
 		}
+
+		pros::delay(2);
 	}
 }
 
@@ -51,6 +53,21 @@ void OtosSensor::setup() {
 		TASK_STACK_DEPTH_DEFAULT,
 		"Read serial task"
 	);
+
+	// Start a new task for printing serial
+ //    pros::Task::create(
+	// 	[&]{
+	// 		while (true) {
+	// 			auto pos = get_latest_position();
+	// 			pros::lcd::print(1, "%f.2 %f.2 %f.2", pos.x, pos.y, pos.h);
+
+	// 			pros::delay(100);
+	// 		}
+	// 	},
+	// 	TASK_PRIORITY_DEFAULT,
+	// 	TASK_STACK_DEPTH_DEFAULT,
+	// 	"print serial task"
+	// );
 }
 
 void OtosSensor::recalibrate() {

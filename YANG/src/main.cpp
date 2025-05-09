@@ -7,11 +7,15 @@
 #include "goal_grabber.h"
 #include "intake.h"
 #include "optical.h"
+#include "otos.h"
 #include "top_arm.h"
 // #include "auto_chooser.h"
 #include "autos.h"
 
 #include "replay.hpp"
+
+// Enable the following to load skills auto instead of competition auto
+#define SKILLS true
 
 #define FILENAME "replay_.txt"
 #define RECORD false
@@ -74,42 +78,11 @@ void disabled() {
  * starts.
  */
 void competition_initialize() {
-	// Competition initialize
-	bool left_btn = 0;
-	bool center_btn = 0;
-	bool right_btn = 0;
+	// Calibration
+	Drive::resetHeading();
+	// OtosSensor::setup();
 
-	pros::lcd::print(0, "Choose the auto!");
-	// pros::lcd::print(1, "Current Auto:");
-	pros::lcd::print(3, "Current Color:");
-
-	for (;;) {
-		auto lcd_buttons = pros::lcd::read_buttons();
-
-		bool old_left_btn = left_btn;
-		bool old_center_btn = center_btn;
-		bool old_right_btn = right_btn;
-
-		left_btn = lcd_buttons & LCD_BTN_LEFT;
-		center_btn = lcd_buttons & LCD_BTN_CENTER;
-		right_btn = lcd_buttons & LCD_BTN_RIGHT;
-
-		if (left_btn != old_left_btn && left_btn) {
-			// UNUSED
-		} else if (center_btn != old_center_btn && center_btn) {
-			// is_blue = !is_blue;
-		} else if (right_btn != old_right_btn && right_btn) {
-			// UNUSED
-		}
-		pros::lcd::print(4, "%s", is_blue ? "blue" : "red");
-
-		if (!is_blue) {
-			controllerMain.set_text(0, 0, "C: B [R]");
-		} else {
-			controllerMain.set_text(0, 0, "C:[B] R ");
-		}
-		pros::delay(50);
-	}
+	// OtosSensor::recalibrate();
 }
 
 /**
@@ -124,19 +97,25 @@ void competition_initialize() {
  * from where it left_btn off.
  */
 void autonomous() {
-	if (AUTO_TIME_LIMIT) {
+	if (AUTO_TIME_LIMIT && !SKILLS) {
 		auto main_task = pros::Task::current();
 		uint32_t start = pros::c::millis();
 		pros::Task::create(
-			[&]{
+			[&, start]{
 				while (true) {
 					if (pros::c::millis() - start > 30 /* sec */ * 1000 /* ms */) {
 						main_task.suspend();
-						disabled();
-						pros::Task::current().suspend();
+
+						Drive::brake();
+						Intake::brake();
+						Conveyor::brake();
+						Optical::setLED(false);
+						GoalGrabber::setNotGrabbing();
+
+						break;
 					}
 
-					pros::delay(100);
+					pros::delay(50);
 				}
 			},
 			TASK_PRIORITY_DEFAULT,
@@ -149,7 +128,11 @@ void autonomous() {
 	// testDriveWithSort(true);
 	// skillsOneYang();
 	// fullAutoTwoYang(true);
-	fullAutoThreeYang(is_blue); // USE THIS AUTO FOR WORLDS
+	if (SKILLS) {
+		worldsSkillsYang();
+	} else {
+		worldsAutoYang(is_blue);
+	}
 	// AutoChooser::runSelected();
 
 	Drive::brake();

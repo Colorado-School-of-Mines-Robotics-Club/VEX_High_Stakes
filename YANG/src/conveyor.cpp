@@ -36,6 +36,7 @@ void Conveyor::conveyDistance(double units, int32_t speed) {
         //     pros::delay(500);
         // }
         // conveyorMotor.move(speed);
+        pros::delay(4);
     }
     conveyorMotor.move(0);
 }
@@ -70,5 +71,6 @@ void Conveyor::direct(double velocity) {
 }
 
 bool Conveyor::isJammed() {
-    return conveyorMotor.get_current_draw() > 2000 && conveyorMotor.get_torque() > 0.9 && conveyorMotor.get_actual_velocity() < 1;
+	return false;
+    // return conveyorMotor.get_current_draw() > 2000 && conveyorMotor.get_torque() > 0.9 && conveyorMotor.get_actual_velocity() < 1;
 }

@@ -122,6 +122,10 @@ void Drive::resetHeading() {
 	tinyBox.reset(true);
 }
 
+void Drive::tareYaw() {
+	tinyBox.tare_yaw();
+}
+
 double Drive::getYaw() {
 	return tinyBox.get_yaw();
 }
@@ -150,7 +154,9 @@ void Drive::driveDistance(double distance, int32_t power) {
 	double target =  distance * DRIVE_UNIT_MULTIPLIER;
 	power = distance > 0 ? power : -power; // Drive backwards if negative distance
 	Drive::move(power, power);
-	while(abs(average(left.get_position_all(), right.get_position_all())) < abs(target)) {}
+	while(abs(average(left.get_position_all(), right.get_position_all())) < abs(target)) {
+		pros::delay(4);
+	}
 	Drive::move(0, 0);
 }
 
@@ -201,6 +207,12 @@ void Drive::driveDistanceFeedbackBasic(double distance, int32_t minPower, int32_
 	Drive::move(0, 0);
 }
 
+// void Drive::turnToOtos(double deg, int32_t power) {
+// 	double start_yaw = tinyBox.get_yaw();
+
+// 	turn(deg - start_yaw, power);
+// }
+
 void Drive::turnTo(double deg, int32_t power) {
 	double start_yaw = tinyBox.get_yaw();
 
@@ -213,7 +225,9 @@ void Drive::turn(double deg, int32_t power) {
 	tinyBox.tare_rotation();
 	double cw = (deg > 0) ? 1.0 : -1.0; // Turn cw if deg is positive
 	Drive::move(power * cw, -power * cw);
-	while(abs(tinyBox.get_rotation()) < (abs(deg) * DRIVE_DEG_MULTIPLIER)) {}
+	while(abs(tinyBox.get_rotation()) < (abs(deg) * DRIVE_DEG_MULTIPLIER)) {
+		pros::delay(4);
+	}
 	Drive::brake();
 }
 
@@ -232,12 +246,16 @@ void Drive::driveArc(double radius, double percentage, double power) {
 		left_power = power;
 		right_power = power * ((radius - wheel_distance) / (radius + wheel_distance));
 		Drive::move(left_power, right_power);
-		while(abs(average(left.get_position_all())) < distance) {}
+		while(abs(average(left.get_position_all())) < distance) {
+			pros::delay(4);
+		}
 	} else {
 		left_power = power * ((radius - wheel_distance) / (radius + wheel_distance));
 		right_power = power;
 		Drive::move(left_power, right_power);
-		while(abs(average(right.get_position_all())) < distance) {}
+		while(abs(average(right.get_position_all())) < distance) {
+			pros::delay(4);
+		}
 	}
 	Drive::move(0, 0);
 }

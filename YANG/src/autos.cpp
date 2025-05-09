@@ -8,6 +8,8 @@
 #include "optical.h"
 #include "constants.h"
 
+bool shouldIntake = true;
+
 enum MoveSpeed {
 	SLOW = 30,
 	DRIVE = 50,
@@ -15,6 +17,23 @@ enum MoveSpeed {
 	RUSH = 90,
 	TURN = 50,
 };
+
+void startSorting() {
+	pros::Task sortTask(
+		[]{
+			while (shouldIntake) {
+				// std::lock_guard shouldIntake(shouldIntakeMutex);
+
+				Intake::autoControl(false, true, false, Optical::stoppedDetectingOpposite());
+
+				pros::delay(10);
+			}
+		},
+		TASK_PRIORITY_DEFAULT,
+		TASK_STACK_DEPTH_DEFAULT,
+		"color sort"
+	);
+}
 
 void doNothing() {
 	pros::lcd::set_text(1, "This does nothing!");
@@ -425,7 +444,7 @@ void fullAutoTwoYang(bool isBlue) {
 void driveWithSort(double distance, double speed, int max_counts);
 void dontMoveSort(int counts);
 
-void fullAutoThreeYang(bool isBlue) {
+void worldsAutoYang(bool isBlue) {
 	double turnMultiplier = isBlue ? 1.0 : -1.0;
 	Optical::setTeamColor(isBlue);
 	Optical::enable();
@@ -441,13 +460,13 @@ void fullAutoThreeYang(bool isBlue) {
 
 	// Grab bottom ring from starting pile, return to origin
 	{
-		Conveyor::setNotMoving();
+		// Conveyor::setNotMoving();
 		Intake::setIntaking();
 		Drive::driveDistance(20.5, slowSpeed);
 		Intake::setNotMoving();
-		Drive::turn(-1 * turnMultiplier, turnSpeed); // TODO: Offset by more to be more consistent (prob. 0.2)
-		Drive::driveDistance(-6.25, slowSpeed);
-		Drive::turn(1 * turnMultiplier, turnSpeed);
+		Drive::turn((isBlue ? -1 : -5) * turnMultiplier, turnSpeed);
+		Drive::driveDistance(isBlue ? -6.25 : -7, slowSpeed);
+		Drive::turn((isBlue ? 1 : 15) * turnMultiplier, turnSpeed);
 	}
 	// Turn towards alliance stake
 	{
@@ -463,53 +482,154 @@ void fullAutoThreeYang(bool isBlue) {
 	{
 		// Push away so we can turn around safely
 		Drive::driveDistance(15, driveSpeed);
-		Drive::driveDistance(-7, driveSpeed);
-		Drive::turn(180 * turnMultiplier, turnSpeed); // Face grabber towards goal
-		Drive::driveDistance(-16, driveSpeed); // Move into goal
+		Drive::driveDistance(-4, driveSpeed);
+		Drive::turn(180, turnSpeed); // Face grabber towards goal
+		Drive::driveDistance(-13, driveSpeed); // Move into goal NOTE: 3
 		GoalGrabber::setGrabbing(); // Clamp onto goal
+		startSorting();
 	}
 	// Grab both blue and red from leftmost pile
 	{
-		Intake::setNotMovingWithConveyor();
-		Conveyor::setNotMoving();
-		Drive::turn(62 * turnMultiplier, turnSpeed);
+		// Intake::setNotMovingWithConveyor();
+		// Conveyor::setNotMoving();
+		Drive::turn((isBlue ? 62 : 65) * turnMultiplier, turnSpeed);
 
 		pros::delay(100);
-		driveWithSort(40, fastSpeed, 4000);
-		Intake::setNotMovingWithConveyor();
-		driveWithSort(17, slowSpeed + 10, 4000);
-		Intake::setNotMovingWithConveyor();
-		driveWithSort(999, slowSpeed, 250); // Center on wall and grab ring
+		Intake::setIntaking();
+		Drive::driveDistance(30, fastSpeed);
+		// driveWithSort(40, fastSpeed, 4000);
+		Drive::driveDistance(10, slowSpeed);
+		Drive::driveDistance(-5, slowSpeed);
+		Drive::driveDistance(20, slowSpeed);
+		Drive::driveTime(2000, slowSpeed, slowSpeed); // Center on wall and grab ring
 	}
 	// Align with corner pile and try to grab all rings
 	{
-		driveWithSort(8, -driveSpeed, 4000); // Back up to align
+		// Drive::tareYaw();
+		Drive::driveDistance(isBlue ? 8 : 7, -driveSpeed);
+		// driveWithSort(8, -driveSpeed, 4000); // Back up to align
 		// pros::Controller controllerMain(pros::E_CONTROLLER_MASTER);
 		// controllerMain.print(0, 0, "%f", Drive::getYaw());
 		// return;
-		Drive::turnTo(-45 * turnMultiplier, turnSpeed); // Turn towards corner
-		driveWithSort(30, slowSpeed + 10, 375);
+		Drive::turnTo((isBlue ? -45 : -40) * turnMultiplier, turnSpeed); // Turn towards corner
+		Drive::driveTime(375, slowSpeed + 10, slowSpeed + 10);
 
-		for (unsigned char i = 0; i < 7; i++) {
+		for (unsigned char i = 0; i < 8; i++) {
 			// Drive::turnTo(-45, turnSpeed); // Turn towards corner
-			driveWithSort(25, driveSpeed, 375);
-			dontMoveSort(500);
-			driveWithSort(-14, -slowSpeed, 375);
+			Drive::driveTime(500, fastSpeed, fastSpeed);
+			// driveWithSort(25, driveSpeed, 375);
+			// dontMoveSort(500);
+			pros::delay(500);
+			Drive::driveDistance(8, -slowSpeed);
+			// driveWithSort(-6, -slowSpeed, 999999);
 		}
 	}
 	// Do a 180 and put goal in corner
 	{
-		Intake::setNotMovingWithConveyor();
-		Conveyor::setNotMoving();
+		// Intake::setNotMovingWithConveyor();
+		// Conveyor::setNotMoving();
 
 		// Turn and move goal to corner
-		Drive::turn(120 * turnMultiplier, 100);
+		Drive::turn((isBlue ? 120 : 110) * turnMultiplier, 100);
 		Drive::driveTime(500, -fastSpeed, -fastSpeed);
 
 		// Leave goal and run away
 		GoalGrabber::setNotGrabbing();
-		Drive::driveArc(24, -0.15 * turnMultiplier, fastSpeed);
+		Drive::driveArc(25, -0.17 * turnMultiplier, fastSpeed);
 	}
+
+	shouldIntake = false;
+}
+
+void worldsSkillsYang() {
+	static const int32_t slowSpeed = 30;
+	static const int32_t turnSpeed = 40;
+	static const int32_t driveSpeed = 50;
+	static const int32_t cornerSpeed = 60;
+	static const int32_t fastSpeed = 70;
+
+	Drive::setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
+	GoalGrabber::setNotGrabbing();
+
+	// Grab ring, put on alliance stake
+	{
+		Intake::setIntaking();
+		Drive::driveDistance(6, slowSpeed);
+		Drive::driveDistance(-8, slowSpeed);
+		Conveyor::setConveyingForward();
+		pros::delay(1000);
+		Conveyor::setNotMoving();
+		Drive::driveDistance(17, slowSpeed);
+	}
+	// Turn towards closest pile, diagonal and grab
+	{
+		Drive::turn(-45, slowSpeed);
+		Intake::setIntaking();
+		Drive::driveDistance(26, slowSpeed);
+		pros::delay(1000);
+		Intake::setNotMoving();
+	}
+	// Turn to mogo and grab it
+	{
+		Drive::turn(142, slowSpeed);
+		Drive::driveDistance(-19, driveSpeed);
+		GoalGrabber::setGrabbing();
+	}
+	// Face towards other pile, grab ring, turn towards corner, grab corner
+	{
+		Drive::turn(92, slowSpeed);
+		Intake::setIntakingWithConveyor();
+		Drive::driveDistance(23.5, slowSpeed);
+		Drive::turn(42, slowSpeed);
+		Drive::driveTime(2000, slowSpeed, slowSpeed);
+		pros::delay(1500);
+	}
+	// Back up, spin, place goal in corner
+	{
+		Drive::driveDistance(-18, slowSpeed);
+		Drive::turn(188, slowSpeed);
+		Drive::driveTime(1250, -slowSpeed, -slowSpeed);
+		Intake::setNotMovingWithConveyor();
+		GoalGrabber::setNotGrabbing();
+	}
+	// Go forward, turn towards middle pile (blue on top of red)
+	{
+		Drive::driveDistance(7, slowSpeed);
+		Drive::turn(-55, slowSpeed);
+		Intake::setIntaking();
+		Drive::driveDistance(56, slowSpeed);
+		TopArm::approachRingFromMogo();
+		Conveyor::setConveyingForward();
+		Drive::driveDistance(-24, slowSpeed);
+		pros::delay(500);
+	}
+	// Grab second red ring, put on stake
+	{
+		Drive::turn(25, slowSpeed);
+		Drive::driveDistance(22, slowSpeed);
+		Conveyor::setNotMoving();
+		pros::delay(1000);
+		Intake::setNotMoving();
+	}
+	// Go for the wall stake
+	{
+		Drive::turn(-120, slowSpeed); // Turn towards stake
+		Conveyor::conveyDistance(-10, -slowSpeed); // Move conveyor out of the way
+		TopArm::approachHighStake(); // Move ring out in front
+		Drive::driveDistance(14, slowSpeed); // Drive towards stake, placing on stake
+		Drive::driveDistance(-8, slowSpeed); // Back up for another ring place
+	}
+	// Go for the wall stake again
+	{
+		TopArm::approachRingFromHighStake(); // Place back in ring position
+		Conveyor::setConveyingForward(); // Place ring in high stake mech
+		pros::delay(1500);
+		Conveyor::conveyDistance(-10, -slowSpeed); // Move conveyor out of the way
+		TopArm::approachHighStake(); // Move ring in front
+		Drive::driveDistance(8, slowSpeed); // Place ring on stake
+	}
+
+	pros::delay(1000000000);
 }
 
 void skillsOneYang() {
@@ -581,7 +701,6 @@ void skillsOneYang() {
 	Drive::brake();
 	Intake::setNotMoving();
 	Conveyor::setNotMoving();
-
 }
 
 // Test autos

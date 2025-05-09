@@ -23,16 +23,16 @@
 
 #include "replay.hpp"
 
-#define RECORD_NAME "replay_skills_7.txt"
-#define PLAY_NAME "replay_skills_7.txt"
+#define RECORD_NAME "replay_worlds_1.txt"
+#define PLAY_NAME "replay_worlds_1.txt"
 
 #define RECORD false
 // #define RECORD_TIME 15000 // 30 sec
 #define RECORD_TIME 30000 // 1 min
-#define AUTO_TIME_LIMIT true // TURN OFF FOR COMPETITION PLEASE PLEASE
+#define AUTO_TIME_LIMIT false // TURN OFF FOR COMPETITION PLEASE PLEASE
 
-bool isBlue = false;
-char side = 'C'; // NPC: Negative, Positive, Center
+bool isBlue = true;
+char side = 'N'; // NPC: Negative, Positive, Center
 bool recording = RECORD;
 
 std::vector<ReplayStep> replay(0);
@@ -198,23 +198,26 @@ void autonomous() {
 
 	std::vector<ReplayStep> replay = read_replay(PLAY_NAME);
 	pros::lcd::set_text(2, "Loaded replay!");
-	pros::delay(1000);
+	pros::delay(100);
 	pros::lcd::set_text(3, "Running replay!");
+
 	for(ReplayStep replay_step : replay) {
 		Drive::driveDirect(replay_step.leftWheels, replay_step.rightWheels);
 		Intake::direct(replay_step.intake);
 		Conveyor::direct(replay_step.conveyor);
 		Arm::direct(replay_step.arm);
 		GoalGrabber::direct(replay_step.grabber);
+		Climb::direct(replay_step.climb);
+		TopArm::direct(replay_step.top_arm);
 
 		pros::delay(2);
 	}
+
 	Drive::brake();
 	Intake::setNotMoving();
 	Conveyor::setNotMoving();
 	pros::lcd::set_text(4, "Finished replay!");
 	// pros::delay(1000);
-
 }
 
 /**
@@ -246,11 +249,11 @@ void opcontrol() {
 	// pros::delay(2000);
 	Drive::setBrakeMode(pros::E_MOTOR_BRAKE_COAST);
 	Optical::setTeamColor(isBlue);
-	Optical::enable();
+	Optical::disable();
 	TopArm::tarePosition();
 
 	controllerMain.print(0, 0, "Color: %s", isBlue ? "blue" : "red");
-	controllerMain.print(1, 0, "Sort: enabled ");
+	controllerMain.print(1, 0, "Sort: disabled ");
 
 	bool last_detected = false;
 	int replay_step = 0;
@@ -325,12 +328,15 @@ void opcontrol() {
 			current_step.conveyor = Conveyor::conveyorMotors.get_actual_velocity();
 			current_step.arm = Arm::armValue;
 			current_step.grabber = GoalGrabber::grabValue;
+			current_step.climb = Climb::climbValue;
+			current_step.top_arm = TopArm::topArmMotor.get_actual_velocity();
 			replay.push_back(current_step);
 
 			// if(replay_step >= RECORD_TIME || left_arrow) {
 			if(left_arrow) {
 				recording = false;
 				write_replay(replay, RECORD_NAME);
+				controllerMain.print(0, 0, "Saved replay!");
 				pros::lcd::set_text(1, "Saved replay!");
 				// autonomous();
 			}

@@ -41,4 +41,10 @@ void Climb::setNotEngaged() {
 }
 
 
+void Climb::direct(bool climbState) {
+    if(climbValue != climbState) {
+        setClimb(climbState);
+    }
+}
+
 

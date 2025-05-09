@@ -245,10 +245,10 @@ void Drive::turn(double deg, int32_t power) {
 	double cw = (deg > 0) ? 1.0 : -1.0; // Turn cw if deg is positive
 	Drive::move(power * cw, -power * cw);
 
-	pros::Controller controllerMain(pros::E_CONTROLLER_MASTER);
+	// pros::Controller controllerMain(pros::E_CONTROLLER_MASTER);
 
 	while(abs(tinyBox.get_rotation()) < (abs(deg) * DRIVE_DEG_MULTIPLIER)) {
-		controllerMain.print(0, 0, "rot: %f", tinyBox.get_rotation());
+		// controllerMain.print(0, 0, "rot: %f", tinyBox.get_rotation());
 	}
 	Drive::brake();
 }

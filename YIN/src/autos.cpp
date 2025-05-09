@@ -364,7 +364,7 @@ void yinRushCenter(bool isBlue) {
     const int32_t driveSpeed = 50;
     const int32_t slowSpeed = 30;
     const int32_t turnSpeed = 50;
-    pros::Controller controllerMain(pros::E_CONTROLLER_MASTER);
+    // pros::Controller controllerMain(pros::E_CONTROLLER_MASTER);
 
     Optical::setTeamColor(isBlue);
     Optical::enable();

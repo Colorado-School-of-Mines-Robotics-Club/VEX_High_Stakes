@@ -35,4 +35,5 @@ class TopArm{
         static void reachRing();
         static void reachHighStake();
 
+        static void direct(double velocity);
 };

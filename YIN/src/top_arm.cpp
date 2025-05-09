@@ -153,3 +153,7 @@ void TopArm::reachHighStake() {
     // topArmMotor.move(0);
     topArmState = TopArmState::HIGH_STAKE;
 }
+
+void TopArm::direct(double velocity) {
+    topArmMotor.move_velocity(velocity);
+}

@@ -245,9 +245,9 @@ void yinRushNegative(bool isBlue) {
         Arm::setArmDown();
         // Drive::driveArc(TRACK_WIDTH/2, 0.052, rushSpeed); // Align with mogo
         Drive::driveDistanceFeedbackBasic(21, rushSpeed, rushSpeed); // Move to mogo
-        Drive::driveDistance(7, slowSpeed); // Approach slowly
+        Drive::driveDistance(8, slowSpeed); // Approach slowly
         Arm::setArmUp();
-        Drive::driveDistance(2, slowSpeed); // Approach slowly
+        Drive::driveDistance(1, slowSpeed); // Approach slowly
 
         // Drive::driveArc(TRACK_WIDTH/2, -0.052, slowSpeed);
 
@@ -293,7 +293,7 @@ void yinRushNegative(bool isBlue) {
         GoalGrabber::setNotGrabbing();
         Arm::setArmDown();
         // Drive::driveArc(TRACK_WIDTH/2, 0.052, rushSpeed); // Align with mogo
-        Drive::driveDistanceFeedbackBasic(22, rushSpeed, rushSpeed); // Move to mogo
+        Drive::driveDistanceFeedbackBasic(23, rushSpeed, rushSpeed); // Move to mogo
         Drive::driveDistance(7, slowSpeed); // Approach slowly
         Arm::setArmUp();
         Drive::driveDistance(2, slowSpeed); // Approach slowly
@@ -317,7 +317,7 @@ void yinRushNegative(bool isBlue) {
         Drive::brake();
         pros::delay(200);
 
-        Drive::driveArc(0, 0.22, turnSpeed); // Turn towards pile
+        Drive::driveArc(0, 0.20, turnSpeed); // Turn towards pile
         driveWithSort(40, driveSpeed, 1000); // Approach corner
 
         Drive::brake(); // Stop
@@ -423,7 +423,7 @@ void yinRushCenter(bool isBlue) {
         GoalGrabber::setNotGrabbing();
         // Drive::driveArc(TRACK_WIDTH/2, 0.052, rushSpeed); // Align with mogo
         Intake::setOuttaking();
-        Drive::driveArc(11, 0.145, fastSpeed);
+        Drive::driveArc(9, 0.145, fastSpeed);
         Arm::setArmDown();
 
         // Drive::driveDistanceFeedbackBasic(21, rushSpeed, rushSpeed); // Move to mogo
@@ -448,7 +448,7 @@ void yinRushCenter(bool isBlue) {
 
         GoalGrabber::setGrabbing();
         Drive::driveDistance(6, slowSpeed);
-        Drive::driveArc(0, 0.03, turnSpeed); // Turn towards corner
+        Drive::driveArc(0, 0.05, turnSpeed); // Turn towards corner
 
         driveWithSort(8, slowSpeed, 1000);
         driveWithSort(24, driveSpeed, 2000);

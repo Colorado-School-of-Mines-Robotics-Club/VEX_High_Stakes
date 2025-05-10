@@ -33,6 +33,7 @@
 
 bool isBlue = true;
 char side = 'N'; // NPC: Negative, Positive, Center
+bool start_sorting = true;
 bool recording = RECORD;
 
 std::vector<ReplayStep> replay(0);
@@ -249,7 +250,11 @@ void opcontrol() {
 	// pros::delay(2000);
 	Drive::setBrakeMode(pros::E_MOTOR_BRAKE_COAST);
 	Optical::setTeamColor(isBlue);
-	Optical::disable();
+	if(start_sorting) {
+		Optical::enable();
+	} else {
+		Optical::disable();
+	}
 	TopArm::tarePosition();
 
 	controllerMain.print(0, 0, "Color: %s", isBlue ? "blue" : "red");

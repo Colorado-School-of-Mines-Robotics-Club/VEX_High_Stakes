@@ -1,6 +1,5 @@
 #include "pure_pursuit.h"
 #include "drive.h"
-#include "pros/llemu.hpp"
 #include <cmath>
 #include <optional>
 
@@ -22,7 +21,7 @@ std::optional<Point> getIntersection(OtosData pos, double x1, double y1, double 
         Point first;
         first.x = D * d_y + (d_y < 0 ? -1 : 1) * d_x * std::sqrt(discriminant) / d_r_sqr;
         first.y = - D * d_x + std::fabs(d_y) * std::sqrt(discriminant) / d_r_sqr;
-        
+
         Point second;
         second.x = D * d_y - (d_y < 0 ? -1 : 1) * d_x * std::sqrt(discriminant);
         second.y = - D * d_x - std::fabs(d_y) * std::sqrt(discriminant) / d_r_sqr;
@@ -64,7 +63,7 @@ std::optional<Point> PurePursuit::getNextLookahead(OtosData pos) {
     );
 
     if (!intersection.has_value()) {
-        pros::lcd::set_text(4, "LOST LINE :c");
+        // pros::lcd::set_text(4, "LOST LINE :c");
     }
 
     return intersection;

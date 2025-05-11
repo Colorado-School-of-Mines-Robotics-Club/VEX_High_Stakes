@@ -7,12 +7,18 @@
 #include "goal_grabber.h"
 #include "intake.h"
 #include "optical.h"
-#include "otos.h"
+#include "display/display.h"
 #include "top_arm.h"
 // #include "auto_chooser.h"
 #include "autos.h"
 
 #include "replay.hpp"
+
+Display* display = new Display();
+
+// Runtime modified variables
+static bool is_blue = false;
+static size_t auto_index = 0;
 
 // Enable the following to load skills auto instead of competition auto
 #define SKILLS true
@@ -27,7 +33,6 @@ bool driver = true;
 bool recording = RECORD;
 std::vector<ReplayStep> replay(0);
 
-static bool is_blue = false;
 pros::Controller controllerMain(pros::E_CONTROLLER_MASTER);
 
 /**
@@ -44,7 +49,6 @@ void on_center_button() {
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
-	pros::lcd::initialize();
 	// pros::lcd::set_text(1, "Is this working");
 	Drive::resetHeading();
 }
@@ -83,6 +87,14 @@ void competition_initialize() {
 	// OtosSensor::setup();
 
 	// OtosSensor::recalibrate();
+
+	display->setupSelectors(&auto_index, &is_blue);
+
+	lv_color_t colors[] = { lv_color_make(255, 0, 255) };
+	display->setupColors(1, 1, colors);
+
+	display->addAuto("Normal Match", lv_color_make(0, 255, 0), true);
+	display->addAuto("Skills", lv_color_make(255, 0, 0), false);
 }
 
 /**
@@ -97,77 +109,19 @@ void competition_initialize() {
  * from where it left_btn off.
  */
 void autonomous() {
-	if (AUTO_TIME_LIMIT && !SKILLS) {
-		auto main_task = pros::Task::current();
-		uint32_t start = pros::c::millis();
-		pros::Task::create(
-			[&, start]{
-				while (true) {
-					if (pros::c::millis() - start > 30 /* sec */ * 1000 /* ms */) {
-						main_task.suspend();
-
-						Drive::brake();
-						Intake::brake();
-						Conveyor::brake();
-						Optical::setLED(false);
-						GoalGrabber::setNotGrabbing();
-
-						break;
-					}
-
-					pros::delay(50);
-				}
-			},
-			TASK_PRIORITY_DEFAULT,
-			TASK_STACK_DEPTH_DEFAULT,
-			"stop after 30s"
-		);
+	switch (auto_index) {
+		case 0:
+			worldsAutoYang(is_blue);
+			break;
+		case 1:
+			worldsSkillsYang();
+			break;
 	}
-
-	// testCornerSort(true);
-	// testDriveWithSort(true);
-	// skillsOneYang();
-	// fullAutoTwoYang(true);
-	if (SKILLS) {
-		worldsSkillsYang();
-	} else {
-		worldsAutoYang(is_blue);
-	}
-	// AutoChooser::runSelected();
 
 	Drive::brake();
 	Intake::setNotMoving();
 	Conveyor::setNotMoving();
 	return;
-
-	// bool y = controllerMain.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y);
-	// if(!y) {
-	// 	pros::lcd::set_text(2, "Waiting for press...");
-	// 	pros::lcd::clear_line(3);
-	// 	pros::lcd::clear_line(4);
-	// 	pros::delay(2);
-	// 	return;
-	// }
-	// pros::lcd::clear_line(1);
-
-	// // std::vector<ReplayStep> replay = read_replay(FILENAME);
-	// pros::lcd::set_text(2, "Loaded replay!");
-	// pros::delay(1000);
-	// pros::lcd::set_text(3, "Running replay!");
-	// for(ReplayStep replay_step : replay) {
-	// 	Drive::driveDirect(replay_step.leftWheels, replay_step.rightWheels);
-	// 	Intake::direct(replay_step.intake);
-	// 	Conveyor::direct(replay_step.conveyor);
-	// 	Arm::direct(replay_step.arm);
-	// 	GoalGrabber::direct(replay_step.grabber);
-
-	// 	pros::delay(2);
-	// }
-	// Drive::brake();
-	// Intake::setNotMoving();
-	// Conveyor::setNotMoving();
-	// pros::lcd::set_text(4, "Finished replay!");
-	// pros::delay(1000);
 }
 
 /**
@@ -201,7 +155,7 @@ void opcontrol() {
 	// return;
 	Drive::setBrakeMode(pros::E_MOTOR_BRAKE_COAST);
 
-	Optical::setTeamColor(is_blue);
+	Optical::setTeamColor(SKILLS ? false : is_blue);
 	Optical::enable();
 
 	TopArm::tarePosition();
@@ -257,7 +211,7 @@ void opcontrol() {
 				// driver = false;
 				recording = false;
 				write_replay(replay, FILENAME);
-				pros::lcd::set_text(1, "Saved replay!");
+				controllerMain.set_text(1, 0, "Saved replay!");
 			}
 			replay_step++;
 		}

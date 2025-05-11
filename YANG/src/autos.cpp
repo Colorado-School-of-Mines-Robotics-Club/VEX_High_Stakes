@@ -2,7 +2,6 @@
 #include "intake.h"
 #include "conveyor.h"
 #include "arm.h"
-#include "pros/llemu.hpp"
 #include "top_arm.h"
 #include "goal_grabber.h"
 #include "optical.h"
@@ -36,15 +35,15 @@ void startSorting() {
 }
 
 void doNothing() {
-	pros::lcd::set_text(1, "This does nothing!");
+	// pros::lcd::set_text(1, "This does nothing!");
 }
 
 // broken since driveArc changed
 void figureEight(bool isBlue) {
 	Drive::setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
 	if(isBlue) {
-		pros::lcd::set_text(1, "Figure Eight!");
-		pros::lcd::set_text(2, "Blue!");
+		// pros::lcd::set_text(1, "Figure Eight!");
+		// pros::lcd::set_text(2, "Blue!");
 		// These delays are to make each action clear for testing
 		pros::delay(2000);
 		Drive::driveArc(12, 0.5, 6000);
@@ -61,8 +60,8 @@ void figureEight(bool isBlue) {
 		Drive::driveArc(12, 0.5, -6000);
 		pros::delay(2000);
 	} else {
-		pros::lcd::set_text(1, "Figure Eight!");
-		pros::lcd::set_text(2, "Red!");
+		// pros::lcd::set_text(1, "Figure Eight!");
+		// pros::lcd::set_text(2, "Red!");
 		pros::delay(2000);
 		Drive::driveArc(12, 0.5, 6000);
 		Drive::driveArc(12, -1, 6000);
@@ -77,12 +76,12 @@ void figureEight(bool isBlue) {
 }
 
 void driveForwardContactLadder() {
-	pros::lcd::set_text(1, "This does nothing");
+	// pros::lcd::set_text(1, "This does nothing");
 	// TODO: implement
 }
 
 void driveForwardRushMogo() {
-	pros::lcd::set_text(1, "This does nothing");
+	// pros::lcd::set_text(1, "This does nothing");
 	// TODO: implement
 }
 
@@ -466,13 +465,13 @@ void worldsAutoYang(bool isBlue) {
 		Intake::setNotMoving();
 		Drive::turn((isBlue ? -1 : -5) * turnMultiplier, turnSpeed);
 		Drive::driveDistance(isBlue ? -6.25 : -7, slowSpeed);
-		Drive::turn((isBlue ? 1 : 15) * turnMultiplier, turnSpeed);
+		Drive::turn((isBlue ? 4.5 : 15) * turnMultiplier, turnSpeed);
 	}
 	// Turn towards alliance stake
 	{
 		Drive::turn(80 * turnMultiplier, turnSpeed); // Conveyor facing stake
 		Drive::driveTime(550, -slowSpeed, -slowSpeed); // Center on wall
-		Drive::driveDistance(0.65, slowSpeed + 10); // Move to correct distance from stake
+		Drive::driveDistance(/*0.65*/0.8, slowSpeed + 10); // Move to correct distance from stake
 		// Put ring on stake
 		Conveyor::setConveyingForward();
 		pros::delay(250);
@@ -555,7 +554,7 @@ void worldsSkillsYang() {
 	{
 		Intake::setIntaking();
 		Drive::driveDistance(6, slowSpeed);
-		Drive::driveDistance(-8, slowSpeed);
+		Drive::driveDistance(-8.5, slowSpeed);
 		Conveyor::setConveyingForward();
 		pros::delay(1000);
 		Conveyor::setNotMoving();
@@ -579,9 +578,10 @@ void worldsSkillsYang() {
 	{
 		Drive::turn(92, slowSpeed);
 		Intake::setIntakingWithConveyor();
-		Drive::driveDistance(23.5, slowSpeed);
-		Drive::turn(42, slowSpeed);
+		Drive::driveDistance(26.5, slowSpeed);
+		Drive::turn(40, slowSpeed);
 		Drive::driveTime(2000, slowSpeed, slowSpeed);
+		Drive::driveTime(500, driveSpeed, driveSpeed);
 		pros::delay(1500);
 	}
 	// Back up, spin, place goal in corner
@@ -595,12 +595,12 @@ void worldsSkillsYang() {
 	// Go forward, turn towards middle pile (blue on top of red)
 	{
 		Drive::driveDistance(7, slowSpeed);
-		Drive::turn(-55, slowSpeed);
+		Drive::turn(-57, slowSpeed);
 		Intake::setIntaking();
-		Drive::driveDistance(56, slowSpeed);
+		Drive::driveDistance(60, slowSpeed);
 		TopArm::approachRingFromMogo();
 		Conveyor::setConveyingForward();
-		Drive::driveDistance(-24, slowSpeed);
+		Drive::driveDistance(-26, slowSpeed);
 		pros::delay(500);
 	}
 	// Grab second red ring, put on stake
@@ -614,7 +614,7 @@ void worldsSkillsYang() {
 	// Go for the wall stake
 	{
 		Drive::turn(-120, slowSpeed); // Turn towards stake
-		Conveyor::conveyDistance(-10, -slowSpeed); // Move conveyor out of the way
+		Conveyor::conveyDistance(-30, -slowSpeed); // Move conveyor out of the way
 		TopArm::approachHighStake(); // Move ring out in front
 		Drive::driveDistance(14, slowSpeed); // Drive towards stake, placing on stake
 		Drive::driveDistance(-8, slowSpeed); // Back up for another ring place
@@ -624,7 +624,7 @@ void worldsSkillsYang() {
 		TopArm::approachRingFromHighStake(); // Place back in ring position
 		Conveyor::setConveyingForward(); // Place ring in high stake mech
 		pros::delay(1500);
-		Conveyor::conveyDistance(-10, -slowSpeed); // Move conveyor out of the way
+		Conveyor::conveyDistance(-30, -slowSpeed); // Move conveyor out of the way
 		TopArm::approachHighStake(); // Move ring in front
 		Drive::driveDistance(8, slowSpeed); // Place ring on stake
 	}
@@ -774,7 +774,7 @@ void testDriveWithSort(bool isBlue) {
 	if(isBlue) {
 		driveWithSort(20, slowSpeed, 4000);
 		driveWithSort(-20, -slowSpeed, 4000);
-		pros::lcd::set_text(4, "Finished!");
+		// pros::lcd::set_text(4, "Finished!");
 	} else {
 
 	}
@@ -782,30 +782,30 @@ void testDriveWithSort(bool isBlue) {
 
 void driveForward(double distance) {
 	Drive::setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
-	pros::lcd::set_text(1, "Driving Forward!");
+	// pros::lcd::set_text(1, "Driving Forward!");
 	Drive::driveDistance(distance, 50);
-	pros::lcd::clear_line(1);
-	pros::lcd::set_text(1, "Finished Driving Forward!");
+	// pros::lcd::clear_line(1);
+	// pros::lcd::set_text(1, "Finished Driving Forward!");
 }
 
 void rotate(double distance) {
 	Drive::resetHeading();
 	Drive::setBrakeMode(MOTOR_BRAKE_BRAKE);
-	pros::lcd::set_text(1, "Rotating");
+	// pros::lcd::set_text(1, "Rotating");
 	Drive::turn(720, 50);
-	pros::lcd::clear_line(1);
-	pros::lcd::set_text(1, "Finished Rotating!");
+	// pros::lcd::clear_line(1);
+	// pros::lcd::set_text(1, "Finished Rotating!");
 }
 
 void driveCircle(double radius) {
 	Drive::resetHeading();
 	Drive::setBrakeMode(MOTOR_BRAKE_BRAKE);
 	pros::delay(2);
-	pros::lcd::set_text(1, "Circle");
+	// pros::lcd::set_text(1, "Circle");
 	Drive::driveArc(radius, 2, 50);
 	Drive::setDriveVelocity(0);
-	pros::lcd::clear_line(1);
-	pros::lcd::set_text(1, "Finished Circle!");
+	// pros::lcd::clear_line(1);
+	// pros::lcd::set_text(1, "Finished Circle!");
 }
 
 void rushWithArm() {
@@ -874,15 +874,15 @@ void rushWithGoalGrab() {
 void driveDistanceGyro(double distance) {
 	Drive::resetHeading();
 	pros::delay(2000);
-	pros::lcd::set_text(1, "Going the distance");
+	// pros::lcd::set_text(1, "Going the distance");
 	Drive::driveDistanceGyro(distance, 60);
 	Drive::setDriveVelocity(0);
-	pros::lcd::clear_line(1);
-	pros::lcd::set_text(1, "Gone the distance");
+	// pros::lcd::clear_line(1);
+	// pros::lcd::set_text(1, "Gone the distance");
 }
 
 void testIntake() {
-	pros::lcd::set_text(1, "Test Intake!");
+	// pros::lcd::set_text(1, "Test Intake!");
 	Intake::setIntaking();
 	pros::delay(2000);
 	Intake::setNotMoving();

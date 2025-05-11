@@ -1,5 +1,6 @@
 #include "optical.h"
 #include "constants.h"
+#include "display.h"
 
 pros::Optical Optical::opticalSensor(OPTICAL_PORT);
 enum Color Optical::teamColor(Color::OTHER);
@@ -10,19 +11,17 @@ void Optical::enable() {
     enabled = true;
     setLED(true);
     if(teamColor == Color::BLUE) {
-        pros::screen::set_pen(pros::Color::blue);
-        pros::screen::fill_rect(0, 0, 512, 1024);
+        display->setColor(0, 0, lv_color_make(0, 0, 255));
     } else {
-        pros::screen::set_pen(pros::Color::red);
-        pros::screen::fill_rect(0, 0, 512, 1024);
+        display->setColor(0, 0, lv_color_make(255, 0, 0));
     }
 }
 
 void Optical::disable() {
     setLED(false);
     enabled = false;
-    pros::screen::set_pen(pros::Color::white);
-    pros::screen::fill_rect(0, 0, 512, 1024);
+
+    display->setColor(0, 0, lv_color_make(255, 255, 255));
 }
 
 void Optical::setTeamColor(bool isBlue) {
@@ -68,8 +67,8 @@ pros::Optical Optical::getOptical() {
 }
 
 Color Optical::getColor() {
-    pros::lcd::print(2, "%i", opticalSensor.get_proximity());
-    pros::lcd::print(3, "%f", opticalSensor.get_hue());
+    // pros::lcd::print(2, "%i", opticalSensor.get_proximity());
+    // pros::lcd::print(3, "%f", opticalSensor.get_hue());
     double hue = opticalSensor.get_hue();
     if(opticalSensor.get_proximity() >= 250) {
         if(170 < hue && hue < 260 ) {

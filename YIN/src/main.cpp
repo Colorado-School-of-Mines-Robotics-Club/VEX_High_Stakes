@@ -34,6 +34,8 @@
 bool isBlue = true;
 char side = 'N'; // NPC: Negative, Positive, Center
 bool start_sorting = true;
+bool isBlue = true;
+char side = 'C'; // NPC: Negative, Positive, Center
 bool recording = RECORD;
 
 std::vector<ReplayStep> replay(0);

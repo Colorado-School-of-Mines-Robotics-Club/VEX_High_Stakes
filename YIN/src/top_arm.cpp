@@ -4,7 +4,7 @@
 const double MOGO_POSITION = 0;
 // double RING_POSITION = -120;
 double RING_POSITION = -120;
-const double HIGH_STAKE_POSITION = -600;
+const double HIGH_STAKE_POSITION = -640;
 
 double TopArm::desiredPosition = 0;
 
@@ -29,7 +29,7 @@ bool TopArm::atDesiredPosition() {
         && (topArmMotor.get_position() + 5 >= desiredPosition);
 }
 
-void TopArm::control(bool mogo_button, bool upper_toggle_button) {
+void TopArm::control(bool mogo_button, bool upper_toggle_button, double adjust) {
     // pros::lcd::print(2, "%f", topArmMotor.get_position());
     // pros::lcd::print(3, "%f", desiredPosition);
     // pros::lcd::print(4, "%i", TopArm::atDesiredPosition());
@@ -37,6 +37,7 @@ void TopArm::control(bool mogo_button, bool upper_toggle_button) {
     //     topArmMotor.tare_position();
     //     desiredPosition = 0;
     // }
+
     switch(topArmState) {
         case TopArmState::APPROACH_MOGO:
             approachMogo();
@@ -95,6 +96,15 @@ void TopArm::control(bool mogo_button, bool upper_toggle_button) {
             }
         break;
         case TopArmState::RING:
+            if(adjust > MOGO_ADJUST_DEADZONE) {
+                topArmMotor.move(-(adjust - MOGO_ADJUST_DEADZONE) * 0.6);
+                RING_POSITION = topArmMotor.get_position();
+            } else if (adjust < -MOGO_ADJUST_DEADZONE) {
+                topArmMotor.move(-(adjust + MOGO_ADJUST_DEADZONE) * 0.3);
+                RING_POSITION = topArmMotor.get_position();
+            } else {
+                topArmMotor.move_absolute(RING_POSITION, TOP_ARM_SLOW_SPEED);
+            }
             // pros::lcd::print(1, "RING");
             if(upper_toggle_button) {
                 approachHighStake();
@@ -154,6 +164,26 @@ void TopArm::reachHighStake() {
     topArmState = TopArmState::HIGH_STAKE;
 }
 
-void TopArm::direct(double velocity) {
-    topArmMotor.move_velocity(velocity);
+void TopArm::direct(double position, double velocity) {
+    topArmMotor.move_absolute(position, velocity);
+}
+
+int32_t TopArm::getCurrentVelocity() {
+switch (topArmState) {
+    case TopArmState::APPROACH_MOGO:
+        return TOP_ARM_SLOW_SPEED;
+    case TopArmState::MOGO:
+        return TOP_ARM_SLOW_SPEED;
+    case TopArmState::APPROACH_RING_FROM_MOGO:
+        return -TOP_ARM_NORMAL_SPEED;
+    case TopArmState::APPROACH_RING_FROM_HIGH_STAKE:
+        return TOP_ARM_FAST_SPEED;
+    case TopArmState::RING:
+        return TOP_ARM_SLOW_SPEED;
+    case TopArmState::APPROACH_HIGH_STAKE:
+        return -TOP_ARM_FAST_SPEED;
+    case TopArmState::HIGH_STAKE:
+        return TOP_ARM_SLOW_SPEED;
+    break;
+    }
 }

@@ -24,4 +24,14 @@ purdue 3 - with final backup
 WORLDS
 --------------------------------------------------------------------------------
 replay_worlds_1.txt
-first worlds
+bad - lots of disconnects
+
+replay_worlds_2.txt
+thought it was good but misses the first goal
+
+replay_worlds_3.txt
+made in a rush - 2 disconnects in middle
+
+replay_skills_1.txt
+recording of our last driver skills match
+this didnt happen :(

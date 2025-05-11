@@ -21,7 +21,7 @@
 #define RECORD false
 // #define RECORD_TIME 15000 // 30 seconds
 #define RECORD_TIME 30000 // 1 min
-#define AUTO_TIME_LIMIT true // TURN OFF FOR COMPETITION PLEASE PLEASE
+#define AUTO_TIME_LIMIT false // TURN OFF FOR COMPETITION PLEASE PLEASE
 
 bool driver = true;
 bool recording = RECORD;

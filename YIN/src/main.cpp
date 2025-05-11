@@ -23,8 +23,8 @@
 
 #include "replay.hpp"
 
-#define RECORD_NAME "replay_worlds_1.txt"
-#define PLAY_NAME "replay_worlds_1.txt"
+#define RECORD_NAME "replay_worlds_3.txt"
+#define PLAY_NAME "replay_worlds_3.txt"
 
 #define RECORD false
 // #define RECORD_TIME 15000 // 30 sec
@@ -145,40 +145,42 @@ void competition_initialize() {
  * from where it left_btn off.
  */
 void autonomous() {
-	if (AUTO_TIME_LIMIT) {
-		auto main_task = pros::Task::current();
-		uint32_t start = pros::c::millis();
-		pros::Task::create(
-			[&]{
-				while (true) {
-					if (pros::c::millis() - start > 30 /* sec */ * 1000 /* ms */) {
-						main_task.suspend();
-						disabled();
-						pros::Task::current().suspend();
+	if(!RECORD) {
+		if (AUTO_TIME_LIMIT) {
+			auto main_task = pros::Task::current();
+			uint32_t start = pros::c::millis();
+			pros::Task::create(
+				[&]{
+					while (true) {
+						if (pros::c::millis() - start > 30 /* sec */ * 1000 /* ms */) {
+							main_task.suspend();
+							disabled();
+							pros::Task::current().suspend();
+						}
+
+						pros::delay(100);
 					}
+				},
+				TASK_PRIORITY_DEFAULT,
+				TASK_STACK_DEPTH_DEFAULT,
+				"stop after 30s"
+			);
+		}
 
-					pros::delay(100);
-				}
-			},
-			TASK_PRIORITY_DEFAULT,
-			TASK_STACK_DEPTH_DEFAULT,
-			"stop after 30s"
-		);
+		if(side == 'N') {
+			yinRushNegative(isBlue);
+		} else if(side == 'P') {
+			// TODO
+			yinRushPositive(isBlue);
+		} else if(side == 'C') {
+			yinRushCenter(isBlue);
+		}
+
+		Drive::brake();
+		Intake::setNotMoving();
+		Conveyor::setNotMoving();
+		return;
 	}
-
-	if(side == 'N') {
-		yinRushNegative(isBlue);
-	} else if(side == 'P') {
-		// TODO
-		yinRushPositive(isBlue);
-	} else if(side == 'C') {
-		yinRushCenter(isBlue);
-	}
-
-	Drive::brake();
-	Intake::setNotMoving();
-	Conveyor::setNotMoving();
-	return;
 
 	// testAutoIntake(true);
 	// testCornerSort(true);
@@ -209,7 +211,8 @@ void autonomous() {
 		Arm::direct(replay_step.arm);
 		GoalGrabber::direct(replay_step.grabber);
 		Climb::direct(replay_step.climb);
-		TopArm::direct(replay_step.top_arm);
+		// TopArm::control(replay_step.top_arm_buttons[0], replay_step.top_arm_buttons[1], replay_step.top_arm_adjust);
+		TopArm::direct(replay_step.top_arm[0], replay_step.top_arm[1]);
 
 		pros::delay(2);
 	}
@@ -274,7 +277,7 @@ void opcontrol() {
 		// pros::lcd::print(6, "%f", Intake::intakeMotor.get_actual_velocity());
 
 		double left_x = controllerMain.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X); // turn for arcade
-		// double left_y = controllerMain.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y); // left tank
+		double left_y = controllerMain.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y); // lady brown tuning
 		// double right_x = controllerMain.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X); // not used
 		double right_y = controllerMain.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y); // arcade forward and right tank
 		bool l1 = controllerMain.get_digital(pros::E_CONTROLLER_DIGITAL_L1); // control conveyor and intake
@@ -310,7 +313,7 @@ void opcontrol() {
 
 		GoalGrabber::control(r1, controllerMain);
 		Arm::control(down_arrow);
-		TopArm::control(b, r2);
+		TopArm::control(b, r2, left_y);
 
 		// if(y) {
 		// 	Drive::driveArc(0, 1.5, 127);
@@ -334,7 +337,10 @@ void opcontrol() {
 			current_step.arm = Arm::armValue;
 			current_step.grabber = GoalGrabber::grabValue;
 			current_step.climb = Climb::climbValue;
-			current_step.top_arm = TopArm::topArmMotor.get_actual_velocity();
+			current_step.top_arm[0] = TopArm::topArmMotor.get_position();
+			// current_step.top_arm[1] = TopArm::getCurrentVelocity();
+			current_step.top_arm[1] = 127;
+
 			replay.push_back(current_step);
 
 			// if(replay_step >= RECORD_TIME || left_arrow) {

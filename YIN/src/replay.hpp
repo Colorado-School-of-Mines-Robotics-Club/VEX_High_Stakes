@@ -11,7 +11,7 @@ struct ReplayStep{
     bool arm; // arm
     bool grabber; // goal grabber
 	bool climb; // climb
-	double top_arm; // top arm
+	double top_arm[2]; // top arm
 };
 
 void write_replay(std::vector<ReplayStep> steps, std::string filename) {
@@ -36,7 +36,8 @@ void write_replay(std::vector<ReplayStep> steps, std::string filename) {
 		replay_file << step.grabber << " ";
 
 		replay_file << step.climb << " ";
-		replay_file << step.top_arm;
+		replay_file << step.top_arm[0];
+		replay_file << step.top_arm[1];
 
 		replay_file << "\n";
 	}
@@ -70,7 +71,8 @@ std::vector<ReplayStep> read_replay(std::string filename) {
 			s >> current_step.grabber;
 
 			s >> current_step.climb;
-			s >> current_step.top_arm;
+			s >> current_step.top_arm[0];
+			s >> current_step.top_arm[1];
 
 			steps.push_back(current_step);
 			if(s.fail()) {

@@ -31,8 +31,7 @@ echo "START UPLOAD AT: $(date +"%d/%m/%y %T")"
 
 # blue negative
 set_defaults
-pros make
-pros upload
+pros mu --slot 1
 echo "BLUE NEGATIVE FINISHED"
 
 # blue center
@@ -42,8 +41,7 @@ sed -i -e 's#RECORD .*#RECORD false#' ./src/main.cpp
 sed -i -e 's#isBlue = .*;#isBlue = true;#' ./src/main.cpp
 sed -i -e "s#side = .*;#side = \'C\';#" ./src/main.cpp
 sed -i -e "s#start_sorting = .*;#start_sorting = true;#" ./src/main.cpp
-pros make
-pros upload
+pros mu --slot 2
 echo "BLUE CENTER FINISHED"
 
 # red negative
@@ -53,8 +51,7 @@ sed -i -e 's#RECORD .*#RECORD false#' ./src/main.cpp
 sed -i -e 's#isBlue = .*;#isBlue = false;#' ./src/main.cpp
 sed -i -e "s#side = .*;#side = \'N\';#" ./src/main.cpp
 sed -i -e "s#start_sorting = .*;#start_sorting = true;#" ./src/main.cpp
-pros make
-pros upload
+pros mu --slot 3
 echo "RED NEGATIVE FINISHED"
 
 # red center
@@ -64,19 +61,17 @@ sed -i -e 's#RECORD .*#RECORD false#' ./src/main.cpp
 sed -i -e 's#isBlue = .*;#isBlue = false;#' ./src/main.cpp
 sed -i -e "s#side = .*;#side = \'C\';#" ./src/main.cpp
 sed -i -e "s#start_sorting = .*;#start_sorting = true;#" ./src/main.cpp
-pros make
-pros upload
+pros mu --slot 4
 echo "RED CENTER FINISHED"
 
 # skills
 sed -i -e 's#"project_name": .*,#"project_name": "YIN driver skills",#' project.pros
 sed -i -e 's#"slot": .*#"slot": "5"#' project.pros
-sed -i -e 's#RECORD .*#RECORD false#' ./src/main.cpp
+sed -i -e 's#RECORD .*#RECORD true#' ./src/main.cpp
 sed -i -e 's#isBlue = .*;#isBlue = false;#' ./src/main.cpp
 sed -i -e "s#side = .*;#side = \'N\';#" ./src/main.cpp
 sed -i -e "s#start_sorting = .*;#start_sorting = false;#" ./src/main.cpp
-pros make
-pros upload
+pros mu --slot 5
 echo "SKILLS FINISHED"
 
 # record
@@ -86,8 +81,7 @@ sed -i -e 's#RECORD .*#RECORD true#' ./src/main.cpp
 sed -i -e 's#isBlue = .*;#isBlue = false;#' ./src/main.cpp
 sed -i -e "s#side = .*;#side = \'N\';#" ./src/main.cpp
 sed -i -e "s#start_sorting = .*;#start_sorting = false;#" ./src/main.cpp
-pros make
-pros upload
+pros mu --slot 6
 echo "RECORD FINISHED"
 
 echo "FINISH UPLOAD AT: $(date +"%d/%m/%y %T")"

@@ -23,7 +23,7 @@ class TopArm{
         static pros::Motor topArmMotor;
         static void tarePosition();
 
-        static void control(bool mogo_button, bool upper_toggle_button);
+        static void control(bool mogo_button, bool upper_toggle_button, double tune);
         static TopArmState getTopArmState();
 
         static void approachMogo();
@@ -35,5 +35,6 @@ class TopArm{
         static void reachRing();
         static void reachHighStake();
 
-        static void direct(double velocity);
+        static void direct(double position, double velocity);
+        static int32_t getCurrentVelocity();
 };

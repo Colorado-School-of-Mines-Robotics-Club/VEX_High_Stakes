@@ -268,9 +268,8 @@ void yinRushNegative(bool isBlue) {
         Drive::brake();
         pros::delay(200);
 
-        Drive::driveArc(0, -0.225, turnSpeed); // Turn towards pile
+        Drive::driveArc(0, -0.21, turnSpeed); // Turn towards pile
         driveWithSort(40, driveSpeed, 1000); // Approach corner
-
         Drive::brake(); // Stop
         // Color sort corner
         for(int i = 0; i < 6; i++) {
@@ -279,12 +278,11 @@ void yinRushNegative(bool isBlue) {
             dontMoveSort(250);
             driveWithSort(11, driveSpeed, 1000);
         }
-
         dontMoveSort(250);
         driveWithSort(-6, -slowSpeed, 750);
         Drive::driveArc(0, 0.47, turnSpeed); // Turn towards stake
 
-        driveWithSort(48, slowSpeed, 5000); // Approach stake
+        driveWithSort(54, slowSpeed, 5000); // Approach stake
 
         Intake::setNotMoving();
         Conveyor::setNotMoving();

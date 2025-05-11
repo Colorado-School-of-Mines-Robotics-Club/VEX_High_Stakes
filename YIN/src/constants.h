@@ -64,6 +64,7 @@
 #define TOP_ARM_SLOW_SPEED 60
 #define TOP_ARM_NORMAL_SPEED 80
 #define TOP_ARM_FAST_SPEED 127
+#define MOGO_ADJUST_DEADZONE 80
 
 // Sensors
 #define OPTICAL_SENSOR_TOLERANCE 10 // needs testing
